@@ -4,8 +4,11 @@ import { useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
+  const router = useRouter();
+
   const [showPassword, setShowPassword] = useState(false);
 
   const [firstName, setFirstName] = useState("");
@@ -16,7 +19,7 @@ export default function Page() {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState("");
 
-  const validateRegisterForm = ({ firstName, email, password , mobile}) => {
+  const validateRegisterForm = ({ firstName, email, password, mobile }) => {
     const errors = {};
 
     if (!firstName.trim()) {
@@ -63,7 +66,7 @@ export default function Page() {
         username: firstName,
         email,
         password,
-        role: "admin",
+        role: "vendor",
       };
 
       const res = await apiClient("/users/", {
@@ -71,11 +74,13 @@ export default function Page() {
         body: payload,
       });
 
-      console.log("Res", res);
-
-      alert("Account created successfully");
+      if (res.success === true) {
+        alert("Account created successfully");
+        router.push("/login");
+      }
     } catch (err) {
-      setErrors("Registration failed. Try again.");
+      console.log("ERR FULL:", err);
+      alert(err?.message || "Registration failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -102,7 +107,10 @@ export default function Page() {
           </h2>
           <p className="text-sm text-gray-500 mb-6">
             Already have an account?{" "}
-            <span className="text-orange-500 font-medium cursor-pointer">
+            <span
+              className="text-orange-500 font-medium cursor-pointer"
+              onClick={() => router.push("/login")}
+            >
               Sign in
             </span>
           </p>
@@ -137,7 +145,7 @@ export default function Page() {
               <p className="text-sm text-red-500 mt-1">{errors.email}</p>
             )}
 
-             <input
+            <input
               type="Mobile"
               placeholder="Mobile Number"
               value={mobile}
