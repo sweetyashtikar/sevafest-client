@@ -6,6 +6,9 @@ import { Eye, EyeOff } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
 
+import Login from "@/assets/images/login.jpg"
+
+
 export default function Page() {
   const router = useRouter();
 
@@ -90,9 +93,9 @@ export default function Page() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-5xl bg-white rounded-2xl shadow-xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
         {/* LEFT IMAGE */}
-        <div className="relative hidden md:flex items-center justify-center bg-[#FFF2CC]">
+        <div className="relative hidden md:flex items-center justify-center">
           <Image
-            src="/images/auth-illustration.png"
+            src={Login}
             alt="Auth Illustration"
             fill
             className="object-contain p-10"

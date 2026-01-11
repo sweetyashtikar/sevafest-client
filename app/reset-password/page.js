@@ -5,53 +5,44 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
-import {
-  loginStart,
-  loginSuccess,
-  loginFailure,
-} from "@/redux/slices/authSlice";
 
 import Login from "@/assets/images/login.jpg";
-import { useDispatch } from "react-redux";
 
 export default function Page() {
-  const router = useRouter();
-  const dispatch = useDispatch();
-  const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
+  const router = useRouter();
+  const [otp, setOtp] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState("");
 
-  const validateLoginForm = ({ email, password }) => {
+  const validaterForm = ({ otp, newPassword, confirmPassword }) => {
     const errors = {};
 
-    if (!email.trim()) {
-      errors.email = "Email is required";
-    } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        errors.email = "Enter a valid email address";
-      }
+    // OTP validation
+    if (!otp || !otp.trim()) {
+      errors.otp = "OTP is required";
+    } else if (!/^\d{4,6}$/.test(otp)) {
+      errors.otp = "Enter a valid OTP";
     }
 
-    if (!password.trim()) {
-      errors.password = "Password is required";
-    } else if (password.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+    // New Password validation
+    if (!newPassword) {
+      errors.newPassword = "New password is required";
+    } else if (newPassword.length < 6) {
+      errors.newPassword = "Password must be at least 6 characters";
     }
-
     return errors;
   };
 
-  const handleLogin = async (e) => {
+  const handleRestePass = async (e) => {
     e.preventDefault();
     setErrors("");
 
-    const validationErrors = validateLoginForm({
-      email,
-      password,
+    const validationErrors = validaterForm({
+      otp,
+      newPassword,
     });
 
     setErrors(validationErrors);
@@ -62,33 +53,22 @@ export default function Page() {
 
     try {
       const payload = {
-        email,
-        password,
+        resetToken: otp,
+        newPassword,
       };
 
-      const res = await apiClient("/login", {
+      const res = await apiClient("/resetpassword", {
         method: "POST",
         body: payload,
       });
 
       if (res.success === true) {
-        dispatch(
-          loginSuccess({
-            user: res.user,
-            token: res.token,
-          })
-        );
-
-        document.cookie = `token=${res.token}; path=/`;
-        document.cookie = `role=${res.user.role.role}; path=/`;
-        alert("Login successfully");
-
-        router.push("/admin");
+        alert("Password Reset successfully");
+        router.push("/login");
       }
     } catch (err) {
       console.log("ERR FULL:", err);
-      dispatch(loginFailure());
-      alert(err?.message || "Registration failed. Try again.");
+      alert(err?.message || "Password Reset failed. Try again.");
     } finally {
       setLoading(false);
     }
@@ -108,44 +88,36 @@ export default function Page() {
           />
         </div>
 
-        {/* RIGHT FORM */}
         <div className="p-8 md:p-12 flex flex-col justify-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-1">
-            Get started absolutely free
+            Reset your password
           </h2>
+
           <p className="text-sm text-gray-500 mb-6">
-            Already have an account?{" "}
-            <span
-              className="text-orange-500 font-medium cursor-pointer"
-              onClick={() => router.push("/register")}
-            >
-              Sign Up
-            </span>
+            Enter the OTP sent to your email and set a new password.
           </p>
 
-          {/* FORM */}
           <form className="space-y-4">
             <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               className="w-full px-4 py-3 border rounded-lg outline-none
-                         text-black placeholder-gray-400
-                         focus:ring-2 focus:ring-orange-400
-                         focus:border-orange-400 transition"
+                 text-black placeholder-gray-400
+                 focus:ring-2 focus:ring-orange-400
+                 focus:border-orange-400 transition"
             />
-            {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+            {errors.otp && (
+              <p className="text-sm text-red-500 mt-1">{errors.otp}</p>
             )}
 
-            {/* Password */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full px-4 py-3 border rounded-lg outline-none
                            text-black placeholder-gray-400
                            focus:ring-2 focus:ring-orange-400
@@ -163,41 +135,31 @@ export default function Page() {
               <p className="text-sm text-red-500 mt-1">{errors.password}</p>
             )}
 
-            <div className="flex justify-end mt-2">
-              <span
-                className="text-sm text-orange-500 cursor-pointer hover:underline"
-                onClick={() => router.push("/forgot-password")}
-              >
-                Forgot password?
-              </span>
-            </div>
-
             <button
               type="submit"
-              onClick={handleLogin}
+              onClick={handleRestePass}
               disabled={loading}
               className={`w-full mt-4 flex items-center justify-center gap-2
-              font-semibold py-3 rounded-lg transition
-              ${
-                loading
-                  ? "bg-green-400 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700"
-              }
-              text-white`}
+      font-semibold py-3 rounded-lg transition
+      ${
+        loading
+          ? "bg-green-400 cursor-not-allowed"
+          : "bg-green-600 hover:bg-green-700"
+      }
+      text-white`}
             >
               {loading && (
                 <span
                   className="w-5 h-5 border-2 border-white border-t-transparent
-                 rounded-full animate-spin"
+          rounded-full animate-spin"
                 />
               )}
 
-              {loading ? "Wait..." : "Login"}
+              {loading ? "Resetting..." : "Reset Password"}
             </button>
           </form>
 
           <p className="text-xs text-gray-500 mt-6 text-center">
-            By signing up, I agree to{" "}
             <span className="underline cursor-pointer">Terms of Use</span> and{" "}
             <span className="underline cursor-pointer">Privacy Policy</span>
           </p>
