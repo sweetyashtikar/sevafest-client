@@ -23,16 +23,15 @@ export default function ClientLayout({ children }) {
   /* ================= ADMIN LAYOUT ================= */
   if (!isAuthPage && isAdminPage) {
     return (
-      <div className="flex min-h-screen bg-gray-100">
-        {/* SIDEBAR */}
+      <div className="min-h-screen bg-gray-100">
+        {/* FIXED SIDEBAR */}
         <AdminSidebar />
 
-        {/* RIGHT CONTENT */}
-        <div className="flex-1 flex flex-col">
-          <AdminTopBar />
+        {/* FIXED TOPBAR */}
+        <AdminTopBar />
 
-          <main className="flex-1 p-6">{children}</main>
-        </div>
+        {/* MAIN CONTENT */}
+        <main className="ml-64 pt-16 p-6">{children}</main>
       </div>
     );
   }
