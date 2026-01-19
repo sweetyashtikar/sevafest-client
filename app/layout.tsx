@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Providers } from "./providers";
+import ClientLayout from "./client-layout";
 
 import TopBar from "@/components/header/TopBar"
 import Footer from "@/components/footer/Footer"
+import { headers } from "next/headers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,19 +23,29 @@ export const metadata: Metadata = {
   description: "Products -Sevafast Online Store",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
+
 }>) {
+
+  const pathname = (await headers()).get("x-pathname") || "";
+
+  const hideLayout =
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register");
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TopBar/>
-        {children}
-        <Footer />
+        <Providers>
+          <ClientLayout>
+            {children}
+          </ClientLayout>
+        </Providers>
       </body>
     </html>
   );
