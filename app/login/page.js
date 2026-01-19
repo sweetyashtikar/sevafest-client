@@ -76,14 +76,22 @@ export default function Page() {
           loginSuccess({
             user: res.user,
             token: res.token,
-          })
+          }),
         );
 
         document.cookie = `token=${res.token}; path=/`;
         document.cookie = `role=${res.user.role.role}; path=/`;
         alert("Login successfully");
 
-        router.push("/admin");
+        const role = res.user.role.role;
+
+        if (role === "Admin") {
+          router.push("/admin");
+        } else if (role === "vendor") {
+          router.push("/vendor");
+        } else {
+          router.push("/"); 
+        }
       }
     } catch (err) {
       console.log("ERR FULL:", err);

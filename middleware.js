@@ -1,37 +1,59 @@
 import { NextResponse } from "next/server";
 
-/**
- * This function name MUST be `middleware`
- */
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin routes
-  if (pathname.startsWith("/admin")) {
-    const token = request.cookies.get("token")?.value;
-    const role = request.cookies.get("role")?.value;
+  const token = request.cookies.get("token")?.value;
+  const role = request.cookies.get("role")?.value;
 
-    // Not logged in
+  /* ================= AUTH PAGES ================= */
+  // Logged in user should not access login/register
+  if (
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register")
+  ) {
+    if (token && role) {
+      if (role === "Admin") {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
+      if (role === "vendor") {
+        return NextResponse.redirect(new URL("/vendor", request.url));
+      }
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  /* ================= ADMIN ROUTES ================= */
+  if (pathname.startsWith("/admin")) {
     if (!token) {
-      return NextResponse.redirect(
-        new URL("/login", request.url)
-      );
+      return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // Not admin
-    if (!["Admin", "vendor"].includes(role)) {
-      return NextResponse.redirect(
-        new URL("/", request.url)
-      );
+    if (role !== "Admin") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  }
+
+  /* ================= VENDOR ROUTES ================= */
+  if (pathname.startsWith("/vendor")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    if (role !== "vendor") {
+      return NextResponse.redirect(new URL("/", request.url));
     }
   }
 
   return NextResponse.next();
 }
 
-/**
- * Matcher is REQUIRED
- */
+/* ================= MATCHER ================= */
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/vendor/:path*",
+    "/login",
+    "/register",
+  ],
 };
