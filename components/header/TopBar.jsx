@@ -13,9 +13,17 @@ import {
   ShoppingCart,
   Search,
   ChevronDown,
+  LogIn,
+  UserPlus,
 } from "lucide-react";
+import { useSelector } from "react-redux";
+import { apiClient } from "@/services/apiClient";
+import { useDispatch } from "react-redux";
+import { logout } from "@/redux/slices/authSlice";
+import { useRouter } from "next/navigation";
 
 export default function TopBar() {
+  const { user } = useSelector((state) => state.auth);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -124,7 +132,13 @@ export default function TopBar() {
                   <User className="w-5 h-5" />
                 </button>
 
-                {isProfileOpen && <ProfileModel />}
+                {isProfileOpen && (
+                  user ? (
+                    <ProfileModel user={user} setIsProfileOpen={setIsProfileOpen} />
+                  ) : (
+                    <AuthDropdown setIsProfileOpen={setIsProfileOpen} />
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -141,7 +155,69 @@ export default function TopBar() {
   );
 }
 
-const ProfileModel = () => {
+const AuthDropdown = ({ setIsProfileOpen }) => {
+  const router = useRouter();
+
+  const handleNavigation = (path) => {
+    setIsProfileOpen(false);
+    router.push(path);
+  };
+
+  return (
+    <div className="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl z-50 border border-gray-100 overflow-hidden">
+      <div className="p-4 border-b bg-gradient-to-r from-green-50 to-green-100">
+        <p className="text-sm text-gray-600 text-center">Welcome to SEVAFAST</p>
+        <p className="text-xs text-gray-500 text-center mt-1">
+          Login or Register to continue
+        </p>
+      </div>
+
+      <div className="p-4 space-y-3">
+        <button
+          onClick={() => handleNavigation("/login")}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-all active:scale-95 shadow-md"
+        >
+          <LogIn className="w-4 h-4" />
+          Login
+        </button>
+
+        <button
+          onClick={() => handleNavigation("/register")}
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-green-600 text-green-600 font-medium hover:bg-green-50 transition-all active:scale-95"
+        >
+          <UserPlus className="w-4 h-4" />
+          Register
+        </button>
+      </div>
+
+      <div className="border-t p-4 bg-gray-50">
+        <p className="text-xs text-gray-500 text-center">
+          New to SEVAFAST? Create an account to enjoy exclusive offers!
+        </p>
+      </div>
+    </div>
+  );
+};
+
+const ProfileModel = ({ user, setIsProfileOpen }) => {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      const res = await apiClient("/logout", { method: "POST", body: {} });
+
+      if (res.success) {
+        dispatch(logout());
+        setIsProfileOpen(false);
+        router.push("/login");
+        alert("Logged out successfully");
+      }
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
   return (
     <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl z-50 border border-gray-100 overflow-hidden">
       <div className="flex items-center gap-4 p-4 border-b">
@@ -150,8 +226,8 @@ const ProfileModel = () => {
         </div>
         <div>
           <p className="text-sm text-gray-500">Hello,</p>
-          <h3 className="font-semibold text-gray-800">Vaibhav Dhake</h3>
-          <p className="text-xs text-gray-500">+91 7507566066</p>
+          <h3 className="font-semibold text-gray-800">{user?.username}</h3>
+          <p className="text-xs text-gray-500">{user?.mobile}</p>
         </div>
       </div>
 
@@ -193,7 +269,10 @@ const ProfileModel = () => {
       </div>
 
       <div className="border-t p-3">
-        <button className="w-full py-2 rounded-lg border border-red-500 text-red-500 text-sm font-medium hover:bg-red-50 transition">
+        <button
+          onClick={handleLogout}
+          className="w-full py-2 rounded-lg border border-red-500 text-red-500 text-sm font-medium hover:bg-red-50 transition"
+        >
           Logout
         </button>
       </div>

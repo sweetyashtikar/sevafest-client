@@ -20,13 +20,17 @@ export default function Page() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mobile, setMobile] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState("");
+  const [errors, setErrors] = useState({});
+  const [loginType, setLoginType] = useState("email"); // "email" or "mobile
 
-  const validateLoginForm = ({ email, password }) => {
+  const validateLoginForm = ({ email, password,mobile, loginType }) => {
     const errors = {};
 
+   // Validate Email OR Mobile based on active tab
+  if (loginType === "email") {
     if (!email.trim()) {
       errors.email = "Email is required";
     } else {
@@ -35,6 +39,13 @@ export default function Page() {
         errors.email = "Enter a valid email address";
       }
     }
+  } else {
+    if (!mobile.trim()) {
+      errors.mobile = "Mobile is required";
+    } else if (mobile.length !== 10) {
+      errors.mobile = "Enter a valid 10-digit mobile number";
+    }
+  }
 
     if (!password.trim()) {
       errors.password = "Password is required";
@@ -47,11 +58,13 @@ export default function Page() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setErrors("");
+    setErrors({});
 
     const validationErrors = validateLoginForm({
       email,
       password,
+      mobile,
+      loginType
     });
 
     setErrors(validationErrors);
@@ -62,8 +75,8 @@ export default function Page() {
 
     try {
       const payload = {
-        email,
         password,
+        ...(loginType === "email" ? { email } : { mobile })
       };
 
       const res = await apiClient("/login", {
@@ -85,12 +98,34 @@ export default function Page() {
 
         const role = res.user.role.role;
 
-        if (role === "Admin") {
-          router.push("/admin");
-        } else if (role === "vendor") {
-          router.push("/vendor");
-        } else {
-          router.push("/"); 
+        switch (role) {
+          case "Admin":
+            router.push("/admin");
+            break;
+          case "vendor":
+            router.push("/vendor");
+            break;
+          case "manager":
+            router.push("/manager");
+            break;
+          case "distributor":
+            router.push("/distributor");
+            break;
+          case "sub_distributor":
+            router.push("/sub_distributor");
+            break;
+          case "web designer":
+          case "webdesigner":
+            router.push("/designer-portal");
+            break;
+          case "worker":
+            router.push("/worker");
+            break;
+          case "courier":
+            router.push("/courier");
+            break;
+          default:
+            router.push("/"); // For "worker", "courier", "abcd", or unknown roles
         }
       }
     } catch (err) {
@@ -131,22 +166,67 @@ export default function Page() {
             </span>
           </p>
 
+          {/* TAB SWITCHER */}
+          <div className="flex mb-6 border-b">
+            <button
+              type="button"
+              className={`flex-1 py-2 text-center font-medium transition ${loginType === "email" ? "border-b-2 border-orange-500 text-orange-500" : "text-gray-400"
+                }`}
+              onClick={() => {
+                setLoginType("email")
+                setErrors({})
+              }}
+            >
+              Email
+            </button>
+            <button
+              type="button"
+              className={`flex-1 py-2 text-center font-medium transition ${loginType === "mobile" ? "border-b-2 border-orange-500 text-orange-500" : "text-gray-400"
+                }`}
+              onClick={() => setLoginType("mobile")}
+            >
+              Mobile
+            </button>
+          </div>
+
           {/* FORM */}
-          <form className="space-y-4">
-            <input
-              type="email"
-              placeholder="Email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border rounded-lg outline-none
+          <form className="space-y-4" onSubmit={handleLogin}>
+            {loginType === "email" ? (
+              <div>
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 border rounded-lg outline-none
                          text-black placeholder-gray-400
                          focus:ring-2 focus:ring-orange-400
                          focus:border-orange-400 transition"
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                />
+                {errors.email && (
+                  <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+                )}
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="tel"
+                  placeholder="Mobile Number"
+                  value={mobile}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "");
+                    if (val.length <= 10) setMobile(val);
+                  }}
+                  className="w-full px-4 py-3 border rounded-lg outline-none
+                         text-black placeholder-gray-400
+                         focus:ring-2 focus:ring-orange-400
+                         focus:border-orange-400 transition"
+                />
+                {errors.mobile && (
+                  <p className="text-sm text-red-500 mt-1">{errors.mobile}</p>
+                )}
+              </div>
             )}
-
             {/* Password */}
             <div className="relative">
               <input
@@ -186,11 +266,10 @@ export default function Page() {
               disabled={loading}
               className={`w-full mt-4 flex items-center justify-center gap-2
               font-semibold py-3 rounded-lg transition
-              ${
-                loading
+              ${loading
                   ? "bg-green-400 cursor-not-allowed"
                   : "bg-green-600 hover:bg-green-700"
-              }
+                }
               text-white`}
             >
               {loading && (

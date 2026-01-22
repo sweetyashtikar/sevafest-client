@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
@@ -18,9 +18,33 @@ export default function Page() {
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
+  const [rolesOptions, setRolesOptions] = useState([])
+  const [selectedRole, setSelectedRole] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState("");
+
+  const getRoles = async () => {
+    try {
+      const response = await apiClient("/role", {
+        method: "GET",
+      });
+      console.log("response", response)
+      if (response?.success === true) {
+        const rolesList = response.data.map(item => item.role);
+        console.log("Roles fetched successfully:", rolesList);
+
+        setRolesOptions(rolesList);
+        return rolesList;
+      }
+    } catch (error) {
+      console.error("Error fetching roles:", error);
+    }
+  };
+  useEffect(() => {
+    getRoles();
+  }, []);
+
 
   const validateRegisterForm = ({ firstName, email, password, mobile }) => {
     const errors = {};
@@ -36,6 +60,11 @@ export default function Page() {
       if (!emailRegex.test(email)) {
         errors.email = "Enter a valid email address";
       }
+    }
+    if(!mobile.trim()){
+       errors.mobile = "mobile is required";
+    }else if(mobile.length !== 10){
+      errors.mobile = "enter a valid mobile number";
     }
 
     if (!password.trim()) {
@@ -56,9 +85,11 @@ export default function Page() {
       email,
       mobile,
       password,
+      selectedRole
     });
 
     setErrors(validationErrors);
+    console.log(validationErrors)
 
     if (Object.keys(validationErrors).length > 0) return;
 
@@ -69,7 +100,9 @@ export default function Page() {
         username: firstName,
         email,
         password,
-        role: "vendor",
+        mobile,
+        role : selectedRole
+
       };
 
       const res = await apiClient("/users/", {
@@ -79,8 +112,11 @@ export default function Page() {
 
       if (res.success === true) {
         alert("Account created successfully");
-        router.push("/login");
       }
+      if(selectedRole !== "customer"){
+        alert("you shall receive a mail when the admin activates your account")
+      }
+      router.push("/login");
     } catch (err) {
       console.log("ERR FULL:", err);
       alert(err?.message || "Registration failed. Try again.");
@@ -149,10 +185,13 @@ export default function Page() {
             )}
 
             <input
-              type="Mobile"
+              type="tel"
               placeholder="Mobile Number"
               value={mobile}
-              onChange={(e) => setMobile(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ""); 
+                if (value.length <= 10) setMobile(value); 
+            }}
               className="w-full px-4 py-3 border rounded-lg outline-none
                          text-black placeholder-gray-400
                          focus:ring-2 focus:ring-orange-400
@@ -161,6 +200,21 @@ export default function Page() {
             {errors.mobile && (
               <p className="text-sm text-red-500 mt-1">{errors.mobile}</p>
             )}
+
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="w-full px-4 py-3 border rounded-lg outline-none bg-white text-black focus:ring-2 focus:ring-orange-400 transition appearance-none"
+            >
+              <option value="" disabled>Select a role</option>
+
+              {/* Use the state variable rolesOptions here */}
+              {rolesOptions.length > 0 && rolesOptions.map((roleName, index) => (
+                <option key={index} value={roleName}>
+                  {roleName}
+                </option>
+              ))}
+            </select>
 
             {/* Password */}
             <div className="relative">
@@ -192,11 +246,10 @@ export default function Page() {
               disabled={loading}
               className={`w-full mt-4 flex items-center justify-center gap-2
               font-semibold py-3 rounded-lg transition
-              ${
-                loading
+              ${loading
                   ? "bg-green-400 cursor-not-allowed"
                   : "bg-green-600 hover:bg-green-700"
-              }
+                }
               text-white`}
             >
               {loading && (
