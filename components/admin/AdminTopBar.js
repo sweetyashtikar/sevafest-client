@@ -1,30 +1,33 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/slices/authSlice";
-import {
-  ShieldCheck,
-  LogOut,
-  UserCircle,
-  ChevronDown,
-} from "lucide-react";
+import { ShieldCheck, LogOut, UserCircle, ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export default function AdminTopBar() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
+
+  console.log("user", user);
 
   const handleLogout = () => {
     dispatch(logout());
-    router.push("/login");
+
+    document.cookie = "token=; path=/; max-age=0";
+    document.cookie = "role=; path=/; max-age=0";
+
+    router.replace("/login");
   };
+
+  const roleName = user?.role?.role;
 
   return (
     <header className="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 z-40">
       <div className="px-6 h-full flex items-center justify-between">
-
         {/* LEFT */}
         <div
           className="flex items-center gap-2 cursor-pointer"
@@ -32,7 +35,7 @@ export default function AdminTopBar() {
         >
           <ShieldCheck className="text-orange-500" />
           <h1 className="text-lg font-semibold text-gray-800">
-            Admin Panel
+            {roleName} Panel
           </h1>
         </div>
 
@@ -48,19 +51,19 @@ export default function AdminTopBar() {
 
           {/* DROPDOWN */}
           {open && (
-            <div className="absolute right-0 mt-3 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-              
-              {/* INFO */}
+            <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
+              {/* USER INFO */}
               <div className="px-4 py-3 border-b">
                 <p className="text-sm font-medium text-gray-800">
-                  Admin User
+                  {user?.username || "User"}
                 </p>
-                <p className="text-xs text-gray-500">
-                  admin@example.com
+                <p className="text-xs text-gray-500">{user?.email || ""}</p>
+                <p className="mt-1 text-xs text-orange-500 capitalize">
+                  {roleName}
                 </p>
               </div>
 
-              {/* ACTIONS */}
+              {/* ACTION */}
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-gray-50"
@@ -71,7 +74,6 @@ export default function AdminTopBar() {
             </div>
           )}
         </div>
-
       </div>
     </header>
   );

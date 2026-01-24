@@ -85,12 +85,15 @@ export default function Page() {
       });
 
       if (res.success === true) {
+        
         dispatch(
           loginSuccess({
             user: res.user,
             token: res.token,
           }),
         );
+
+        console.log("res",res)
 
         document.cookie = `token=${res.token}; path=/`;
         document.cookie = `role=${res.user.role.role}; path=/`;
@@ -99,7 +102,7 @@ export default function Page() {
         const role = res.user.role.role;
 
         switch (role) {
-          case "Admin":
+          case "admin":
             router.push("/admin");
             break;
           case "vendor":
@@ -125,7 +128,7 @@ export default function Page() {
             router.push("/courier");
             break;
           default:
-            router.push("/"); // For "worker", "courier", "abcd", or unknown roles
+            router.push("/"); 
         }
       }
     } catch (err) {
