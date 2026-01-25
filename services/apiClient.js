@@ -107,7 +107,7 @@ api.interceptors.response.use(
 
       if (typeof window !== "undefined") {
         console.log("➡️ Redirecting to /login");
-        window.location.href = "/login";
+        // window.location.href = "/login";
       }
     }
 

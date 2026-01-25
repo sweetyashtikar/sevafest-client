@@ -6,6 +6,7 @@ import CategoryTable from '@/components/categories/categoryTable';
 import CategoryForm from '@/components/categories/CategoryForm';
 import CategoryFilters from '@/components/categories/CategoryFilters';
 import { CATEGORY_FILTERS } from '@/components/categories/categoryTypes';
+import { apiClient } from '@/services/apiClient';
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -45,7 +46,8 @@ export default function CategoriesPage() {
         ...(filters.status !== CATEGORY_FILTERS.ALL && { status: filters.status })
       }).toString();
 
-      const response = await fetch(`http://localhost:8000/api/category?`);
+      const response = await apiClient(`http://localhost:8000/api/category?`);
+      
       console.log("response url:", response)
       console.log('Fetching categories with params:', queryParams);
       const data = await response.json();

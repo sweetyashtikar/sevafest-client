@@ -85,6 +85,8 @@ export default function Page() {
       });
 
       if (res.success === true) {
+
+        console.log("res", res)
         
         dispatch(
           loginSuccess({

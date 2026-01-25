@@ -13,8 +13,15 @@ import ProductSEO from '@/components/products/ProductSEO';
 import ProductVariants from '@/components/products/ProductVariants';
 import { PRODUCT_TYPES } from '@/components/products/productTypes';
 import { apiClient } from '@/services/apiClient';
+import { useSelector } from 'react-redux';
 
 export default function AddProductPage() {
+
+  const {token, user} =  useSelector((a)=> a.auth);
+
+  console.log("Token", token)
+   console.log("user", user)
+
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Basic Information
@@ -131,18 +138,15 @@ export default function AddProductPage() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:8000/api/product', {
+      const response = await apiClient('/product', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
+        body: formData,
       });
 
-      const data = await response.json();
+      console.log("create product resposne", response)
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to create product');
+        throw new Error(response.message || 'Failed to create product');
       }
 
       // Redirect to product list or show success message

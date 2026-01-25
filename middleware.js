@@ -79,7 +79,5 @@ export const config = {
     "/designer-portal/:path*",
     "/worker/:path*",
     "/courier/:path*",
-    "/login",
-    "/register",
   ],
 };

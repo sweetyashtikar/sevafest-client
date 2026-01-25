@@ -32,7 +32,7 @@ export const menuItems = [
     icon: ShoppingBag,
     children: [
       { label: "Products", path: "/admin/product", icon: Package },
-      { label: "Categories", path: "/admin/categories", icon: Layers },
+      { label: "Categories", path: "/admin/category", icon: Layers },
       { label: "Attributes", path: "/admin/attributes", icon: Tags },
       { label: "Coupons", path: "/admin/coupons", icon: Percent },
       { label: "Brands", path: "/admin/brands", icon: Store },

@@ -1,23 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const isBrowser = typeof window !== "undefined";
-
-const getStoredAuth = () => {
-  if (!isBrowser) return null;
-  try {
-    const data = localStorage.getItem("auth");
-    return data ? JSON.parse(data) : null;
-  } catch {
-    return null;
-  }
-};
-
-const storedAuth = getStoredAuth();
-
 const initialState = {
-  isAuthenticated: !!storedAuth,
-  user: storedAuth?.user || null,
-  token: storedAuth?.token || null,
+  isAuthenticated: false,
+  user: null,
+  token: null,
   loading: false,
 };
 
@@ -25,6 +11,12 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+    hydrateAuth: (state, action) => {
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+    },
+
     loginStart: (state) => {
       state.loading = true;
     },
@@ -35,7 +27,7 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
 
-      if (isBrowser) {
+      if (typeof window !== "undefined") {
         localStorage.setItem(
           "auth",
           JSON.stringify({
@@ -52,7 +44,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
 
-      if (isBrowser) {
+      if (typeof window !== "undefined") {
         localStorage.removeItem("auth");
       }
     },
@@ -63,7 +55,7 @@ const authSlice = createSlice({
       state.token = null;
       state.loading = false;
 
-      if (isBrowser) {
+      if (typeof window !== "undefined") {
         localStorage.removeItem("auth");
       }
     },
@@ -75,6 +67,7 @@ export const {
   loginSuccess,
   loginFailure,
   logout,
+  hydrateAuth,
 } = authSlice.actions;
 
 export default authSlice.reducer;
