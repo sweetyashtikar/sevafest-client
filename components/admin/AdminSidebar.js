@@ -31,7 +31,7 @@ export const menuItems = [
     label: "Catalog",
     icon: ShoppingBag,
     children: [
-      { label: "Products", path: "/admin/products", icon: Package },
+      { label: "Products", path: "/admin/product", icon: Package },
       { label: "Categories", path: "/admin/categories", icon: Layers },
       { label: "Attributes", path: "/admin/attributes", icon: Tags },
       { label: "Coupons", path: "/admin/coupons", icon: Percent },
