@@ -1,40 +1,41 @@
 'use client';
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { hydrateAuth } from "@/redux/slices/authSlice";
+import { hydrateAuth, logout } from "@/redux/slices/authSlice";
+import { getCookie } from "@/utils/getCookies"; 
 
 export default function AuthHydrator() {
   const dispatch = useDispatch();
-  const hydratedRef = useRef(false);
+
   useEffect(() => {
-    if (hydratedRef.current) return;
-    hydratedRef.current = true;
+    console.log("🟡 AuthHydrator mounted");
 
-    try {
-      const auth = localStorage.getItem("auth");
-      if (!auth) return;
+    const token = getCookie("token");
+    const userStr = getCookie("user");
 
-      const parsed = JSON.parse(auth);
+    console.log("🍪 token:", token);
+    console.log("🍪 userStr:", userStr);
 
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
 
-      if (!parsed?.token || !parsed?.user) {
-        console.warn("⚠️ Invalid auth in storage, clearing");
-        localStorage.removeItem("auth");
-        return;
+        dispatch(
+          hydrateAuth({
+            token,
+            user,
+          })
+        );
+
+        console.log("✅ Redux hydrated from cookies");
+      } catch (e) {
+        console.error("❌ user JSON parse failed", e);
+        dispatch(logout());
       }
-
-      console.log("🔁 [AUTH] Hydrating from localStorage", parsed);
-
-      dispatch(
-        hydrateAuth({
-          user: parsed.user,
-          token: parsed.token,
-        })
-      );
-    } catch (err) {
-      console.error("❌ Failed to hydrate auth", err);
-      localStorage.removeItem("auth");
+    } else {
+      console.warn("⚠️ Cookies missing → logout");
+      dispatch(logout());
     }
   }, [dispatch]);
 

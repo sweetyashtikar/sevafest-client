@@ -74,7 +74,7 @@ api.interceptors.request.use(
   (error) => {
     console.log("❌ [API] Request interceptor error:", error);
     return Promise.reject(error);
-  }
+  },
 );
 
 /* =========================
@@ -114,7 +114,7 @@ api.interceptors.response.use(
     console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
 
     return Promise.reject(error?.response?.data || error);
-  }
+  },
 );
 
 /* =========================
@@ -133,7 +133,7 @@ export const apiClient = async (endpoint, options = {}) => {
     const response = await api.request({
       url: endpoint,
       method,
-      data: body,
+      ...(body !== null && body !== undefined ? { data: body } : {}),
       headers: {
         ...headers,
         ...(isFormData

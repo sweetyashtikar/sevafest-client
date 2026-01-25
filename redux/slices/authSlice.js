@@ -5,16 +5,20 @@ const initialState = {
   user: null,
   token: null,
   loading: false,
+  hydrated: false, 
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
+   
     hydrateAuth: (state, action) => {
+      console.log("🔁 [REDUX] hydrateAuth", action.payload);
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
+      state.hydrated = true;
     },
 
     loginStart: (state) => {
@@ -26,16 +30,7 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.user = action.payload.user;
       state.token = action.payload.token;
-
-      if (typeof window !== "undefined") {
-        localStorage.setItem(
-          "auth",
-          JSON.stringify({
-            user: action.payload.user,
-            token: action.payload.token,
-          })
-        );
-      }
+      state.hydrated = true; 
     },
 
     loginFailure: (state) => {
@@ -43,10 +38,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.user = null;
       state.token = null;
-
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("auth");
-      }
+      state.hydrated = true; 
     },
 
     logout: (state) => {
@@ -54,10 +46,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.loading = false;
-
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("auth");
-      }
+      state.hydrated = true; 
     },
   },
 });

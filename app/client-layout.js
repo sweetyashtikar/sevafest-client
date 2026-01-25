@@ -28,7 +28,7 @@ export default function ClientLayout({ children }) {
   return (
     <>
       {!isAuthPage && <TopBar />}
-      <AuthHydrator />
+     
 
       {children}
 

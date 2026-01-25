@@ -1,37 +1,42 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import CategoryTable from '@/components/categories/categoryTable';
-import CategoryForm from '@/components/categories/CategoryForm';
-import CategoryFilters from '@/components/categories/CategoryFilters';
-import { CATEGORY_FILTERS } from '@/components/categories/categoryTypes';
-import { apiClient } from '@/services/apiClient';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import CategoryTable from "@/components/categories/categoryTable";
+import CategoryForm from "@/components/categories/CategoryForm";
+import CategoryFilters from "@/components/categories/CategoryFilters";
+import { CATEGORY_FILTERS } from "@/components/categories/categoryTypes";
+import { apiClient } from "@/services/apiClient";
+import { useSelector } from "react-redux";
+
+import { getCookie } from "@/utils/getCookies";
 
 export default function CategoriesPage() {
   const router = useRouter();
+  const { user } = useSelector((a) => a.auth);
+
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
-  const [bulkAction, setBulkAction] = useState('');
-  
+  const [bulkAction, setBulkAction] = useState("");
+
   // Pagination & Filter states
   const [filters, setFilters] = useState({
-    search: '',
+    search: "",
     status: CATEGORY_FILTERS.ALL,
-    sort: 'row_order_asc',
+    sort: "row_order_asc",
     page: 1,
-    limit: 10
+    limit: 10,
   });
-  
+
   const [pagination, setPagination] = useState({
     total: 0,
     totalPages: 0,
     hasNext: false,
-    hasPrev: false
+    hasPrev: false,
   });
 
   // Fetch categories
@@ -43,18 +48,17 @@ export default function CategoriesPage() {
         limit: filters.limit,
         sort: filters.sort,
         ...(filters.search && { search: filters.search }),
-        ...(filters.status !== CATEGORY_FILTERS.ALL && { status: filters.status })
+        ...(filters.status !== CATEGORY_FILTERS.ALL && {
+          status: filters.status,
+        }),
       }).toString();
 
-      const response = await apiClient(`http://localhost:8000/api/category?`);
-      
-      console.log("response url:", response)
-      console.log('Fetching categories with params:', queryParams);
-      const data = await response.json();
-      console.log('Fetched categories:', data);
+      const data = await apiClient(`/category?`);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to fetch categories');
+      console.log("response", data);
+
+      if (!data.status === 200) {
+        throw new Error(data.message || "Failed to fetch categories");
       }
 
       setCategories(data.data || []);
@@ -62,11 +66,11 @@ export default function CategoriesPage() {
         total: data.total || 0,
         totalPages: Math.ceil((data.total || 0) / filters.limit),
         hasNext: data.total > filters.page * filters.limit,
-        hasPrev: filters.page > 1
+        hasPrev: filters.page > 1,
       });
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching categories:', err);
+      console.error("Error fetching categories:", err);
     } finally {
       setLoading(false);
     }
@@ -75,26 +79,31 @@ export default function CategoriesPage() {
   // Initial fetch and refetch when filters change
   useEffect(() => {
     fetchCategories();
-  }, [filters.page, filters.limit, filters.sort, filters.status, filters.search])
+  }, [
+    filters.page,
+    filters.limit,
+    filters.sort,
+    filters.status,
+    filters.search,
+  ]);
 
   // Handle category creation
   const handleCreateCategory = async (categoryData) => {
     try {
-      const response = await fetch('http://localhost:8000/api/category', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(categoryData)
+      const response = await apiClient("/category", {
+        method: "POST",
+        body: categoryData,
       });
 
-      const data = await response.json();
+      console.log("response", response);
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to create category');
+      if (!data.status === 200) {
+        throw new Error(data.message || "Failed to fetch categories");
       }
 
       setShowForm(false);
-      fetchCategories(); // Refresh list
-      return { success: true, data };
+      fetchCategories();
+      return { success: true, response };
     } catch (err) {
       return { success: false, error: err.message };
     }
@@ -103,42 +112,33 @@ export default function CategoriesPage() {
   // Handle category update
   const handleUpdateCategory = async (id, categoryData) => {
     try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(categoryData)
+      const data = await apiClient(`/categories/${id}`, {
+        method: "PUT",
+        body: categoryData,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update category');
-      }
 
       setEditingCategory(null);
-      fetchCategories(); // Refresh list
+      fetchCategories(); // refresh list
+
       return { success: true, data };
     } catch (err) {
-      return { success: false, error: err.message };
+      return {
+        success: false,
+        error: err?.message || err?.error || "Failed to update category",
+      };
     }
   };
-
   // Handle category deletion
   const handleDeleteCategory = async (id) => {
-    if (!confirm('Are you sure you want to delete this category?')) return;
+    if (!confirm("Are you sure you want to delete this category?")) return;
 
     try {
-      const response = await fetch(`/api/categories/${id}`, {
-        method: 'DELETE'
+      const response = await apiClient(`/categories/${id}`, {
+        method: "DELETE",
+        body: {},
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete category');
-      }
-
-      fetchCategories(); // Refresh list
+      fetchCategories();
       return { success: true };
     } catch (err) {
       alert(`Failed to delete category: ${err.message}`);
@@ -150,23 +150,20 @@ export default function CategoriesPage() {
   const handleToggleStatus = async (id, currentStatus) => {
     try {
       const targetStatus = currentStatus === true ? false : true;
-      
-      const response = await fetch(`http://localhost:8000/api/category/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ newStatus: targetStatus })
+
+      const data = await apiClient(`/category/${id}`, {
+        method: "PATCH",
+        body: {
+          newStatus: targetStatus,
+        },
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to update status');
-      }
-
       // Update local state immediately
-      setCategories(prev => prev.map(cat => 
-        cat._id === id ? { ...cat, status: targetStatus } : cat
-      ));
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat._id === id ? { ...cat, status: targetStatus } : cat,
+        ),
+      );
 
       return { success: true, data };
     } catch (err) {
@@ -175,50 +172,48 @@ export default function CategoriesPage() {
     }
   };
 
-//   // Handle bulk actions
-//   const handleBulkAction = async () => {
-//     if (!bulkAction || selectedCategories.length === 0) {
-//       alert('Please select categories and choose an action');
-//       return;
-//     }
+  //   // Handle bulk actions
+  //   const handleBulkAction = async () => {
+  //     if (!bulkAction || selectedCategories.length === 0) {
+  //       alert('Please select categories and choose an action');
+  //       return;
+  //     }
 
-//     if (bulkAction === 'delete' && !confirm(`Delete ${selectedCategories.length} categories?`)) {
-//       return;
-//     }
+  //     if (bulkAction === 'delete' && !confirm(`Delete ${selectedCategories.length} categories?`)) {
+  //       return;
+  //     }
 
-//     try {
-//       const response = await fetch('/api/categories/bulk', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json' },
-//         body: JSON.stringify({
-//           action: bulkAction,
-//           ids: selectedCategories
-//         })
-//       });
+  //     try {
+  //       const response = await fetch('/api/categories/bulk', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({
+  //           action: bulkAction,
+  //           ids: selectedCategories
+  //         })
+  //       });
 
-//       const data = await response.json();
+  //       const data = await response.json();
 
-//       if (!response.ok) {
-//         throw new Error(data.message || 'Bulk action failed');
-//       }
+  //       if (!response.ok) {
+  //         throw new Error(data.message || 'Bulk action failed');
+  //       }
 
-//       // Clear selections and refresh
-//       setSelectedCategories([]);
-//       setBulkAction('');
-//       fetchCategories();
+  //       // Clear selections and refresh
+  //       setSelectedCategories([]);
+  //       setBulkAction('');
+  //       fetchCategories();
 
-//       alert(`Successfully ${bulkAction}ed ${selectedCategories.length} categories`);
-//     } catch (err) {
-//       alert(`Bulk action failed: ${err.message}`);
-//     }
-//   };
+  //       alert(`Successfully ${bulkAction}ed ${selectedCategories.length} categories`);
+  //     } catch (err) {
+  //       alert(`Bulk action failed: ${err.message}`);
+  //     }
+  //   };
 
   // Handle row selection
   const handleSelectCategory = (id) => {
-    setSelectedCategories(prev => 
-      prev.includes(id) 
-        ? prev.filter(catId => catId !== id)
-        : [...prev, id]
+    setSelectedCategories((prev) =>
+      prev.includes(id) ? prev.filter((catId) => catId !== id) : [...prev, id],
     );
   };
 
@@ -227,13 +222,13 @@ export default function CategoriesPage() {
     if (selectedCategories.length === categories.length) {
       setSelectedCategories([]);
     } else {
-      setSelectedCategories(categories.map(cat => cat._id));
+      setSelectedCategories(categories.map((cat) => cat._id));
     }
   };
 
   // Handle page change
   const handlePageChange = (newPage) => {
-    setFilters(prev => ({ ...prev, page: newPage }));
+    setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
   return (
@@ -244,15 +239,27 @@ export default function CategoriesPage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-              <p className="text-gray-600 mt-2">Manage your product categories</p>
+              <p className="text-gray-600 mt-2">
+                Manage your product categories
+              </p>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowForm(true)}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
-                <svg className="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                <svg
+                  className="mr-2 -ml-1 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 4v16m8-8H4"
+                  />
                 </svg>
                 Add Category
               </button>
@@ -260,8 +267,18 @@ export default function CategoriesPage() {
                 onClick={fetchCategories}
                 className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
-                <svg className="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className="mr-2 -ml-1 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 Refresh
               </button>
@@ -274,8 +291,16 @@ export default function CategoriesPage() {
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -303,13 +328,21 @@ export default function CategoriesPage() {
                   onChange={(e) => setBulkAction(e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select Action</option>
-                  <option value="activate">Activate</option>
-                  <option value="deactivate">Deactivate</option>
-                  <option value="delete">Delete</option>
+                  <option value="" className="text-black bg-white">
+                    Select Action
+                  </option>
+                  <option value="activate" className="text-black bg-white">
+                    Activate
+                  </option>
+                  <option value="deactivate" className="text-black bg-white">
+                    Deactivate
+                  </option>
+                  <option value="delete" className="text-black bg-white">
+                    Delete
+                  </option>
                 </select>
                 <button
-                  onClick={handleBulkAction}
+                  onClick={() => {}}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
                   Apply
@@ -329,7 +362,9 @@ export default function CategoriesPage() {
         <div className="mb-6">
           <CategoryFilters
             filters={filters}
-            onFilterChange={(newFilters) => setFilters(prev => ({ ...prev, ...newFilters, page: 1 }))}
+            onFilterChange={(newFilters) =>
+              setFilters((prev) => ({ ...prev, ...newFilters, page: 1 }))
+            }
           />
         </div>
 
@@ -351,14 +386,16 @@ export default function CategoriesPage() {
                 onToggleStatus={handleToggleStatus}
                 onView={(id) => router.push(`/categories/${id}`)}
               />
-              
+
               {/* Pagination */}
               <div className="px-6 py-4 border-t border-gray-200">
                 <div className="flex flex-col md:flex-row md:items-center justify-between">
                   <div className="mb-4 md:mb-0">
                     <p className="text-sm text-gray-700">
-                      Showing <span className="font-medium">{categories.length}</span> of{' '}
-                      <span className="font-medium">{pagination.total}</span> categories
+                      Showing{" "}
+                      <span className="font-medium">{categories.length}</span>{" "}
+                      of <span className="font-medium">{pagination.total}</span>{" "}
+                      categories
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -367,8 +404,8 @@ export default function CategoriesPage() {
                       disabled={!pagination.hasPrev}
                       className={`px-3 py-1 rounded-md ${
                         pagination.hasPrev
-                          ? 'bg-gray-200 hover:bg-gray-300'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          ? "bg-gray-200 hover:bg-gray-300"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
                       }`}
                     >
                       Previous
@@ -381,15 +418,21 @@ export default function CategoriesPage() {
                       disabled={!pagination.hasNext}
                       className={`px-3 py-1 rounded-md ${
                         pagination.hasNext
-                          ? 'bg-gray-200 hover:bg-gray-300'
-                          : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          ? "bg-gray-200 hover:bg-gray-300"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
                       }`}
                     >
                       Next
                     </button>
                     <select
                       value={filters.limit}
-                      onChange={(e) => setFilters(prev => ({ ...prev, limit: parseInt(e.target.value), page: 1 }))}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          limit: parseInt(e.target.value),
+                          page: 1,
+                        }))
+                      }
                       className="ml-4 px-3 py-1 border border-gray-300 rounded-md"
                     >
                       <option value="5">5 per page</option>
@@ -414,11 +457,14 @@ export default function CategoriesPage() {
               onSubmit={async (data) => {
                 let result;
                 if (editingCategory) {
-                  result = await handleUpdateCategory(editingCategory._id, data);
+                  result = await handleUpdateCategory(
+                    editingCategory._id,
+                    data,
+                  );
                 } else {
                   result = await handleCreateCategory(data);
                 }
-                
+
                 if (result.success) {
                   setShowForm(false);
                   setEditingCategory(null);

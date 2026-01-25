@@ -20,7 +20,7 @@ export default function CategoryFilters({ filters, onFilterChange }) {
               type="text"
               value={filters.search}
               onChange={(e) => handleChange('search', e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-10 pr-3 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Search categories..."
             />
             <div className="absolute left-3 top-2.5">
@@ -39,7 +39,7 @@ export default function CategoryFilters({ filters, onFilterChange }) {
           <select
             value={filters.status}
             onChange={(e) => handleChange('status', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value={CATEGORY_FILTERS.ALL}>All Status</option>
             <option value={CATEGORY_FILTERS.ACTIVE}>Active Only</option>
@@ -55,7 +55,7 @@ export default function CategoryFilters({ filters, onFilterChange }) {
           <select
             value={filters.sort}
             onChange={(e) => handleChange('sort', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {SORT_OPTIONS.map(option => (
               <option key={option.value} value={option.value}>
@@ -73,7 +73,7 @@ export default function CategoryFilters({ filters, onFilterChange }) {
           <select
             value={filters.limit}
             onChange={(e) => handleChange('limit', parseInt(e.target.value))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border text-black border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="5">5</option>
             <option value="10">10</option>

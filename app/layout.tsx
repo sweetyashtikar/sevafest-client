@@ -4,8 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import ClientLayout from "./client-layout";
 
-import TopBar from "@/components/header/TopBar"
-import Footer from "@/components/footer/Footer"
+import AuthHydrator from "@/components/AuthHydrator";
 import { headers } from "next/headers";
 
 const geistSans = Geist({
@@ -43,6 +42,7 @@ export default async function RootLayout({
       >
         <Providers>
           <ClientLayout>
+             <AuthHydrator />
             {children}
           </ClientLayout>
         </Providers>

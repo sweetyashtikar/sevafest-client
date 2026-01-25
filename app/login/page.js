@@ -26,26 +26,26 @@ export default function Page() {
   const [errors, setErrors] = useState({});
   const [loginType, setLoginType] = useState("email"); // "email" or "mobile
 
-  const validateLoginForm = ({ email, password,mobile, loginType }) => {
+  const validateLoginForm = ({ email, password, mobile, loginType }) => {
     const errors = {};
 
-   // Validate Email OR Mobile based on active tab
-  if (loginType === "email") {
-    if (!email.trim()) {
-      errors.email = "Email is required";
+    // Validate Email OR Mobile based on active tab
+    if (loginType === "email") {
+      if (!email.trim()) {
+        errors.email = "Email is required";
+      } else {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          errors.email = "Enter a valid email address";
+        }
+      }
     } else {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        errors.email = "Enter a valid email address";
+      if (!mobile.trim()) {
+        errors.mobile = "Mobile is required";
+      } else if (mobile.length !== 10) {
+        errors.mobile = "Enter a valid 10-digit mobile number";
       }
     }
-  } else {
-    if (!mobile.trim()) {
-      errors.mobile = "Mobile is required";
-    } else if (mobile.length !== 10) {
-      errors.mobile = "Enter a valid 10-digit mobile number";
-    }
-  }
 
     if (!password.trim()) {
       errors.password = "Password is required";
@@ -64,7 +64,7 @@ export default function Page() {
       email,
       password,
       mobile,
-      loginType
+      loginType,
     });
 
     setErrors(validationErrors);
@@ -76,7 +76,7 @@ export default function Page() {
     try {
       const payload = {
         password,
-        ...(loginType === "email" ? { email } : { mobile })
+        ...(loginType === "email" ? { email } : { mobile }),
       };
 
       const res = await apiClient("/login", {
@@ -85,9 +85,8 @@ export default function Page() {
       });
 
       if (res.success === true) {
+        console.log("res", res);
 
-        console.log("res", res)
-        
         dispatch(
           loginSuccess({
             user: res.user,
@@ -95,10 +94,25 @@ export default function Page() {
           }),
         );
 
-        console.log("res",res)
+        
+        console.log("res", res);
 
         document.cookie = `token=${res.token}; path=/`;
         document.cookie = `role=${res.user.role.role}; path=/`;
+
+        const minimalUser = {
+          id: res.user.id,
+          name: res.user.username,
+          email: res.user.email,
+          role: res.user.role?.id || res.user.role,
+        };
+
+        console.log("res", minimalUser);
+
+        document.cookie = `user=${encodeURIComponent(
+          JSON.stringify(minimalUser),
+        )}; path=/; SameSite=Lax`;
+
         alert("Login successfully");
 
         const role = res.user.role.role;
@@ -130,7 +144,7 @@ export default function Page() {
             router.push("/courier");
             break;
           default:
-            router.push("/"); 
+            router.push("/");
         }
       }
     } catch (err) {
@@ -175,19 +189,25 @@ export default function Page() {
           <div className="flex mb-6 border-b">
             <button
               type="button"
-              className={`flex-1 py-2 text-center font-medium transition ${loginType === "email" ? "border-b-2 border-orange-500 text-orange-500" : "text-gray-400"
-                }`}
+              className={`flex-1 py-2 text-center font-medium transition ${
+                loginType === "email"
+                  ? "border-b-2 border-orange-500 text-orange-500"
+                  : "text-gray-400"
+              }`}
               onClick={() => {
-                setLoginType("email")
-                setErrors({})
+                setLoginType("email");
+                setErrors({});
               }}
             >
               Email
             </button>
             <button
               type="button"
-              className={`flex-1 py-2 text-center font-medium transition ${loginType === "mobile" ? "border-b-2 border-orange-500 text-orange-500" : "text-gray-400"
-                }`}
+              className={`flex-1 py-2 text-center font-medium transition ${
+                loginType === "mobile"
+                  ? "border-b-2 border-orange-500 text-orange-500"
+                  : "text-gray-400"
+              }`}
               onClick={() => setLoginType("mobile")}
             >
               Mobile
@@ -271,10 +291,11 @@ export default function Page() {
               disabled={loading}
               className={`w-full mt-4 flex items-center justify-center gap-2
               font-semibold py-3 rounded-lg transition
-              ${loading
+              ${
+                loading
                   ? "bg-green-400 cursor-not-allowed"
                   : "bg-green-600 hover:bg-green-700"
-                }
+              }
               text-white`}
             >
               {loading && (
