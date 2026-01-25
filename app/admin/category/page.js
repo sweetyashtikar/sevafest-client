@@ -8,6 +8,7 @@ import CategoryFilters from "@/components/categories/CategoryFilters";
 import { CATEGORY_FILTERS } from "@/components/categories/categoryTypes";
 import { apiClient } from "@/services/apiClient";
 import { useSelector } from "react-redux";
+import {CategoryViewModal} from "@/components/categories/CategoryViewModal"
 
 import { getCookie } from "@/utils/getCookies";
 
@@ -22,6 +23,7 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [bulkAction, setBulkAction] = useState("");
+  const [viewCategoryId, setViewCategoryId] = useState(null);
 
   // Pagination & Filter states
   const [filters, setFilters] = useState({
@@ -97,8 +99,8 @@ export default function CategoriesPage() {
 
       console.log("response", response);
 
-      if (!data.status === 200) {
-        throw new Error(data.message || "Failed to fetch categories");
+      if (!response.status === 200) {
+        throw new Error(response.message || "Failed to fetch categories");
       }
 
       setShowForm(false);
@@ -112,7 +114,7 @@ export default function CategoriesPage() {
   // Handle category update
   const handleUpdateCategory = async (id, categoryData) => {
     try {
-      const data = await apiClient(`/categories/${id}`, {
+      const data = await apiClient(`/category/${id}`, {
         method: "PUT",
         body: categoryData,
       });
@@ -133,7 +135,7 @@ export default function CategoriesPage() {
     if (!confirm("Are you sure you want to delete this category?")) return;
 
     try {
-      const response = await apiClient(`/categories/${id}`, {
+      const response = await apiClient(`/category/${id}`, {
         method: "DELETE",
         body: {},
       });
@@ -172,43 +174,60 @@ export default function CategoriesPage() {
     }
   };
 
-  //   // Handle bulk actions
-  //   const handleBulkAction = async () => {
-  //     if (!bulkAction || selectedCategories.length === 0) {
-  //       alert('Please select categories and choose an action');
-  //       return;
-  //     }
+  const handleBulkAction = async () => {
+    if (!bulkAction || selectedCategories.length === 0) {
+      alert("Please select categories and choose an action");
+      return;
+    }
 
-  //     if (bulkAction === 'delete' && !confirm(`Delete ${selectedCategories.length} categories?`)) {
-  //       return;
-  //     }
+    if (
+      bulkAction === "delete" &&
+      !confirm(`Delete ${selectedCategories.length} categories?`)
+    ) {
+      return;
+    }
 
-  //     try {
-  //       const response = await fetch('/api/categories/bulk', {
-  //         method: 'POST',
-  //         headers: { 'Content-Type': 'application/json' },
-  //         body: JSON.stringify({
-  //           action: bulkAction,
-  //           ids: selectedCategories
-  //         })
-  //       });
+    try {
+      // ACTIVATE / DEACTIVATE
+      if (bulkAction === "activate" || bulkAction === "deactivate") {
+        const newStatus = bulkAction === "activate";
 
-  //       const data = await response.json();
+        await Promise.all(
+          selectedCategories.map((id) =>
+            apiClient(`/category/${id}`, {
+              method: "PATCH",
+              body: {
+                newStatus,
+              },
+            }),
+          ),
+        );
+      }
 
-  //       if (!response.ok) {
-  //         throw new Error(data.message || 'Bulk action failed');
-  //       }
+      // DELETE
+      if (bulkAction === "delete") {
+        await Promise.all(
+          selectedCategories.map((id) =>
+            apiClient(`/category/${id}`, {
+              method: "DELETE",
+              body: {},
+            }),
+          ),
+        );
+      }
 
-  //       // Clear selections and refresh
-  //       setSelectedCategories([]);
-  //       setBulkAction('');
-  //       fetchCategories();
+      // clear + refresh
+      setSelectedCategories([]);
+      setBulkAction("");
+      fetchCategories();
 
-  //       alert(`Successfully ${bulkAction}ed ${selectedCategories.length} categories`);
-  //     } catch (err) {
-  //       alert(`Bulk action failed: ${err.message}`);
-  //     }
-  //   };
+      alert(
+        `Successfully ${bulkAction}ed ${selectedCategories.length} categories`,
+      );
+    } catch (err) {
+      alert(`Bulk action failed: ${err.message}`);
+    }
+  };
 
   // Handle row selection
   const handleSelectCategory = (id) => {
@@ -342,7 +361,7 @@ export default function CategoriesPage() {
                   </option>
                 </select>
                 <button
-                  onClick={() => {}}
+                  onClick={handleBulkAction}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
                   Apply
@@ -381,10 +400,10 @@ export default function CategoriesPage() {
                 selectedCategories={selectedCategories}
                 onSelectCategory={handleSelectCategory}
                 onSelectAll={handleSelectAll}
-                onEdit={setEditingCategory}
                 onDelete={handleDeleteCategory}
                 onToggleStatus={handleToggleStatus}
-                onView={(id) => router.push(`/categories/${id}`)}
+                 onEdit={setEditingCategory}
+                onView={(id) => setViewCategoryId(id)}
               />
 
               {/* Pagination */}
@@ -478,6 +497,13 @@ export default function CategoriesPage() {
             />
           </div>
         </div>
+      )}
+
+      {viewCategoryId && (
+        <CategoryViewModal
+          id={viewCategoryId}
+          onClose={() => setViewCategoryId(null)}
+        />
       )}
     </div>
   );
