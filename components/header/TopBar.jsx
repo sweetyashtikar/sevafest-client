@@ -212,6 +212,9 @@ const ProfileModel = ({ user, setIsProfileOpen }) => {
         setIsProfileOpen(false);
         router.push("/login");
         alert("Logged out successfully");
+        
+        document.cookie = "token=; path=/; max-age=0";
+        document.cookie = "role=; path=/; max-age=0";
       }
     } catch (err) {
       console.error("Logout failed:", err);

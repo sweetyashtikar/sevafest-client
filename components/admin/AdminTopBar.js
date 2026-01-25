@@ -12,7 +12,7 @@ export default function AdminTopBar() {
   const { user } = useSelector((state) => state.auth);
   const [open, setOpen] = useState(false);
 
-  console.log("user", user);
+  // console.log("user", user);
 
   const handleLogout = () => {
     dispatch(logout());
