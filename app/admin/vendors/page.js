@@ -53,7 +53,7 @@ export default function Page() {
         ),
       );
 
-      const data = await apiClient(`/vendors/${row.id}`, {
+      const data = await apiClient(`/updateStatus/User/${row.id}`, {
         method: "PATCH",
         body: {
           newStatus: newStatus,
