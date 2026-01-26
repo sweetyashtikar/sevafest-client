@@ -45,8 +45,8 @@ export default function TopBar() {
 
               {[
                 { name: "Home", href: "/" },
-                { name: "Products", href: "/contact" },
-                { name: "Coupons", href: "/blog" },
+                { name: "Products", href: "/products" },
+                { name: "Coupons", href: "/coupons" },
               ].map((item) => (
                 <a
                   key={item.name}
