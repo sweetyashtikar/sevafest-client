@@ -16,7 +16,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 
-export function VendorViewModal({ open, onClose, data }) {
+export function VendorViewModal({ open, onClose, data , tittle = "Vendor" }) {
   if (!open || !data) return null;
 
   return (
@@ -32,7 +32,7 @@ export function VendorViewModal({ open, onClose, data }) {
         {/* HEADER with gradient */}
         <div className="bg-gradient-to-r from-orange-500 via-orange-600 to-red-500 px-6 py-5 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-white">Vendor Details</h2>
+            <h2 className="text-2xl font-bold text-white">{tittle} Details</h2>
             <p className="text-orange-100 text-sm mt-0.5">
               Complete vendor information and metrics
             </p>
