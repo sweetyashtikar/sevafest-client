@@ -26,6 +26,7 @@ export default function Page() {
 
       const res = await apiClient(`product?page=${page}&limit=20`);
       if (res?.success) {
+        console.log("Fetched products:", res.data.products);
         setProducts(res.data.products);
         setCurrentPage(res.data.pagination.currentPage);
         setTotalPages(res.data.pagination.totalPages);
@@ -60,7 +61,7 @@ export default function Page() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <div className="mb-6 text-sm text-gray-600">
-          Home / Women's Fashion / T-Shirts
+          Home / Womens Fashion / T-Shirts
         </div>
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}

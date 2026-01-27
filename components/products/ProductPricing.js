@@ -1,14 +1,34 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { taxApi } from '../attributes/api';
+import { PRODUCT_TYPES } from './productTypes';
 
 export default function ProductPricing({ formData, updateFormData }) {
   const [taxes, setTaxes] = useState([]); // Would fetch from API
+const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch taxes from API
-    // fetch('/api/taxes').then(res => res.json()).then(setTaxes);
+    fetchTax();
   }, []);
+
+    const fetchTax = async () => {
+      setLoading(true);
+      setError(null);
+  
+      try {
+        const response = await taxApi.getStatusTrue();
+        console.log('Fetched taxes:', response);
+        // Assuming your API returns { success: true, data: [] }
+        setTaxes(response.data || []);
+      } catch (err) {
+        console.error('Error fetching taxes:', err);
+        setError(err.message || 'Failed to load taxes');
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -17,10 +37,9 @@ export default function ProductPricing({ formData, updateFormData }) {
 
   const handleSimpleProductChange = (e) => {
     const { name, value } = e.target;
-    const field = name.replace('simpleProduct.', '');
     updateFormData('simpleProduct', {
       ...formData.simpleProduct,
-      [field]: value
+      [name]: value
     });
   };
 
@@ -38,12 +57,12 @@ export default function ProductPricing({ formData, updateFormData }) {
             name="taxId"
             value={formData.taxId}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
             <option value="">Select Tax Rate</option>
             {taxes.map(tax => (
               <option key={tax._id} value={tax._id}>
-                {tax.name} - {tax.amount}%
+                {tax.title} - {tax.amount}/-
               </option>
             ))}
           </select>
@@ -65,7 +84,7 @@ export default function ProductPricing({ formData, updateFormData }) {
         </div>
 
         {/* Simple/Digital Product Pricing */}
-        {(formData.productType === 'simple' || formData.productType === 'digital') && (
+        {(formData.productType === PRODUCT_TYPES.SIMPLE || formData.productType === PRODUCT_TYPES.DIGITAL) && (
           <>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -75,8 +94,8 @@ export default function ProductPricing({ formData, updateFormData }) {
                 <span className="absolute left-3 top-2 text-gray-500">₹</span>
                 <input
                   type="number"
-                  name="simpleProduct.sp_price"
-                  value={formData.simpleProduct.sp_price}
+                  name="sp_price"
+                  value={formData.simpleProduct?.sp_price || ''}
                   onChange={handleSimpleProductChange}
                   min="0"
                   step="0.01"
@@ -95,8 +114,8 @@ export default function ProductPricing({ formData, updateFormData }) {
                 <span className="absolute left-3 top-2 text-gray-500">₹</span>
                 <input
                   type="number"
-                  name="simpleProduct.sp_specialPrice"
-                  value={formData.simpleProduct.sp_specialPrice}
+                  name="sp_specialPrice"
+                  value={formData.simpleProduct?.sp_specialPrice || ''}
                   onChange={handleSimpleProductChange}
                   min="0"
                   step="0.01"
@@ -115,8 +134,8 @@ export default function ProductPricing({ formData, updateFormData }) {
               </label>
               <input
                 type="text"
-                name="simpleProduct.sp_sku"
-                value={formData.simpleProduct.sp_sku}
+                name="sp_sku"
+                value={formData.simpleProduct?.sp_sku || ''}
                 onChange={handleSimpleProductChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
                 placeholder="Product SKU"

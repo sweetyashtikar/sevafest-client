@@ -1,11 +1,70 @@
 'use client';
-
+import { useEffect } from 'react';
 import { INDICATOR_TYPES } from '@/components/products/productTypes';
 import { useState } from 'react';
+import { categoryApi, attributeValueApi } from '../attributes/api';
 
 export default function ProductCategorization({ formData, updateFormData }) {
   const [tagInput, setTagInput] = useState('');
   const [categories, setCategories] = useState([]); // Would fetch from API
+  const [attributeValues, setAttributeValue] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  // Fetch categories on component mount
+  useEffect(() => {
+    fetchCategories();
+    fetchAttributeValues();
+  }, []);
+
+  const fetchCategories = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await categoryApi.getStatusTrue();
+      console.log('Fetched categories:', response);
+      // Assuming your API returns { success: true, data: [] }
+      setCategories(response.data || []);
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+      setError(err.message || 'Failed to load categories');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAttributeValues = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await attributeValueApi.getStatusTrue();
+      console.log('Fetched attribute values:', response);
+      // Assuming your API returns { success: true, data: [] }
+      setAttributeValue(response.data || []);
+    } catch (err) {
+      console.error('Error fetching attribute values:', err);
+      setError(err.message || 'Failed to load attribute values');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Add this handler function to your component
+  const handleAttributeValuesChange = (e) => {
+    const { options } = e.target;
+    const selectedValues = [];
+
+    for (let i = 0; i < options.length; i++) {
+      if (options[i].selected) {
+        selectedValues.push(options[i].value);
+      }
+    }
+
+    updateFormData('attributeValues', selectedValues);
+  };
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,7 +85,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-800 mb-6">Categorization & Classification</h2>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Category */}
         <div>
@@ -38,12 +97,20 @@ export default function ProductCategorization({ formData, updateFormData }) {
             value={formData.categoryId}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            disabled={loading}
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${loading ? 'bg-gray-100 cursor-not-allowed' : ''
+              }`}
           >
             <option value="">Select Category</option>
-            {/* Populate with categories from API */}
-            <option value="cat1">Category 1</option>
-            <option value="cat2">Category 2</option>
+
+            {categories.length === 0 && !loading && (
+              <option value="" disabled>No categories available</option>
+            )}
+            {categories.map((category) => (
+              <option key={category._id} value={category._id}>
+                {category.name}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -147,19 +214,92 @@ export default function ProductCategorization({ formData, updateFormData }) {
           </div>
         </div>
 
-        {/* Attribute Values (for variable products) */}
+
+
         {formData.productType === 'variable' && (
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Attribute Values
-            </label>
-            <div className="space-y-2">
-              {/* Would fetch and select from existing attributes */}
-              <p className="text-sm text-gray-500">Select attributes for variable products</p>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Attribute Values *
+              </label>
+              {loading && (
+                <span className="text-xs text-gray-500">Loading...</span>
+              )}
             </div>
+
+            <div className="border border-gray-300 rounded-md p-3 max-h-60 overflow-y-auto">
+              {attributeValues.length === 0 && !loading ? (
+                <p className="text-sm text-gray-500">No attribute values available</p>
+              ) : (
+                <div className="space-y-2">
+                  {attributeValues.map((attributeValue) => (
+                    <div key={attributeValue._id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`attr-${attributeValue._id}`}
+                        checked={(formData.attributeValues || []).includes(attributeValue._id)}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          const currentValues = formData.attributeValues || [];
+
+                          if (isChecked) {
+                            updateFormData('attributeValues', [...currentValues, attributeValue._id]);
+                          } else {
+                            updateFormData('attributeValues', currentValues.filter(id => id !== attributeValue._id));
+                          }
+                        }}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <label
+                        htmlFor={`attr-${attributeValue._id}`}
+                        className="ml-2 text-sm text-gray-900 cursor-pointer"
+                      >
+                        {attributeValue.attribute_id?.name || 'Attribute'}: {attributeValue.value}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Display selected attribute values as tags */}
+            {formData.attributeValues && formData.attributeValues.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium text-gray-700 mb-2">Selected Attributes:</p>
+                <div className="flex flex-wrap gap-2">
+                  {formData.attributeValues.map(attrId => {
+                    const selectedAttr = attributeValues.find(attr => attr._id === attrId);
+                    if (!selectedAttr) return null;
+
+                    return (
+                      <span
+                        key={attrId}
+                        className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-green-100 text-green-800"
+                      >
+                        {selectedAttr.attribute_id?.name || 'Attribute'}: {selectedAttr.value}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const updated = formData.attributeValues.filter(id => id !== attrId);
+                            updateFormData('attributeValues', updated);
+                          }}
+                          className="ml-2 text-green-600 hover:text-green-800"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 }
+
+
+
+

@@ -10,7 +10,7 @@ export default function ProductMedia({ formData, updateFormData }) {
   const videoFileInputRef = useRef(null);
 
   // Handle main image change
-  const handleMainImageChange = async (e) => {
+  const handleMainImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -25,52 +25,17 @@ export default function ProductMedia({ formData, updateFormData }) {
       return;
     }
 
-    // Simulate upload (replace with actual upload logic)
-    setUploadingImages(true);
-    setUploadProgress(0);
+    // Store the File object directly (for upload) AND create preview URL
+    updateFormData('mainImage', file);
 
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 95) {
-          clearInterval(interval);
-          return 95;
-        }
-        return prev + 5;
-      });
-    }, 100);
-
-    try {
-      // In real app: Upload to your storage
-      // const uploadedUrl = await uploadImage(file);
-      
-      // Simulate upload
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      clearInterval(interval);
-      setUploadProgress(100);
-
-      // Create object URL for preview
-      const objectUrl = URL.createObjectURL(file);
-      
-      // Update form data
-      updateFormData('mainImage', objectUrl);
-      
-      // In production: updateFormData('mainImage', uploadedUrl);
-      
-      setTimeout(() => {
-        setUploadingImages(false);
-        setUploadProgress(0);
-      }, 500);
-
-    } catch (error) {
-      console.error('Image upload failed:', error);
-      setUploadingImages(false);
-      setUploadProgress(0);
-      alert('Failed to upload image. Please try again.');
-    }
+    // Create a preview URL for display only
+    const previewUrl = URL.createObjectURL(file);
+    updateFormData('mainImagePreview', previewUrl);
   };
 
   // Handle other images upload
-  const handleOtherImagesChange = async (e) => {
+  // Handle other images upload
+  const handleOtherImagesChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
 
@@ -89,55 +54,40 @@ export default function ProductMedia({ formData, updateFormData }) {
 
     if (validFiles.length === 0) return;
 
-    setUploadingImages(true);
-    setUploadProgress(0);
-
-    const newImages = [];
-    
-    for (let i = 0; i < validFiles.length; i++) {
-      const file = validFiles[i];
-      
-      // Update progress
-      setUploadProgress(Math.round((i / validFiles.length) * 100));
-      
-      try {
-        // Simulate upload for each file
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        // Create object URL for preview
-        const objectUrl = URL.createObjectURL(file);
-        newImages.push(objectUrl);
-        
-        // In production: const uploadedUrl = await uploadImage(file);
-        // newImages.push(uploadedUrl);
-        
-      } catch (error) {
-        console.error(`Failed to upload ${file.name}:`, error);
-      }
-    }
-
-    // Update form data with all new images
-    updateFormData('otherImages', [...formData.otherImages, ...newImages]);
-    
-    setUploadProgress(100);
-    setTimeout(() => {
-      setUploadingImages(false);
-      setUploadProgress(0);
-    }, 500);
+    // Store File objects
+    const currentFiles = Array.isArray(formData.otherImages)
+      ? formData.otherImages.filter(item => item instanceof File)
+      : [];
+    const updatedFiles = [...currentFiles, ...validFiles];
+    updateFormData('otherImages', updatedFiles);
+    // Create preview URLs for display only
+    const currentPreviews = Array.isArray(formData.otherImagesPreviews)
+      ? formData.otherImagesPreviews
+      : [];
+    const newPreviews = validFiles.map(file => URL.createObjectURL(file));
+    updateFormData('otherImagesPreviews', [...currentPreviews, ...newPreviews]);
   };
+
 
   // Remove an image from other images
   const removeOtherImage = (index) => {
     const updatedImages = formData.otherImages.filter((_, i) => i !== index);
+    const updatedPreviews = formData.otherImagesPreviews.filter((_, i) => i !== index);
     updateFormData('otherImages', updatedImages);
+    updateFormData('otherImagesPreviews', updatedPreviews);
   };
 
   // Set an image as main image
-  const setAsMainImage = (imageUrl) => {
-    updateFormData('mainImage', imageUrl);
-    // Remove from other images if it was there
-    const updatedOtherImages = formData.otherImages.filter(img => img !== imageUrl);
-    updateFormData('otherImages', updatedOtherImages);
+  const setAsMainImage = (index) => {
+    const selectedFile = formData.otherImages[index];
+    const selectedPreview = formData.otherImagesPreviews[index];
+
+    // Set as main image
+    updateFormData('mainImage', selectedFile);
+    updateFormData('mainImagePreview', selectedPreview);
+
+    // Remove from other images
+    removeOtherImage(index);
   };
 
   // Handle video change
@@ -166,17 +116,17 @@ export default function ProductMedia({ formData, updateFormData }) {
 
     // Simulate video upload
     setUploadingImages(true);
-    
+
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const objectUrl = URL.createObjectURL(file);
       updateFormData('video', {
         ...formData.video,
         videoType: 'self_hosted',
         file: objectUrl
       });
-      
+
     } catch (error) {
       console.error('Video upload failed:', error);
       alert('Failed to upload video');
@@ -196,7 +146,7 @@ export default function ProductMedia({ formData, updateFormData }) {
 
     if (formData.video.videoType === 'youtube' || formData.video.videoType === 'vimeo') {
       if (!formData.video.url) return null;
-      
+
       // Extract video ID from URL
       let videoId = '';
       if (formData.video.videoType === 'youtube') {
@@ -248,22 +198,21 @@ export default function ProductMedia({ formData, updateFormData }) {
   return (
     <div>
       <h2 className="text-xl font-semibold text-gray-800 mb-6">Product Media</h2>
-      
+
       <div className="space-y-8">
         {/* Main Image Section */}
         <div className="p-6 border border-gray-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Main Product Image *</h3>
-          
+
           <div className="flex flex-col md:flex-row gap-8">
             {/* Image Preview */}
             <div className="md:w-1/3">
-              <div className={`relative w-full h-64 border-2 border-dashed rounded-lg overflow-hidden ${
-                formData.mainImage ? 'border-gray-300' : 'border-gray-400'
-              }`}>
+              <div className={`relative w-full h-64 border-2 border-dashed rounded-lg overflow-hidden ${formData.mainImage ? 'border-gray-300' : 'border-gray-400'
+                }`}>
                 {formData.mainImage ? (
                   <>
                     <img
-                      src={formData.mainImage}
+                      src={formData.mainImagePreview}
                       alt="Main product"
                       className="w-full h-full object-cover"
                     />
@@ -286,7 +235,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                   </div>
                 )}
               </div>
-              
+
               <div className="mt-4 text-center">
                 <input
                   type="file"
@@ -316,8 +265,8 @@ export default function ProductMedia({ formData, updateFormData }) {
                     <span className="text-sm text-gray-500">{uploadProgress}%</span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div 
-                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
@@ -335,7 +284,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                   <li>• Product should fill at least 85% of the image</li>
                 </ul>
               </div>
-              
+
               <div className="mt-6">
                 <h4 className="font-medium text-gray-700 mb-2">Tips for Best Results</h4>
                 <ul className="text-sm text-gray-600 space-y-1">
@@ -386,11 +335,11 @@ export default function ProductMedia({ formData, updateFormData }) {
           {/* Gallery Grid */}
           {formData.otherImages.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {formData.otherImages.map((image, index) => (
+              {formData.otherImagesPreviews.map((previewUrl, index) => (
                 <div key={index} className="relative group">
                   <div className="aspect-square rounded-lg overflow-hidden border border-gray-300">
                     <img
-                      src={image}
+                      src={previewUrl}
                       alt={`Gallery ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
@@ -398,7 +347,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                       <div className="flex space-x-2">
                         <button
                           type="button"
-                          onClick={() => setAsMainImage(image)}
+                          onClick={() => setAsMainImage(index)}
                           className="p-2 bg-white rounded-full hover:bg-gray-100"
                           title="Set as main image"
                         >
@@ -464,7 +413,7 @@ export default function ProductMedia({ formData, updateFormData }) {
         {/* Product Video Section */}
         <div className="p-6 border border-gray-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Product Video</h3>
-          
+
           <div className="space-y-4">
             {/* Video Type Selection */}
             <div>

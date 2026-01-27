@@ -1,6 +1,6 @@
 'use client';
 
-import { PRODUCT_TYPES, VARIANT_STOCK_LEVEL_TYPES } from '@/components/products/productTypes';
+import { PRODUCT_TYPES, VARIANT_STOCK_LEVEL_TYPES ,STOCK_STATUS} from '@/components/products/productTypes';
 
 export default function ProductInventory({ formData, updateFormData }) {
   const handleChange = (e) => {
@@ -126,8 +126,8 @@ export default function ProductInventory({ formData, updateFormData }) {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Status</option>
-                <option value="in_stock">In Stock</option>
-                <option value="out_of_stock">Out of Stock</option>
+                <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>
+                <option value={STOCK_STATUS.OUT_OF_STOCK}>Out of Stock</option>
               </select>
             </div>
           </>
@@ -175,8 +175,8 @@ export default function ProductInventory({ formData, updateFormData }) {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Status</option>
-                <option value="in_stock">In Stock</option>
-                <option value="out_of_stock">Out of Stock</option>
+                <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>
+                <option value={STOCK_STATUS.OUT_OF_STOCK}>Out of Stock</option>
               </select>
             </div>
           </>
