@@ -121,7 +121,8 @@ api.interceptors.response.use(
    📡 API CLIENT FUNCTION
 ========================= */
 export const apiClient = async (endpoint, options = {}) => {
-  const { method = "GET", body = null, headers = {} } = options;
+  const { method = "GET", body = null, headers = {}, params } = options;
+
 
   console.log("🚀 [API CLIENT CALL]");
   console.log("Endpoint:", endpoint);
@@ -136,9 +137,7 @@ export const apiClient = async (endpoint, options = {}) => {
       ...(body !== null && body !== undefined ? { data: body } : {}),
       headers: {
         ...headers,
-        ...(isFormData
-          ? { "Content-Type": "multipart/form-data" }
-          : { "Content-Type": "application/json" }),
+       ...(!isFormData && { "Content-Type": "application/json" }),
       },
     });
 

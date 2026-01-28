@@ -1,8 +1,9 @@
 // Product Types
 export const PRODUCT_TYPES = {
-  SIMPLE: 'simple',
-  VARIABLE: 'variable',
-  DIGITAL: 'digital'
+  SIMPLE: "simple_product",
+  VARIABLE: "variable_product",
+  DIGITAL: "digital_product",
+
 };
 
 export const INDICATOR_TYPES = {
@@ -19,9 +20,9 @@ export const DELIVERABLE_TYPES = {
 };
 
 export const STOCK_STATUS = {
-  IN_STOCK: 'in_stock',
-  OUT_OF_STOCK: 'out_of_stock',
-  NULL: null
+IN_STOCK: "in-stock",
+  OUT_OF_STOCK: "out-of-stock",
+  NULL : null
 };
 
 export const CANCELABLE_STAGES = {

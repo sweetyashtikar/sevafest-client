@@ -130,7 +130,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
             </div>
 
             {/* Return Policy Details (if enabled) */}
-            {formData.isReturnable && (
+            {/* {formData.isReturnable && (
               <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
                 <h4 className="font-medium text-green-800 mb-4">Return Policy Settings</h4>
                 
@@ -267,10 +267,10 @@ export default function ProductPolicies({ formData, updateFormData }) {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* Non-returnable notice */}
-            {!formData.isReturnable && (
+            {/* {!formData.isReturnable && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                 <div className="flex">
                   <div className="flex-shrink-0">
@@ -293,7 +293,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -361,7 +361,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-blue-700 mb-2">
                       Cancellation Fee (%)
@@ -409,13 +409,13 @@ export default function ProductPolicies({ formData, updateFormData }) {
                       placeholder="Instructions for customers on how to cancel their order..."
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             )}
           </div>
         </div>
 
-        {/* Warranty & Guarantee */}
+        Warranty & Guarantee
         <div className="p-6 border border-gray-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Warranty & Guarantee</h3>
           
@@ -454,7 +454,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
               </p>
             </div>
 
-            <div className="md:col-span-2">
+            {/* <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Warranty Terms & Conditions
               </label>
@@ -465,16 +465,16 @@ export default function ProductPolicies({ formData, updateFormData }) {
                 placeholder="Detailed warranty terms and conditions..."
                 defaultValue="This warranty covers manufacturing defects and does not cover damage from misuse, accidents, or normal wear and tear. Warranty claims must be accompanied by proof of purchase. For warranty service, contact our customer support team."
               />
-            </div>
+            </div> */}
           </div>
 
           {/* Warranty Type */}
           <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            {/* <label className="block text-sm font-medium text-gray-700 mb-3">
               Warranty Type
-            </label>
+            </label> */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="flex items-center p-3 border border-gray-300 rounded-lg">
+              {/* <div className="flex items-center p-3 border border-gray-300 rounded-lg">
                 <input
                   type="radio"
                   id="manufacturerWarranty"
@@ -485,9 +485,9 @@ export default function ProductPolicies({ formData, updateFormData }) {
                 <label htmlFor="manufacturerWarranty" className="ml-3 block text-sm text-gray-700">
                   Manufacturer Warranty
                 </label>
-              </div>
+              </div> */}
               
-              <div className="flex items-center p-3 border border-gray-300 rounded-lg">
+              {/* <div className="flex items-center p-3 border border-gray-300 rounded-lg">
                 <input
                   type="radio"
                   id="sellerWarranty"
@@ -498,9 +498,9 @@ export default function ProductPolicies({ formData, updateFormData }) {
                 <label htmlFor="sellerWarranty" className="ml-3 block text-sm text-gray-700">
                   Seller Warranty
                 </label>
-              </div>
+              </div> */}
               
-              <div className="flex items-center p-3 border border-gray-300 rounded-lg">
+              {/* <div className="flex items-center p-3 border border-gray-300 rounded-lg">
                 <input
                   type="radio"
                   id="extendedWarranty"
@@ -511,7 +511,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                 <label htmlFor="extendedWarranty" className="ml-3 block text-sm text-gray-700">
                   Extended Warranty (Optional)
                 </label>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
