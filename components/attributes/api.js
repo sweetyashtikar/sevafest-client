@@ -235,37 +235,72 @@ export const ProductApi = {
     });
   },
   
-  update: (id, formData) => {
-    // Similar logic for update
-    if (formData instanceof FormData) {
-      formData.append('_method', 'PUT'); // For some servers that need this
-      return apiClient(`/product/${id}`, {
-        method: 'POST',
-        body: formData,
-      });
-    }
-    
-    const data = new FormData();
-    data.append('_method', 'PUT');
-    
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        if (value instanceof File) {
-          data.append(key, value);
-        } else if (typeof value === 'object') {
-          data.append(key, JSON.stringify(value));
-        } else {
-          data.append(key, String(value));
-        }
-      }
-    });
-    
+update: (id, formData) => {
+  // If it's already a FormData object, use it directly
+  if (formData instanceof FormData) {
     return apiClient(`/product/${id}`, {
-      method: 'POST',
-      body: data,
+      method: 'PATCH',
+      body: formData,
+      // Don't set Content-Type header, let browser set it with boundary
     });
-  },
+  }
   
+  // Otherwise, convert object to FormData (same logic as create)
+  const data = new FormData();
+  
+  // Helper function to append data to FormData (same as in create)
+  const appendToFormData = (key, value) => {
+    if (value === null || value === undefined) return;
+    
+    if (value instanceof File) {
+      data.append(key, value);
+    } else if (Array.isArray(value)) {
+      // Handle arrays
+      value.forEach((item, index) => {
+        if (item instanceof File) {
+          data.append(`${key}[${index}]`, item);
+        } else if (typeof item === 'object' && item !== null) {
+          // Handle array of objects
+          Object.entries(item).forEach(([subKey, subValue]) => {
+            if (subValue instanceof File) {
+              data.append(`${key}[${index}][${subKey}]`, subValue);
+            } else {
+              data.append(`${key}[${index}][${subKey}]`, String(subValue));
+            }
+          });
+        } else {
+          data.append(`${key}[${index}]`, String(item));
+        }
+      });
+    } else if (typeof value === 'object' && value !== null && !(value instanceof File)) {
+      // Handle nested objects
+      Object.entries(value).forEach(([subKey, subValue]) => {
+        if (subValue instanceof File) {
+          data.append(`${key}[${subKey}]`, subValue);
+        } else if (typeof subValue === 'object' && subValue !== null) {
+          // Handle deeply nested objects
+          data.append(`${key}[${subKey}]`, JSON.stringify(subValue));
+        } else {
+          data.append(`${key}[${subKey}]`, String(subValue));
+        }
+      });
+    } else {
+      // Handle primitive values
+      data.append(key, String(value));
+    }
+  };
+  
+  // Append all data from the object
+  Object.entries(formData).forEach(([key, value]) => {
+    appendToFormData(key, value);
+  });
+  
+  return apiClient(`/product/${id}`, {
+    method: 'patch', // Use PATCH method
+    body: data,
+  });
+},
+  getAllProducts: () => apiClient('/product/getAllProducts', { method: 'GET' }),
   delete: (id) => apiClient(`/product/${id}`, { method: 'DELETE' }),
   getStatusTrue: () => apiClient('/product/status-true', { method: 'GET' }),
 };
