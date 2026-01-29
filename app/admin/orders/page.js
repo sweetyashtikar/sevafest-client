@@ -1,5 +1,6 @@
 "use client";
 
+
 import { OrderViewModal } from "@/components/admin/OrderViewModal";
 import { OrderTable } from "@/components/admin/OrderTable";
 import { apiClient } from "@/services/apiClient";
@@ -18,6 +19,9 @@ export default function Page() {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [editOrder, setEditOrder] = useState(null);
 
   const fetchOrders = async (pageNo = 1) => {
     try {
@@ -49,9 +53,7 @@ export default function Page() {
       o.product_name?.toLowerCase().includes(search.toLowerCase());
 
     const statusMatch =
-      statusFilter === "all"
-        ? true
-        : o.active_status === statusFilter;
+      statusFilter === "all" ? true : o.active_status === statusFilter;
 
     return searchMatch && statusMatch;
   });
@@ -135,15 +137,15 @@ export default function Page() {
           setSelectedOrder(row);
           setOpen(true);
         }}
-        onEdit={(row) => console.log("Edit:", row)}
+        onEdit={(row) => {
+          setEditOrder(row);
+          setEditOpen(true);
+        }}
         onDelete={(row) => console.log("Delete:", row._id)}
       />
 
-      {loading && (
-        <p className="text-sm text-black">Loading orders...</p>
-      )}
+      {loading && <p className="text-sm text-black">Loading orders...</p>}
 
-      {/* ===== VIEW MODAL ===== */}
       <OrderViewModal
         open={open}
         data={selectedOrder}
@@ -161,9 +163,7 @@ function SummaryCard({ title, value }) {
   return (
     <div className="bg-white rounded-xl shadow-sm p-5 border">
       <p className="text-sm text-gray-600">{title}</p>
-      <p className="text-2xl font-bold text-black mt-1">
-        {value}
-      </p>
+      <p className="text-2xl font-bold text-black mt-1">{value}</p>
     </div>
   );
 }

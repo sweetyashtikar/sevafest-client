@@ -97,7 +97,7 @@ export function OrderTable({
                       <Eye size={16} />
                     </button>
 
-                    <button
+                    {/* <button
                       onClick={() => onEdit(row)}
                       className="p-2 rounded-lg text-orange-600 hover:bg-orange-50"
                     >
@@ -109,7 +109,7 @@ export function OrderTable({
                       className="p-2 rounded-lg text-red-600 hover:bg-red-50"
                     >
                       <Trash2 size={16} />
-                    </button>
+                    </button> */}
                   </div>
                 </td>
               </tr>
