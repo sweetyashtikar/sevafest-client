@@ -59,7 +59,10 @@ export default function Page() {
           newStatus: newStatus,
         },
       });
-
+      if(newStatus === true){
+        alert("Status updated successfully and Email is sent to the user.");
+      }
+      alert("Status updated successfully");
       console.log("Status updated:", row.id, newStatus);
     } catch (error) {
       console.error("Status update failed", error);
