@@ -89,9 +89,9 @@ export default function AddProductPage() {
     otherImages: [],
     otherImagesPreviews: [],
     video: {
-      videoType: "",
-      url: "",
-      file: "",
+      videoType: "" || null,
+      url: "" || null,
+      file: "" || null,
     },
 
     // Digital Product
@@ -171,14 +171,14 @@ export default function AddProductPage() {
     }
 
     // Add variantStockLevelType if needed
-    if (formData.variantStockLevelType) {
-      formDataToSend.append('variantStockLevelType', formData.variantStockLevelType);
-    }
+    // if (formData.variantStockLevelType) {
+    //   formDataToSend.append('variantStockLevelType', formData.variantStockLevelType);
+    // }
 
     // Add productLevelStock if needed
-    if (formData.productLevelStock) {
-      formDataToSend.append('productLevelStock', JSON.stringify(formData.productLevelStock));
-    }
+    // if (formData.productLevelStock) {
+    //   formDataToSend.append('productLevelStock', formData.productLevelStock);
+    // }
     
     if (formData.deliverableZipcodes && Array.isArray(formData.deliverableZipcodes)) {
       formDataToSend.append('deliverableZipcodes', JSON.stringify(formData.deliverableZipcodes));
@@ -214,16 +214,10 @@ export default function AddProductPage() {
       if (formData.variantStockLevelType) {
         formDataToSend.append('variantStockLevelType', formData.variantStockLevelType);
       }
-      
-      // Add variants
-      if (formData.variants && Array.isArray(formData.variants)) {
-        formDataToSend.append('variants', JSON.stringify(formData.variants));
-      }
-      
-      // Add productLevelStock if using product-level stock
+
+  // Add productLevelStock if using product-level stock
       if (formData.variantStockLevelType === VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL && formData.productLevelStock) {
-        formDataToSend.append('productLevelStock', 
-          JSON.stringify(formData.productLevelStock));
+        formDataToSend.append('productLevelStock', JSON.stringify(formData.productLevelStock));
       }
     }
 
