@@ -1,6 +1,6 @@
 // app/products/page.jsx
 "use client";
-
+import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -24,6 +24,9 @@ const ProductTable = () => {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const isAdmin = user?.role?.role === "admin";
+
+  console.log("Role", isAdmin);
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -684,11 +687,8 @@ const ProductTable = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.map((product) => (
-                <>
-                  <tr
-                    key={product._id || product.id}
-                    className="hover:bg-gray-50 transition-colors duration-150"
-                  >
+                <React.Fragment key={product._id || product.id}>
+                  <tr className="hover:bg-gray-50 transition-colors duration-150">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="font-mono text-sm font-medium text-gray-900">
                         {product.serialNo ||
@@ -892,7 +892,7 @@ const ProductTable = () => {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
