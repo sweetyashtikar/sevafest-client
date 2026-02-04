@@ -20,7 +20,8 @@ import { ProductViewModal } from "@/components/admin/ProductViewModal";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const ProductTable = () => {
+const ProductTable = ({ path }) => {
+  
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const isAdmin = user?.role?.role === "admin";
@@ -585,7 +586,7 @@ const ProductTable = () => {
 
           {/* ADD PRODUCT */}
           <button
-            onClick={() => router.push("/admin/product/create")}
+            onClick={() => router.push(path)}
             className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition flex items-center gap-2"
           >
             <FiPlus /> Add Product
