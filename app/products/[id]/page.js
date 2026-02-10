@@ -12,8 +12,8 @@ import {
   RotateCcw,
   Shield,
   ChevronRight,
-  Check,
-  Info,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 
@@ -43,6 +43,33 @@ export default function Page() {
   useEffect(() => {
     if (id) fetchProduct();
   }, [id]);
+
+  const addToCart = async (qty = 1) => {
+    try {
+      const res = await apiClient("/viewCart/addtoCart", {
+        method: "POST",
+        body: {
+          productId: product._id,
+          qty: quantity,
+        },
+      });
+
+      if (res?.success) {
+        console.log("Added to cart");
+        return true;
+      }
+    } catch (err) {
+      console.error("Add to cart failed", err);
+    }
+    return false;
+  };
+
+  const handleBuyNow = async () => {
+    const ok = await addToCart(quantity);
+    if (ok) {
+      window.location.href = "/checkout";
+    }
+  };
 
   if (loading) {
     return (
@@ -82,13 +109,11 @@ export default function Page() {
   }
 
   const allImages = [product.mainImage, ...(product.otherImages || [])];
-  const discount = product.simpleProduct?.sp_price - product.effectivePrice;
   const savingsPercent = product.discountPercentage;
 
   return (
     <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto">
-        {/* Breadcrumb */}
         <div className="px-4 py-3 text-sm flex items-center gap-2 text-gray-600 border-b">
           <span className="hover:text-orange-600 cursor-pointer">Home</span>
           <ChevronRight size={14} />
@@ -141,17 +166,45 @@ export default function Page() {
                 ))}
               </div>
 
+              {/* Quantity Selector */}
+              <div className="flex items-center gap-4 mb-4 mt-8">
+                <span className="text-sm font-medium text-black">Quantity</span>
+
+                <div className="flex items-center border border-gray-300 rounded-full overflow-hidden">
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-black disabled:opacity-50"
+                    disabled={quantity === 1}
+                  >
+                    <Minus size={16} />
+                  </button>
+
+                  <span className="w-12 text-center font-semibold text-black">
+                    {quantity}
+                  </span>
+
+                  <button
+                    onClick={() => setQuantity((q) => q + 1)}
+                    className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-black"
+                  >
+                    <Plus size={16} />
+                  </button>
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="mt-6 space-y-3">
                 <button
-                  disabled={!product.inStock}
-                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  onClick={() => addToCart(quantity)}
+                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full 
+                  font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Add to Cart
                 </button>
                 <button
-                  disabled={!product.inStock}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  onClick={() => addToCart(quantity)}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium
+                   disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Buy Now
                 </button>
@@ -214,20 +267,20 @@ export default function Page() {
             <div className="mb-4">
               <div className="flex items-baseline gap-3">
                 <span className="text-sm text-gray-700">
-                  -{savingsPercent}%
+                  -{product.discountPercentage}%
                 </span>
                 <span className="text-3xl text-gray-900">
                   ₹{product.effectivePrice}
                 </span>
               </div>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-sm text-gray-600">M.R.P.:</span>
-                <span className="text-sm text-gray-600 line-through">
+                <span className="text-sm text-gray-900">M.R.P.:</span>
+                <span className="text-sm text-gray-900 line-through">
                   ₹{product.simpleProduct?.sp_price}
                 </span>
               </div>
               {!product.isPricesInclusiveTax && (
-                <p className="text-xs text-gray-600 mt-1">
+                <p className="text-xs text-gray-900 mt-1">
                   Inclusive of all taxes
                 </p>
               )}
@@ -253,11 +306,6 @@ export default function Page() {
             <div className="space-y-2 mb-6">
               <DetailRow label="Brand" value={product.brand} />
               <DetailRow
-                label="Colour"
-                value={product.attributeValues?.[0]?.value}
-              />
-              <DetailRow label="Material" value="100% Cotton" />
-              <DetailRow
                 label="Item Weight"
                 value={`${product.dimensions?.weight} kg`}
               />
@@ -269,63 +317,51 @@ export default function Page() {
 
             {/* About this item */}
             <div className="mb-6">
-              <h2 className="font-bold text-lg mb-3">About this item</h2>
-              <ul className="space-y-2">
-                <li className="flex gap-2 text-sm">
-                  <span className="text-gray-400 mt-1">•</span>
-                  <span>{product.shortDescription}</span>
-                </li>
+              <h2 className="font-bold text-lg mb-3 text-black">
+                About this item
+              </h2>
+              <ul className="space-y-2 text-black">
+                <li>{product.shortDescription}</li>
+
                 {product.extraDescription && (
-                  <li className="flex gap-2 text-sm">
-                    <span className="text-gray-400 mt-1">•</span>
-                    <span>{product.extraDescription}</span>
-                  </li>
+                  <li>{product.extraDescription}</li>
                 )}
-                {product.codAllowed && (
-                  <li className="flex gap-2 text-sm">
-                    <span className="text-gray-400 mt-1">•</span>
-                    <span>Cash on Delivery available</span>
-                  </li>
-                )}
+
+                {product.codAllowed && <li>Cash on Delivery available</li>}
+
                 {product.warrantyPeriod && (
-                  <li className="flex gap-2 text-sm">
-                    <span className="text-gray-400 mt-1">•</span>
-                    <span>Warranty: {product.warrantyPeriod}</span>
-                  </li>
+                  <li>Warranty: {product.warrantyPeriod}</li>
                 )}
               </ul>
             </div>
 
             <hr className="my-4" />
 
-            {/* Delivery & Returns */}
             <div className="space-y-4">
-              {/* Delivery */}
               <div className="flex gap-3">
                 <MapPin className="text-gray-600 flex-shrink-0" size={20} />
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium">Deliver to</span>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-sm font-medium text-black">
+                      Deliver to
+                    </span>
+                    <span className="text-sm text-gray-600 text-black">
                       Chennai 600001
                     </span>
-                    <button className="text-xs text-blue-600 hover:text-orange-600 hover:underline">
+                    <button className="text-xs text-blue-600 hover:text-orange-600 hover:underline text-black">
                       Change
                     </button>
                   </div>
                   {product.inStock ? (
-                    <p className="text-green-700 font-medium text-sm">
-                      In stock
-                    </p>
+                    <p className="text-green-700 font-medium">In stock</p>
                   ) : (
-                    <p className="text-red-700 font-medium text-sm">
+                    <p className="text-red-700 font-medium">
                       Currently unavailable
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Free Delivery */}
               {product.inStock && (
                 <div className="flex gap-3 items-start">
                   <Truck className="text-blue-600 flex-shrink-0" size={20} />
@@ -334,11 +370,11 @@ export default function Page() {
                       <span className="text-blue-600 font-medium">
                         FREE delivery
                       </span>{" "}
-                      <span className="font-medium">
+                      <span className="font-medium text-black">
                         Tomorrow, 8 AM - 12 PM
                       </span>
                     </p>
-                    <p className="text-xs text-gray-600 mt-0.5">
+                    <p className="text-xs text-gray-900 mt-0.5">
                       Order within 4 hrs 23 mins.{" "}
                       <a
                         href="#"
@@ -351,7 +387,6 @@ export default function Page() {
                 </div>
               )}
 
-              {/* Returns */}
               {product.isReturnable && (
                 <div className="flex gap-3 items-start">
                   <RotateCcw
@@ -360,22 +395,23 @@ export default function Page() {
                   />
                   <div>
                     <p className="text-sm">
-                      <span className="font-medium">Free Returns</span>
+                      <span className="font-medium text-black">
+                        Free Returns
+                      </span>
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-xs text-gray-900">
                       Return this item for free within 30 days of delivery
                     </p>
                   </div>
                 </div>
               )}
 
-              {/* Warranty */}
               {product.warrantyPeriod && (
                 <div className="flex gap-3 items-start">
-                  <Shield className="text-gray-600 flex-shrink-0" size={20} />
+                  <Shield className="text-gray-900 flex-shrink-0" size={20} />
                   <div>
                     <p className="text-sm">
-                      <span className="font-medium">Warranty:</span>{" "}
+                      <span className="font-medium text-black">Warranty:</span>{" "}
                       {product.warrantyPeriod}
                     </p>
                   </div>
@@ -384,7 +420,7 @@ export default function Page() {
 
               {/* Secure Transaction */}
               <div className="flex gap-3 items-start">
-                <Shield className="text-gray-600 flex-shrink-0" size={20} />
+                <Shield className="text-gray-900 flex-shrink-0" size={20} />
                 <div>
                   <p className="text-sm text-blue-600 hover:text-orange-600 cursor-pointer hover:underline">
                     Secure transaction
@@ -395,7 +431,6 @@ export default function Page() {
 
             <hr className="my-4" />
 
-            {/* Color Selection */}
             {product.attributeValues?.length > 0 && (
               <div className="mb-6">
                 <p className="text-sm font-medium mb-2">
@@ -420,14 +455,9 @@ export default function Page() {
               </div>
             )}
 
-            {/* Sold by */}
             <div className="bg-gray-50 border rounded p-4">
               <div className="flex justify-between items-start">
                 <div>
-                  <p className="text-sm">
-                    <span className="text-gray-600">Ships from</span>{" "}
-                    <span className="font-medium">Amazon</span>
-                  </p>
                   <p className="text-sm mt-1">
                     <span className="text-gray-600">Sold by</span>{" "}
                     <span className="text-blue-600 hover:text-orange-600 cursor-pointer hover:underline">
@@ -440,11 +470,12 @@ export default function Page() {
           </div>
         </div>
 
-        {/* Product Description Section */}
         {product.description && (
           <div className="px-6 pb-8">
             <div className="border-t pt-6">
-              <h2 className="text-2xl font-bold mb-4">Product Description</h2>
+              <h2 className="text-2xl font-bold mb-4 text-black">
+                Product Description
+              </h2>
               <p className="text-sm text-gray-700 leading-relaxed">
                 {product.description}
               </p>
@@ -452,10 +483,11 @@ export default function Page() {
           </div>
         )}
 
-        {/* Product Details Section */}
         <div className="px-6 pb-8">
           <div className="border-t pt-6">
-            <h2 className="text-2xl font-bold mb-4">Product details</h2>
+            <h2 className="text-2xl font-bold mb-4 text-black">
+              Product details
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
               <DetailRow
                 label="Product Dimensions"
@@ -480,7 +512,6 @@ export default function Page() {
   );
 }
 
-/* ================= HELPER COMPONENT ================= */
 function DetailRow({ label, value }) {
   return (
     <div className="flex py-2">
