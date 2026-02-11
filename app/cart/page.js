@@ -137,7 +137,7 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
           className="flex gap-4 border-b last:border-b-0 pb-4 mb-4"
         >
           <Image
-            src="https://via.placeholder.com/140"
+            src={item.product.mainImages}
             alt={item.product.name}
             width={140}
             height={140}
