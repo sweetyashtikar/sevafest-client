@@ -21,9 +21,9 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
 const ProductTable = ({ path }) => {
-  
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
+
   const isAdmin = user?.role?.role === "admin";
 
   console.log("Role", isAdmin);
@@ -53,7 +53,9 @@ const ProductTable = ({ path }) => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await ProductApi.getAllProducts();
+
+      const role = user?.role?.role;
+      const response = await ProductApi.getProductsByRole(role);
 
       let productsData = [];
       if (Array.isArray(response.data)) {
@@ -547,16 +549,6 @@ const ProductTable = ({ path }) => {
     );
   }
 
-  if (!Array.isArray(products) || products.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">No products found</p>
-        <p className="text-gray-400 text-sm mt-2">
-          Products data is not in expected format
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="p-6">
