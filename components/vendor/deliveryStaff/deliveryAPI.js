@@ -81,20 +81,20 @@ export const deliveryBoyService = {
     }),
 
   // Get a single delivery boy profile by ID
-  getById: (id) =>
+  getDeliveryBoy: (id) =>
     apiClient(`/delivery-boys/${id}`, {
       method: "GET",
     }),
 
   // Create a new delivery boy profile
-  create: (data) =>
+  createDeliveryBoy: (data) =>
     apiClient("/users/", {
       method: "POST",
       body: data,
     }),
 
   // Update a delivery boy profile
-  update: (id, data) =>
+  updateDeliveryBoy: (id, data) =>
     apiClient(`/delivery-boys/${id}`, {
       method: "PUT",
       body: data,
@@ -122,7 +122,7 @@ export const deliveryBoyService = {
     }),
 
   // Delete a delivery boy profile
-  delete: (id) =>
+  deleteDeliveryBoy: (id) =>
     apiClient(`/delivery-boys/${id}`, {
       method: "DELETE",
     }),

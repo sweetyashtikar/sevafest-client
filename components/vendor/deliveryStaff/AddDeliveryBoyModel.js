@@ -5,7 +5,7 @@ import { X, User, Mail, Phone, Lock, AlertCircle } from 'lucide-react';
 
 const AddDeliveryBoyModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const [formData, setFormData] = useState({
-    full_name: '',
+    username: '',
     email: '',
     mobile: '',
     password: '',
@@ -20,8 +20,8 @@ const AddDeliveryBoyModal = ({ isOpen, onClose, onSubmit, loading }) => {
     const newErrors = {};
 
     // Name validation
-    if (!formData.full_name.trim()) {
-      newErrors.full_name = 'Name is required';
+    if (!formData.username.trim()) {
+      newErrors.username = 'Name is required';
     }
 
     // Email validation
@@ -80,7 +80,7 @@ const AddDeliveryBoyModal = ({ isOpen, onClose, onSubmit, loading }) => {
       
       // Reset form after successful submission
       setFormData({
-        full_name: '',
+        username: '',
         email: '',
         mobile: '',
         password: '',
@@ -93,7 +93,7 @@ const AddDeliveryBoyModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const handleClose = () => {
     // Reset form when modal closes
     setFormData({
-      full_name: '',
+      username: '',
       email: '',
       mobile: '',
       password: '',
@@ -145,17 +145,17 @@ const AddDeliveryBoyModal = ({ isOpen, onClose, onSubmit, loading }) => {
                 <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  name="full_name"
-                  value={formData.full_name}
+                  name="username"
+                  value={formData.username}
                   onChange={handleChange}
                   placeholder="Enter full name"
                   className={`w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    errors.full_name ? 'border-red-500' : 'border-gray-300'
+                    errors.username ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
               </div>
-              {errors.full_name && (
-                <p className="mt-1 text-xs text-red-500">{errors.full_name}</p>
+              {errors.username && (
+                <p className="mt-1 text-xs text-red-500">{errors.username}</p>
               )}
             </div>
 
