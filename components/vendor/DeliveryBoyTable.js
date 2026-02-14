@@ -146,19 +146,19 @@ const DeliveryBoyTable = ({
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1">
                       <button
-                        onClick={() => onStatusToggle(boy._id, boy.employment?.status)}
+                        onClick={() => onStatusToggle(boy._id, boy.user_id?.status)}
                         className={`inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-medium ${
-                          boy.employment?.status
+                          boy.user_id?.status
                             ? 'bg-green-100 text-green-800 hover:bg-green-200'
                             : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                         }`}
                       >
-                        {boy.employment?.status ? (
+                        {boy.user_id?.status ? (
                           <CheckCircle className="w-3 h-3 mr-1" />
                         ) : (
                           <XCircle className="w-3 h-3 mr-1" />
                         )}
-                        {boy.employment?.status ? 'Active' : 'Inactive'}
+                        {boy.user_id?.status ? 'Active' : 'Inactive'}
                       </button>
                       {boy.availability?.is_available && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 w-fit">
