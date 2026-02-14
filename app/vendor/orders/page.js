@@ -1,6 +1,6 @@
 "use client";
 
-
+import { AssignDeliveryBoyModal } from "@/components/vendor/AssignDeliveryBoyModal";
 import { OrderViewModal } from "@/components/admin/OrderViewModal";
 import { OrderTable } from "@/components/admin/OrderTable";
 import { apiClient } from "@/services/apiClient";
@@ -20,8 +20,8 @@ export default function Page() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  const [editOpen, setEditOpen] = useState(false);
-  const [editOrder, setEditOrder] = useState(null);
+  const [assignOpen, setAssignOpen] = useState(false);
+  const [assignOrder, setAssignOrder] = useState(null);
 
   const fetchOrders = async (pageNo = 1) => {
     try {
@@ -137,11 +137,11 @@ export default function Page() {
           setSelectedOrder(row);
           setOpen(true);
         }}
-        onEdit={(row) => {
-          setEditOrder(row);
-          setEditOpen(true);
-        }}
         onDelete={(row) => console.log("Delete:", row._id)}
+        onAssign={(row) => {
+          setAssignOrder(row);
+          setAssignOpen(true);
+        }}
       />
 
       {loading && <p className="text-sm text-black">Loading orders...</p>}
@@ -152,6 +152,15 @@ export default function Page() {
         onClose={() => {
           setOpen(false);
           setSelectedOrder(null);
+        }}
+      />
+
+      <AssignDeliveryBoyModal
+        open={assignOpen}
+        data={assignOrder}
+        onClose={() => {
+          setAssignOpen(false);
+          setAssignOrder(null);
         }}
       />
     </div>

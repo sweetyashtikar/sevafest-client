@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Menu, Dot, MoreVertical } from "lucide-react";
 
 export function OrderTable({
   data = [],
@@ -11,6 +11,7 @@ export function OrderTable({
   onView,
   onEdit,
   onDelete,
+  onAssign
 }) {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -97,14 +98,14 @@ export function OrderTable({
                       <Eye size={16} />
                     </button>
 
-                    {/* <button
-                      onClick={() => onEdit(row)}
+                    <button
+                      onClick={() => onAssign(row)}
                       className="p-2 rounded-lg text-orange-600 hover:bg-orange-50"
                     >
-                      <Edit size={16} />
+                      <MoreVertical size={16} />
                     </button>
 
-                    <button
+                    {/* <button
                       onClick={() => onDelete(row)}
                       className="p-2 rounded-lg text-red-600 hover:bg-red-50"
                     >

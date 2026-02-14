@@ -33,7 +33,7 @@ export default function VendorsTopBar() {
         >
           <ShieldCheck className="text-orange-500" />
           <h1 className="text-lg font-semibold text-gray-800 capitalize">
-            {roleName} Panel
+           {roleName?.replaceAll("_", " ")} Panel
           </h1>
         </div>
 
