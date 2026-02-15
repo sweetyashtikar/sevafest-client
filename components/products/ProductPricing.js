@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { taxApi } from '../attributes/api';
+import { taxApi } from '../../API/api';
 import { PRODUCT_TYPES } from './productTypes';
 
 export default function ProductPricing({ formData, updateFormData }) {
