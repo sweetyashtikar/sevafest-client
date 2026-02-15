@@ -35,6 +35,9 @@ export function OrderTable({
               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
                 Price
               </th>
+               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+               Delivery boy
+              </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
                 Status
               </th>
@@ -77,15 +80,19 @@ export function OrderTable({
                   ₹ {row.sub_total}
                 </td>
 
+                  <td className="px-6 py-4 text-sm text-black">
+                  {row.order_id.delivery_info.boy_id?.user_id?.username || '-'}
+                </td>
+
                 <td className="px-6 py-4 text-sm">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      row.active_status === "processed"
+                      row.status === "processed"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {row.active_status}
+                    {row.status}
                   </span>
                 </td>
 

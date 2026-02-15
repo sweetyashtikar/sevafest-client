@@ -2,7 +2,7 @@
 // app/vendor/delivery-staff/page.js
 "use client";
 import React, { useState, useEffect } from 'react';
-import { deliveryBoyService } from '@/components/vendor/deliveryStaff/deliveryAPI';
+import { deliveryBoyService } from '@/API/deliveryAPI';
 import AddDeliveryBoyModal from '@/components/vendor/deliveryStaff/AddDeliveryBoyModel';
 import DeliveryBoyTable from '@/components/vendor/DeliveryBoyTable';
 import { 
@@ -381,24 +381,6 @@ const DeliveryStaffPage = () => {
           </div>
         )}
       </div>
-
-      {/* Delivery Boys Table */}
-      <DeliveryBoyTable
-        deliveryBoys={deliveryBoys}
-        loading={loading}
-        onStatusToggle={handleStatusToggle}
-        onDelete={handleDelete}
-        pagination={pagination}
-        onPageChange={setCurrentPage}
-      />
-
-      {/* Add Delivery Boy Modal */}
-      <AddDeliveryBoyModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleAddDeliveryBoy}
-        loading={loading}
-      />
 
       {/* Delivery Boys Table */}
       <DeliveryBoyTable

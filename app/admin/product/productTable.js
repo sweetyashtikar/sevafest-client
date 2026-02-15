@@ -12,7 +12,7 @@ import {
   FiSearch,
   FiPlus,
 } from "react-icons/fi";
-import { ProductApi } from "@/components/attributes/api";
+import { ProductApi } from "@/API/api";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
 import { EditProductModal } from "@/components/admin/EditProductModal";
 import { ProductViewModal } from "@/components/admin/ProductViewModal";

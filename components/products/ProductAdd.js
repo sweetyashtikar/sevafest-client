@@ -13,7 +13,7 @@ import ProductSEO from '@/components/products/ProductSEO';
 import ProductVariants from '@/components/products/ProductVariants';
 import { PRODUCT_TYPES, VARIANT_STOCK_LEVEL_TYPES } from '@/components/products/productTypes';
 import { apiClient } from '@/services/apiClient';
-import {  ProductApi } from '@/components/attributes/api';
+import {  ProductApi } from '@/API/api';
 
 
 export default function AddProductPage() {
