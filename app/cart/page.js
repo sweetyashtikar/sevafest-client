@@ -6,29 +6,16 @@ import Link from "next/link";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Trash2 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCart } from "@/redux/slices/cartSlice";
 
 const CartPage = () => {
-  const [cartData, setCartData] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  // ================= FETCH CART =================
-  const fetchCart = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await apiClient("/viewCart");
-      if (res?.success) {
-        setCartData(res.data);
-      }
-    } catch (err) {
-      console.error("Failed to fetch cart", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const dispatch = useDispatch();
+  const { items, loading } = useSelector((state) => state.cart);
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   const updateQty = useCallback(
     async (cartItemId, qty) => {
@@ -40,7 +27,7 @@ const CartPage = () => {
             newQty: Number(qty),
           },
         });
-        fetchCart();
+        dispatch(fetchCart());
       } catch (err) {
         console.error("Qty update failed", err);
       }
@@ -55,11 +42,11 @@ const CartPage = () => {
           method: "DELETE",
           data: {
             productId,
-            variantId, 
+            variantId,
           },
         });
 
-        fetchCart();
+        dispatch(fetchCart());
       } catch (err) {
         console.error(
           "Remove item failed",
@@ -71,22 +58,30 @@ const CartPage = () => {
   );
 
   // ================= MEMOIZED VALUES =================
-  const items = useMemo(() => cartData?.items || [], [cartData]);
-
-  const summary = useMemo(
-    () =>
-      cartData?.summary || {
-        totalItems: 0,
+  const summary = useMemo(() => {
+    if (!items.length) {
+      return {
+        itemsCount: 0,
         totalPrice: 0,
         totalDiscount: 0,
         deliveryCharge: 0,
         finalTotal: 0,
-        itemsCount: 0,
-      },
-    [cartData],
-  );
+      };
+    }
 
-  // ================= UI STATES =================
+    const totalPrice = items.reduce((acc, item) => acc + item.itemTotal, 0);
+
+    return {
+      itemsCount: items.length,
+      totalPrice,
+      totalDiscount: 0,
+      deliveryCharge: 0,
+      finalTotal: totalPrice,
+    };
+  }, [items]);
+
+  
+ 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">

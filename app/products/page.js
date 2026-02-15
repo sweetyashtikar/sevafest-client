@@ -8,11 +8,16 @@ import Pagination from "@/ui/Pagination";
 import FilterAnim from "@/ui/FilterAnim";
 import FilterSidebar from "@/ui/FilterSidebar";
 import { useRouter } from "next/navigation";
+import RecommendedProducts from "@/ui/RecommendedProducts";
+import { useDispatch } from "react-redux";
+import { setRecommended } from "@/redux/slices/recommendationSlice";
+import { fetchCart } from "@/redux/slices/cartSlice";
 
 const PER_PAGE = 20;
 
 export default function Page() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const [view, setView] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [products, setProducts] = useState([]);
@@ -39,6 +44,7 @@ export default function Page() {
       });
 
       if (res?.success) {
+        dispatch(fetchCart());
         console.log("✅ Added to cart", res);
       } else {
         console.error("Failed to add cart", res);
@@ -66,6 +72,17 @@ export default function Page() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      const recommended = products
+        .filter((p) => p.rating?.average >= 0)
+        .slice(0, 10);
+
+      console.log("Recommended:", recommended);
+      dispatch(setRecommended(recommended));
+    }
+  }, [products]);
 
   const toggleBrand = (brand) => {
     setBrands((prev) =>
@@ -324,6 +341,10 @@ export default function Page() {
             />
           </main>
         </div>
+      </div>
+
+      <div className="p-8">
+        <RecommendedProducts />
       </div>
     </div>
   );

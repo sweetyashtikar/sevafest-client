@@ -9,18 +9,17 @@ import { useSelector } from "react-redux";
 import AddressModal from "@/components/address/addressModal";
 
 const CheckoutPage = () => {
+
+  const { user } = useSelector((a) => a.auth);
+
   const [cartData, setCartData] = useState(null);
   const [profile, setProfile] = useState(null);
   const [address, setAddress] = useState(null);
-   const [selectedAddress, setSelectedAddress] = useState(null); 
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState(null);
-    const { user } = useSelector((a) => a.auth);
-    console.log("user", user?.id)
-  
 
-
-  // ================= API CALLS =================
+ 
   const fetchCheckoutData = useCallback(async () => {
     if (!user?.id) return;
     try {
@@ -41,12 +40,10 @@ const CheckoutPage = () => {
         setOrderId(`ORD_${timestamp}_${randomNum}`);
       }
 
-      
-
       if (profileRes?.success) {
         setProfile(profileRes.data);
       }
-       if (addressRes?.success) {
+      if (addressRes?.success) {
         setAddress(addressRes.data);
       }
     } catch (err) {
@@ -71,11 +68,11 @@ const CheckoutPage = () => {
   const items = useMemo(() => cartData?.items || [], [cartData]);
   const summary = useMemo(() => cartData?.summary || {}, [cartData]);
 
-   // Function to generate payment URL via backend
-     const getPaymentUrl = async () => {
-        console.log("orderId", orderId)
-      console.log("summary?.finalTotal", summary?.finalTotal)
-        console.log("profile?.mobile", profile?.mobile)
+
+  const getPaymentUrl = async () => {
+    console.log("orderId", orderId);
+    console.log("summary?.finalTotal", summary?.finalTotal);
+    console.log("profile?.mobile", profile?.mobile);
     try {
       if (!orderId || !summary?.finalTotal || !profile?.mobile) {
         console.error("Missing required data for payment");
@@ -99,7 +96,7 @@ const CheckoutPage = () => {
       });
 
       const data = await response.json();
-      
+
       if (data.success && data.data?.payment_url) {
         return data.data.payment_url;
       } else {
@@ -126,21 +123,25 @@ const CheckoutPage = () => {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6 px-4">
         {/* LEFT */}
         <div className="lg:col-span-2 space-y-6">
-            <Delivery 
-            profile={profile} 
-            address={address} 
+          <Delivery
+            profile={profile}
+            address={address}
             onAddressChange={handleAddressChange}
           />
-             {/* <Payment 
+          <Payment 
             summary={summary}
             profile={profile}
             orderId={orderId}
                selectedAddress={selectedAddress}
             getPaymentUrl={getPaymentUrl}
-          /> */}
+          />
           <ReviewItems items={items} />
         </div>
-      <OrderPlace summary={summary} orderId={orderId} selectedAddress={selectedAddress}  />
+        <OrderPlace
+          summary={summary}
+          orderId={orderId}
+          selectedAddress={selectedAddress}
+        />
       </div>
     </div>
   );
@@ -204,7 +205,6 @@ export default CheckoutPage;
 //           </p>
 //         )}
 
-
 // {/* Other saved addresses (if any) */}
 //    {address?.addresses.length > 1 && (
 //         <div className="mt-3 px-1">
@@ -225,20 +225,21 @@ export default CheckoutPage;
 //   );
 // });
 
-
 const Delivery = React.memo(({ profile, address, onAddressChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  
+
   // Get addresses array
   const addressesArray = address?.addresses || [];
-  
+
   // Initialize selected address
   useEffect(() => {
     if (!selectedAddress && addressesArray.length > 0) {
-      const defaultAddr = addressesArray.find(addr => addr.is_default === true) || addressesArray[0];
+      const defaultAddr =
+        addressesArray.find((addr) => addr.is_default === true) ||
+        addressesArray[0];
       setSelectedAddress(defaultAddr);
-      
+
       // Notify parent component
       if (onAddressChange) {
         onAddressChange(defaultAddr);
@@ -264,8 +265,10 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
         </h2>
         <div className="text-center py-6 border-2 border-dashed rounded-lg">
           <MapPin size={24} className="mx-auto text-gray-400 mb-2" />
-          <p className="text-sm text-gray-500 mb-2">No delivery address found</p>
-          <button 
+          <p className="text-sm text-gray-500 mb-2">
+            No delivery address found
+          </p>
+          <button
             onClick={openModal}
             className="text-blue-600 text-sm font-semibold hover:underline"
           >
@@ -274,7 +277,7 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
         </div>
 
         {/* Address Modal */}
-        <AddressModal 
+        <AddressModal
           isOpen={isModalOpen}
           onClose={closeModal}
           addresses={addressesArray}
@@ -291,7 +294,7 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
         <h2 className="text-lg font-semibold text-black">
           1. Delivery Address
         </h2>
-        <button 
+        <button
           onClick={openModal}
           className="flex items-center gap-1 text-blue-600 text-sm font-semibold hover:text-blue-800 transition-colors"
         >
@@ -304,13 +307,13 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
         <div className="flex items-start gap-3">
           {/* Map Icon */}
           <MapPin size={20} className="text-red-500 mt-1 flex-shrink-0" />
-          
+
           <div className="flex-1">
             {/* Header: Name and Type Badge */}
             <div className="flex items-center gap-2 mb-1 flex-wrap">
               <p className="font-bold text-black">{selectedAddress.name}</p>
               <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-600 font-bold uppercase">
-                {selectedAddress.type || 'Home'}
+                {selectedAddress.type || "Home"}
               </span>
               {selectedAddress.is_default && (
                 <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-medium">
@@ -322,15 +325,20 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
             {/* Address Body */}
             <div className="text-sm text-gray-800 leading-relaxed">
               <p className="font-medium">{selectedAddress.address}</p>
-              
+
               {selectedAddress.landmark && (
-                <p className="text-gray-600">Landmark: {selectedAddress.landmark}</p>
+                <p className="text-gray-600">
+                  Landmark: {selectedAddress.landmark}
+                </p>
               )}
-              
+
               <p>
-                {selectedAddress.area_id?.name && `${selectedAddress.area_id.name}, `}
-                {selectedAddress.city_id?.name && `${selectedAddress.city_id.name}, `}
-                {selectedAddress.state} - <span className="font-semibold">{selectedAddress.pincode}</span>
+                {selectedAddress.area_id?.name &&
+                  `${selectedAddress.area_id.name}, `}
+                {selectedAddress.city_id?.name &&
+                  `${selectedAddress.city_id.name}, `}
+                {selectedAddress.state} -{" "}
+                <span className="font-semibold">{selectedAddress.pincode}</span>
               </p>
 
               <p className="text-gray-500">{selectedAddress.country}</p>
@@ -366,8 +374,9 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
             {/* Delivery Charges Info */}
             {selectedAddress.delivery_info && (
               <div className="mt-2 text-xs text-gray-500">
-                Delivery charges: ₹{selectedAddress.delivery_info.charges} • 
-                Free delivery on orders above ₹{selectedAddress.delivery_info.minimum_free_delivery}
+                Delivery charges: ₹{selectedAddress.delivery_info.charges} •
+                Free delivery on orders above ₹
+                {selectedAddress.delivery_info.minimum_free_delivery}
               </div>
             )}
           </div>
@@ -376,18 +385,21 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
         {/* Other addresses quick link */}
         {addressesArray.length > 1 && (
           <div className="pt-2 ml-8">
-            <button 
+            <button
               onClick={openModal}
               className="text-gray-500 text-xs hover:text-gray-700 flex items-center gap-1"
             >
-              <span>+ {addressesArray.length - 1} other address{addressesArray.length - 1 > 1 ? 'es' : ''}</span>
+              <span>
+                + {addressesArray.length - 1} other address
+                {addressesArray.length - 1 > 1 ? "es" : ""}
+              </span>
             </button>
           </div>
         )}
       </div>
 
       {/* Address Modal */}
-      <AddressModal 
+      <AddressModal
         isOpen={isModalOpen}
         onClose={closeModal}
         addresses={addressesArray}
@@ -397,14 +409,14 @@ const Delivery = React.memo(({ profile, address, onAddressChange }) => {
     </section>
   );
 });
-const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
-  console.log("summary", summary)
-    const [selectedPayment, setSelectedPayment] = useState("tez");
-    const [paymentUrl, setPaymentUrl] = useState(null);
+
+
+const Payment = React.memo(({ summary, profile, orderId, getPaymentUrl }) => {
+  console.log("summary", summary);
+  const [selectedPayment, setSelectedPayment] = useState("tez");
+  const [paymentUrl, setPaymentUrl] = useState(null);
   const [isGeneratingUrl, setIsGeneratingUrl] = useState(false);
 
-
- 
   // Generate payment URL when Tez is selected
   useEffect(() => {
     const generateUrl = async () => {
@@ -421,7 +433,7 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
         }
       }
     };
-    
+
     generateUrl();
   }, [selectedPayment]); // Only depend on selectedPayment
 
@@ -439,19 +451,18 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-        <label className="flex items-center gap-3 cursor-pointer">
-        <input
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
               type="radio"
               name="payment"
               value="tez"
               checked={selectedPayment === "tez"}
-         onChange={(e) => handlePaymentChange(e.target.value)}
+              onChange={(e) => handlePaymentChange(e.target.value)}
               className="h-4 w-4"
-            />      
-                <span>QR code (Tez)
-          </span>
+            />
+            <span>QR code (Tez)</span>
           </label>
-           {selectedPayment === "tez" && (
+          {selectedPayment === "tez" && (
             <div className="text-sm text-gray-600">
               {isGeneratingUrl ? (
                 <span className="animate-pulse">Generating payment...</span>
@@ -462,26 +473,24 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
               )}
             </div>
           )}
-          </div>
-                {selectedPayment === "tez" && paymentUrl && (
+        </div>
+        {selectedPayment === "tez" && paymentUrl && (
           <div className="ml-7 mt-2 p-3 bg-blue-50 rounded">
             <p className="text-sm text-gray-600 mb-2">
               Order ID: <span className="font-medium">{orderId}</span>
             </p>
-            <SimpleTezPaymentButton 
+            <SimpleTezPaymentButton
               paymentUrl={paymentUrl}
               disabled={isGeneratingUrl}
             />
           </div>
         )}
 
-    
-
-    <label className="flex items-center gap-3 cursor-pointer">
-          <input 
-            type="radio" 
-            name="payment" 
-            value="cod" 
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="radio"
+            name="payment"
+            value="cod"
             checked={selectedPayment === "cod"}
             onChange={(e) => handlePaymentChange(e.target.value)}
             className="h-4 w-4"
@@ -489,11 +498,11 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
           <span>Cash on Delivery</span>
         </label>
 
-    <label className="flex items-center gap-3 cursor-pointer">
-          <input 
-            type="radio" 
-            name="payment" 
-            value="upi" 
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="radio"
+            name="payment"
+            value="upi"
             checked={selectedPayment === "upi"}
             onChange={(e) => handlePaymentChange(e.target.value)}
             className="h-4 w-4"
@@ -501,12 +510,11 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
           <span>UPI (Google Pay, PhonePe, Paytm)</span>
         </label>
 
-
-         <label className="flex items-center gap-3 cursor-pointer">
-          <input 
-            type="radio" 
-            name="payment" 
-            value="card" 
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="radio"
+            name="payment"
+            value="card"
             checked={selectedPayment === "card"}
             onChange={(e) => handlePaymentChange(e.target.value)}
             className="h-4 w-4"
@@ -514,11 +522,11 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
           <span>Credit / Debit Card</span>
         </label>
 
-  <label className="flex items-center gap-3 cursor-pointer">
-          <input 
-            type="radio" 
-            name="payment" 
-            value="netbanking" 
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="radio"
+            name="payment"
+            value="netbanking"
             checked={selectedPayment === "netbanking"}
             onChange={(e) => handlePaymentChange(e.target.value)}
             className="h-4 w-4"
@@ -531,7 +539,7 @@ const Payment = React.memo(({summary, profile, orderId ,getPaymentUrl}) => {
 });
 
 const ReviewItems = React.memo(({ items }) => {
-  console.log('items', items)
+  console.log("items", items);
   return (
     <section className="bg-white rounded-lg p-5 shadow">
       <h2 className="text-lg font-semibold mb-4">3. Review Items</h2>
@@ -567,8 +575,8 @@ const ReviewItems = React.memo(({ items }) => {
   );
 });
 
-const OrderPlace = React.memo(({ summary, orderId  }) => {
-    const handlePlaceOrder = () => {
+const OrderPlace = React.memo(({ summary, orderId }) => {
+  const handlePlaceOrder = () => {
     // Here you would implement the actual order placement logic
     // This should create an order in your backend
     console.log("Placing order with ID:", orderId);
