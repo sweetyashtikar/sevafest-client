@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { attributeValueApi, attributeApi } from './api';
+import { attributeValueApi, attributeApi } from '../../API/api';
 
 export default function AttributeValue() {
   const [values, setValues] = useState([]);

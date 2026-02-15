@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { INDICATOR_TYPES } from '@/components/products/productTypes';
 import { useState } from 'react';
-import { categoryApi, attributeValueApi } from '../attributes/api';
+import { categoryApi, attributeValueApi } from '../../API/api';
 
 export default function ProductCategorization({ formData, updateFormData }) {
   const [tagInput, setTagInput] = useState('');

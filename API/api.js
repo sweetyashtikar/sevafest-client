@@ -317,4 +317,6 @@ export const ProductApi = {
 
   delete: (id) => apiClient(`/product/${id}`, { method: "DELETE" }),
   getStatusTrue: () => apiClient("/product/status-true", { method: "GET" }),
+
+  getVendorProducts :(params = {}) => apiClient('/product/vendor/my-products',{ method: "GET", params })
 };

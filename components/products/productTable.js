@@ -13,7 +13,7 @@ import {
   FiSearch,
   FiPlus,
 } from "react-icons/fi";
-import { ProductApi } from "@/components/attributes/api";
+import { ProductApi } from "@/API/api";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
 import { EditProductModal } from "@/components/admin/EditProductModal";
 import { ProductViewModal } from "@/components/admin/ProductViewModal";
@@ -56,6 +56,7 @@ const ProductTable = ({ path }) => {
 
       const role = user?.role?.role;
       const response = await ProductApi.getProductsByRole(role);
+      console.log("products fetched of the vendor", response)
 
       let productsData = [];
       if (Array.isArray(response.data)) {
@@ -75,7 +76,6 @@ const ProductTable = ({ path }) => {
       ) {
         productsData = response.data.data;
       }
-
       setProducts(productsData);
     } catch (error) {
       console.error("Error fetching products:", error);
