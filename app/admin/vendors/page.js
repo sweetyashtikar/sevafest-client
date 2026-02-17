@@ -9,7 +9,7 @@ import { apiClient } from "@/services/apiClient";
 const columns = [
   { key: "name", label: "Name" },
   { key: "email", label: "Email" },
-  { key: "role", label: "Role" },
+  { key: "balance", label: "Balance" },
 ];
 
 export default function Page() {
@@ -29,7 +29,7 @@ export default function Page() {
           id: item._id,
           name: item.username,
           email: item.email,
-          role: item.role?.role ?? "-",
+          balance: item.balance || "-",
           status: item.status,
           raw: item,
         }));

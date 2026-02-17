@@ -100,7 +100,7 @@ const DeliveryBoyTable = ({
                       </div>
                       <div className="ml-3">
                         <span className="text-sm font-mono text-gray-700">
-                          {boy.employment?.employee_id || 'N/A'}
+                          DB{(boy.employment?.employee_id || "").slice(-4).toUpperCase() || 'N/A'}
                         </span>
                       </div>
                     </div>
@@ -160,7 +160,7 @@ const DeliveryBoyTable = ({
                         )}
                         {boy.user_id?.status ? 'Active' : 'Inactive'}
                       </button>
-                      {boy.availability?.is_available && (
+                      {boy.availability?.is_available && boy.user_id?.status === true && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 w-fit">
                           Available Now
                         </span>

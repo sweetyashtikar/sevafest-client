@@ -107,11 +107,28 @@ export default function Page() {
   };
 
   const getProductPrice = (product) => {
+    // For simple products with effectivePrice
     if (product?.effectivePrice != null) return product.effectivePrice;
+
+    // For simple products with special price
     if (product?.simpleProduct?.sp_specialPrice != null)
       return product.simpleProduct.sp_specialPrice;
+
+    // For simple products with regular price
     if (product?.simpleProduct?.sp_price != null)
       return product.simpleProduct.sp_price;
+
+    // For variable products - check first variant's special price
+    if (product?.variants?.length > 0) {
+      const firstVariant = product.variants[0];
+      // Check for variant special price first
+      if (firstVariant?.variant_specialPrice != null)
+        return firstVariant.variant_specialPrice;
+      // Then check variant regular price
+      if (firstVariant?.variant_price != null)
+        return firstVariant.variant_price;
+    }
+
     return null;
   };
 
@@ -322,7 +339,10 @@ export default function Page() {
                       category={product?.categoryId?.name ?? "Uncategorized"}
                       shortDescription={product?.shortDescription}
                       price={getProductPrice(product)}
-                      originalPrice={product?.simpleProduct?.sp_price}
+                      originalPrice={
+                        product?.simpleProduct?.sp_price ||
+                        (product?.variants?.length > 0 ? product.variants[0].variant_price : null)
+                      }
                       discount={product?.discountPercentage}
                       rating={Math.round(product.rating?.average || 0)}
                       reviews={product.rating?.count || 0}

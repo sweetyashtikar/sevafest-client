@@ -848,12 +848,12 @@ const ProductTable = () => {
                             <p className="font-medium text-gray-500">Stock</p>
                             <p
                               className={`font-semibold ${
-                                (product.stock || 0) > 0
+                                (product.simpleProduct?.sp_totalStock ?? product.productLevelStock?.pls_totalStock ?? 0) > 0
                                   ? "text-green-600"
                                   : "text-red-600"
                               }`}
                             >
-                              {product.stock || 0} units
+                            {product.simpleProduct?.sp_totalStock ?? product.productLevelStock?.pls_totalStock ?? 0} units
                             </p>
                           </div>
                           <div>

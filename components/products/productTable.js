@@ -222,34 +222,34 @@ const ProductTable = ({ path }) => {
       ...(product.tags && product.tags.length > 0 && { tags: product.tags }),
       ...(product.attributeValues &&
         product.attributeValues.length > 0 && {
-          attributeValues: product.attributeValues,
-        }),
+        attributeValues: product.attributeValues,
+      }),
       ...(product.variants &&
         product.variants.length > 0 && {
-          variants: product.variants,
-        }),
+        variants: product.variants,
+      }),
       ...(product.deliverableZipcodes &&
         product.deliverableZipcodes.length > 0 && {
-          deliverableZipcodes: product.deliverableZipcodes,
-        }),
+        deliverableZipcodes: product.deliverableZipcodes,
+      }),
 
       // Objects - only if they have properties
       ...(product.dimensions &&
         Object.keys(product.dimensions).length > 0 && {
-          dimensions: product.dimensions,
-        }),
+        dimensions: product.dimensions,
+      }),
       ...(product.video &&
         Object.keys(product.video).length > 0 && {
-          video: product.video,
-        }),
+        video: product.video,
+      }),
       ...(product.productLevelStock &&
         Object.keys(product.productLevelStock).length > 0 && {
-          productLevelStock: product.productLevelStock,
-        }),
+        productLevelStock: product.productLevelStock,
+      }),
       ...(product.simpleProduct &&
         Object.keys(product.simpleProduct).length > 0 && {
-          simpleProduct: product.simpleProduct,
-        }),
+        simpleProduct: product.simpleProduct,
+      }),
 
       // Handle existing images
       ...(product.mainImage && {
@@ -257,11 +257,11 @@ const ProductTable = ({ path }) => {
       }),
       ...(product.otherImages &&
         product.otherImages.length > 0 && {
-          otherImages: product.otherImages.map((url) => ({
-            url,
-            type: "existing",
-          })),
-        }),
+        otherImages: product.otherImages.map((url) => ({
+          url,
+          type: "existing",
+        })),
+      }),
     };
 
     setEditFormData(formData);
@@ -414,7 +414,7 @@ const ProductTable = ({ path }) => {
         // Add productLevelStock if using product-level stock
         if (
           editFormData.variantStockLevelType ===
-            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           editFormData.productLevelStock
         ) {
           formDataToSend.append(
@@ -713,13 +713,12 @@ const ProductTable = ({ path }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.productType === "Physical"
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.productType === "Physical"
                             ? "bg-green-100 text-green-800"
                             : product.productType === "Digital"
                               ? "bg-purple-100 text-purple-800"
                               : "bg-gray-100 text-gray-800"
-                        }`}
+                          }`}
                       >
                         {product.productType || "Unknown"}
                       </span>
@@ -742,17 +741,16 @@ const ProductTable = ({ path }) => {
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.status === true
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === true
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
-                        }`}
+                          }`}
                       >
                         {product.status === true ? "Active" : "Inactive"}
                       </span>
                     </td>
 
-                    {isAdmin && (
+                    {/* {isAdmin && (
                       <td className="px-6 py-4 whitespace-nowrap">
                         <label className="inline-flex items-center cursor-pointer">
                           <input
@@ -776,7 +774,32 @@ const ProductTable = ({ path }) => {
                           />
                         </label>
                       </td>
-                    )}
+                    )} */}
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {isAdmin ? (
+                        /* --- ADMIN VIEW: Interactive Toggle --- */
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={product.isApproved === true}
+                            onChange={() => handleApproveToggle(product)}
+                            className="sr-only peer"
+                          />
+                          <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
+                        </label>
+                      ) : (
+                        /* --- NON-ADMIN VIEW: Static Status Badge --- */
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${product.isApproved
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                            }`}
+                        >
+                          {product.isApproved ? "Approved" : "Pending"}
+                        </span>
+                      )}
+                    </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-3">
@@ -841,11 +864,10 @@ const ProductTable = ({ path }) => {
                           <div>
                             <p className="font-medium text-gray-500">Stock</p>
                             <p
-                              className={`font-semibold ${
-                                (product.stock || 0) > 0
+                              className={`font-semibold ${(product.stock || 0) > 0
                                   ? "text-green-600"
                                   : "text-red-600"
-                              }`}
+                                }`}
                             >
                               {product.stock || 0} units
                             </p>
@@ -855,8 +877,8 @@ const ProductTable = ({ path }) => {
                             <p className="text-gray-900">
                               {product.createdAt
                                 ? new Date(
-                                    product.createdAt,
-                                  ).toLocaleDateString()
+                                  product.createdAt,
+                                ).toLocaleDateString()
                                 : "N/A"}
                             </p>
                           </div>
