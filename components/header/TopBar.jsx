@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Logo from "../../assets/images/image.png";
+import Logo from "../../assets/images/logo.png";
 import { useState } from "react";
 import {
   Mail,
@@ -32,15 +32,17 @@ export default function TopBar() {
   return (
     <>
       <TopStrick />
-      <div className="bg-gradient-to-r from-green-500 to-green-600 shadow-lg sticky top-0 z-50">
-        <div className="absolute inset-0 shine-effect"></div>
+      <div className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-6 py-3">
+          <div className="flex items-center justify-between">
 
-        <div className="max-w-7xl mx-auto px-4 py-3 relative">
-          <div className="flex items-center justify-between gap-4">
-            <nav className="hidden lg:flex items-center gap-6 text-white font-medium">
-              <button className=" group flex items-center gap-1 text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110 ">
+            {/* LEFT NAV */}
+            <nav className="hidden lg:flex items-center gap-8">
+              <img src={Logo} alt="" className="w-28 cursor-pointer" />
+
+              <button className="group flex items-center gap-1 text-gray-800 font-semibold hover:text-[#F7931E] transition">
                 Browse Category
-                <ChevronDown className="w-4 h-4 transition-transform duration-500 ease-in-out group-hover:rotate-180 " />
+                <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition" />
               </button>
 
               {[
@@ -51,32 +53,28 @@ export default function TopBar() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="relative text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110
-                  after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 
-                   after:bg-white after:transition-all after:duration-500 hover:after:w-full"
+                  className="relative font-medium text-gray-700 hover:text-[#F7931E]
+            after:absolute after:left-0 after:-bottom-1 after:h-[2px]
+            after:w-0 after:bg-[#F7931E] after:transition-all hover:after:w-full"
                 >
                   {item.name}
                 </a>
               ))}
 
+              {/* Pages Dropdown */}
               <div className="relative">
                 <button
-                  onClick={() => setIsPagesOpen(!isPagesOpen)}
                   onMouseEnter={() => setIsPagesOpen(true)}
-                  className="group flex items-center gap-1 text-white font-semibold text-base transition-all duration-300 hover:scale-110"
+                  className="group flex items-center gap-1 text-gray-700 font-medium hover:text-[#F7931E]"
                 >
                   Pages
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${
-                      isPagesOpen ? "rotate-180" : ""
-                    }`}
-                  />
+                  <ChevronDown className={`w-4 h-4 transition ${isPagesOpen ? "rotate-180" : ""}`} />
                 </button>
 
                 {isPagesOpen && (
                   <div
                     onMouseLeave={() => setIsPagesOpen(false)}
-                    className="absolute top-full mt-3 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50"
+                    className="absolute top-full mt-3 w-52 bg-white rounded-xl shadow-xl border overflow-hidden"
                   >
                     {[
                       { name: "About Us", href: "/about" },
@@ -87,7 +85,7 @@ export default function TopBar() {
                       <a
                         key={item.name}
                         href={item.href}
-                        className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 hover:text-green-600 transition"
+                        className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition"
                       >
                         {item.name}
                       </a>
@@ -97,53 +95,58 @@ export default function TopBar() {
               </div>
             </nav>
 
-            <div className="flex items-center gap-2 md:gap-4">
+            {/* RIGHT ACTIONS */}
+            <div className="flex items-center gap-3">
+
+              {/* Search */}
               <div
-                className={` overflow-hidden transition-all duration-500 ease-in-out ${
-                  isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0"
-                }`}
+                className={`transition-all duration-500 ${isSearchOpen ? "w-64 opacity-100" : "w-0 opacity-0"
+                  }`}
               >
                 <input
                   type="text"
                   placeholder="Search products..."
-                  className="w-full px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-black border-none outline-none focus:ring-2 focus:ring-yellow-400"
+                  className="w-full px-4 py-2 rounded-full bg-gray-100 text-gray-800 outline-none focus:ring-2 focus:ring-[#F7931E]"
                 />
               </div>
 
               <button
-                onClick={() => setIsSearchOpen((prev) => !prev)}
-                className="text-white hover:bg-white/20 p-2 rounded-full transition-all active:scale-90"
+                onClick={() => setIsSearchOpen(!isSearchOpen)}
+                className="p-2 rounded-full hover:bg-gray-100 transition"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-5 h-5 text-gray-700" />
               </button>
 
-              <button className="relative text-white hover:bg-white/20 p-2 rounded-full transition-all group">
-                <ShoppingCart className="w-5 h-5 group-hover:animate-bounce" />
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-green-600">
+              {/* Cart */}
+              <button className="relative p-2 rounded-full hover:bg-gray-100 transition">
+                <ShoppingCart className="w-5 h-5 text-gray-700" />
+                <span className="absolute -top-1 -right-1 bg-[#F7931E] text-white text-[10px]
+            w-5 h-5 rounded-full flex items-center justify-center font-bold">
                   0
                 </span>
               </button>
 
+              {/* Profile */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-all active:scale-95"
+                  className="p-2 rounded-full hover:bg-gray-100 transition"
                 >
-                  <User className="w-5 h-5" />
+                  <User className="w-5 h-5 text-gray-700" />
                 </button>
 
-                {isProfileOpen && (
-                  user ? (
+                {isProfileOpen &&
+                  (user ? (
                     <ProfileModel user={user} setIsProfileOpen={setIsProfileOpen} />
                   ) : (
                     <AuthDropdown setIsProfileOpen={setIsProfileOpen} />
-                  )
-                )}
+                  ))}
               </div>
             </div>
           </div>
         </div>
       </div>
+
 
       {isProfileOpen && (
         <div
@@ -212,7 +215,7 @@ const ProfileModel = ({ user, setIsProfileOpen }) => {
         setIsProfileOpen(false);
         router.push("/login");
         alert("Logged out successfully");
-        
+
         document.cookie = "token=; path=/; max-age=0";
         document.cookie = "role=; path=/; max-age=0";
       }
