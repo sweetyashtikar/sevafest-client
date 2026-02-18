@@ -17,6 +17,8 @@ const CartPage = () => {
     dispatch(fetchCart());
   }, [dispatch]);
 
+  console.log("item", items);
+
   const updateQty = useCallback(
     async (cartItemId, qty) => {
       try {
@@ -36,11 +38,14 @@ const CartPage = () => {
   );
 
   const removeItem = useCallback(
-    async (productId, variantId = null) => {
+    
+    async (productId, variantId) => {
+      console.log("variantId", variantId);
+      console.log("productId", productId);
       try {
         await apiClient("/cart", {
           method: "DELETE",
-          data: {
+          body: {
             productId,
             variantId,
           },
@@ -80,8 +85,6 @@ const CartPage = () => {
     };
   }, [items]);
 
-  
- 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
