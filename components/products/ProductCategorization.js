@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { INDICATOR_TYPES } from '@/components/products/productTypes';
+import { INDICATOR_TYPES,PRODUCT_TYPES } from '@/components/products/productTypes';
 import { useState } from 'react';
 import { categoryApi, attributeValueApi } from '../../API/api';
 
@@ -216,7 +216,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
 
 
 
-        {formData.productType === 'variable' && (
+        {formData.productType === PRODUCT_TYPES.VARIABLE && (
           <div className="md:col-span-2">
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium text-gray-700">

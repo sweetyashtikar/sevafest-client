@@ -136,6 +136,11 @@ export const attributeValueApi = {
     apiClient(`/attributeValue/${id}`, {
       method: "DELETE",
     }),
+
+    getStatusTrue: (id) =>
+    apiClient(`/attributeValue/status-true`, {
+      method: "GET",
+    }),
 };
 
 export const categoryApi = {

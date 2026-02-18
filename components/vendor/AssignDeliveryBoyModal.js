@@ -23,9 +23,11 @@ export function AssignDeliveryBoyModal({ open, data, onClose }) {
       try {
         setLoading(true);
         const res = await apiClient(`/delivery_boy/vendor/${vendorId}`);
-
         if (res?.success) {
-          setDeliveryBoys(res.data || []);
+          const data = res.data
+          const fetch_boys_with_status_true = data.filter((boy) => boy.user_id?.status === true)
+          console.log("fetch_boys_with_status_true", fetch_boys_with_status_true)
+          setDeliveryBoys(fetch_boys_with_status_true|| []);
         }
       } catch (err) {
         console.error("Failed to fetch delivery boys", err);
@@ -75,6 +77,7 @@ export function AssignDeliveryBoyModal({ open, data, onClose }) {
       phone.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
+
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
