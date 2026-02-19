@@ -5,7 +5,7 @@ import { OrderViewModal } from "@/components/admin/OrderViewModal";
 import { OrderTable } from "@/components/admin/OrderTable";
 import { apiClient } from "@/services/apiClient";
 import { useEffect, useState } from "react";
-import { Search,PackageX } from "lucide-react";
+import { Search, PackageX } from "lucide-react";
 
 export default function Page() {
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,6 @@ export default function Page() {
   const [pagination, setPagination] = useState(null);
   const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
-
 
   const [open, setOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -29,12 +28,12 @@ export default function Page() {
     try {
       setLoading(true);
       const res = await apiClient(`/order/get/sellerOrders?page=${pageNo}`);
-console.log("res", res)
+      console.log("res", res);
       if (res?.success) {
         setOrders(res.data);
         setSummary(res.data.summary);
         setPagination(res.data.pagination);
-      }else {
+      } else {
         // Handle unsuccessful response
         setOrders([]);
         setSummary(null);
@@ -43,7 +42,7 @@ console.log("res", res)
       }
     } catch (error) {
       console.error("Failed to fetch orders", error);
-        console.error("Failed to fetch orders", error);
+      console.error("Failed to fetch orders", error);
       setOrders([]);
       setSummary(null);
       setPagination(null);
@@ -71,7 +70,7 @@ console.log("res", res)
     return searchMatch && statusMatch;
   });
 
-    const hasNoOrders = !loading && !error && (!orders || orders.length === 0);
+  const hasNoOrders = !loading && !error && (!orders || orders.length === 0);
 
   return (
     <div className="p-6 space-y-6 ">
@@ -130,7 +129,7 @@ console.log("res", res)
         </select>
       </div>
 
-       {/* ===== ERROR MESSAGE ===== */}
+      {/* ===== ERROR MESSAGE ===== */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <p className="text-red-600">{error}</p>
@@ -155,13 +154,16 @@ console.log("res", res)
         </div>
       )}
 
-       {/* ===== EMPTY STATE ===== */}
+      {/* ===== EMPTY STATE ===== */}
       {hasNoOrders && (
         <div className="flex flex-col items-center justify-center py-16 px-4 bg-white rounded-xl border border-gray-200">
           <PackageX size={64} className="text-gray-400 mb-4" />
-          <h3 className="text-xl font-semibold text-black mb-2">No Orders Found</h3>
+          <h3 className="text-xl font-semibold text-black mb-2">
+            No Orders Found
+          </h3>
           <p className="text-gray-600 text-center max-w-md mb-6">
-            There are no orders in the system at the moment. New orders will appear here once customers place them.
+            There are no orders in the system at the moment. New orders will
+            appear here once customers place them.
           </p>
           <button
             onClick={() => fetchOrders(1)}
@@ -191,30 +193,33 @@ console.log("res", res)
         />
       )}
 
-        {loading && (
+      {loading && (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           <p className="ml-3 text-sm text-black">Loading orders...</p>
         </div>
       )}
 
-       {/* ===== SHOW FILTERED RESULTS COUNT ===== */}
-      {!loading && !error && orders.length > 0 && filteredOrders.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-gray-600">
-            No orders match your search criteria.{" "}
-            <button
-              onClick={() => {
-                setSearch("");
-                setStatusFilter("all");
-              }}
-              className="text-blue-600 hover:underline"
-            >
-              Clear filters
-            </button>
-          </p>
-        </div>
-      )}
+      {/* ===== SHOW FILTERED RESULTS COUNT ===== */}
+      {!loading &&
+        !error &&
+        orders.length > 0 &&
+        filteredOrders.length === 0 && (
+          <div className="text-center py-8">
+            <p className="text-gray-600">
+              No orders match your search criteria.{" "}
+              <button
+                onClick={() => {
+                  setSearch("");
+                  setStatusFilter("all");
+                }}
+                className="text-blue-600 hover:underline"
+              >
+                Clear filters
+              </button>
+            </p>
+          </div>
+        )}
 
       {loading && <p className="text-sm text-black">Loading orders...</p>}
 

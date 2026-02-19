@@ -10,15 +10,36 @@ export default function Page() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
+  const [roles, setRoles] = useState([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const updateStatus = async (id, newStatus) => {
+    try {
+      console.log("id", id);
+      console.log("inewStatusd", newStatus);
+
+      await apiClient(`/users/status/${id}`, {
+        method: "PATCH",
+        body: { newStatus: newStatus },
+      });
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user._id === id ? { ...user, status: newStatus } : user,
+        ),
+      );
+    } catch (err) {
+      console.log("Status update failed:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const res = await apiClient("/users");
-        setUsers(res.data);
+        setUsers(res.data || []);
       } catch (err) {
         console.log(err);
       }
@@ -26,9 +47,22 @@ export default function Page() {
     fetchData();
   }, []);
 
-  // 🔥 Filtering Logic
+  const uniqueRoles = useMemo(() => {
+    const roleSet = new Set();
+
+    users.forEach((user) => {
+      if (user.role?.role && user.role.role !== "admin") {
+        roleSet.add(user.role.role);
+      }
+    });
+
+    return Array.from(roleSet);
+  }, [users]);
+
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
+      if (user.role?.role === "admin") return false;
+
       const matchesSearch =
         user.username?.toLowerCase().includes(search.toLowerCase()) ||
         user.email?.toLowerCase().includes(search.toLowerCase()) ||
@@ -71,14 +105,16 @@ export default function Page() {
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
           className="px-4 py-2 rounded-lg border border-indigo-300 
-               focus:outline-none focus:ring-2 focus:ring-indigo-500 
-               bg-indigo-50 text-indigo-700 font-medium shadow-sm"
+            focus:outline-none focus:ring-2 focus:ring-indigo-500 
+            bg-indigo-50 text-indigo-700 font-medium shadow-sm"
         >
           <option value="all">All Roles</option>
-          <option value="admin">Admin</option>
-          <option value="vendor">Vendor</option>
-          <option value="customer">Customer</option>
-          <option value="delivery_boy">Delivery Boy</option>
+
+          {uniqueRoles.map((role) => (
+            <option key={role} value={role}>
+              {role.charAt(0).toUpperCase() + role.slice(1)}
+            </option>
+          ))}
         </select>
 
         <select
@@ -94,7 +130,11 @@ export default function Page() {
         </select>
       </div>
 
-      <UsersTable users={filteredUsers} onView={setSelectedUser} />
+      <UsersTable
+        users={filteredUsers}
+        onView={setSelectedUser}
+        onStatusChange={updateStatus}
+      />
 
       <UserViewModal
         user={selectedUser}

@@ -1,37 +1,37 @@
 // components/vendor/DeliveryBoyTable.js
 "use client";
-import React from 'react';
-import { 
-  MoreVertical, 
-  Edit, 
-  Trash2, 
-  CheckCircle, 
+import React from "react";
+import {
+  MoreVertical,
+  Edit,
+  Trash2,
+  CheckCircle,
   XCircle,
   Eye,
   Truck,
   Star,
   Phone,
   Mail,
-  User
-} from 'lucide-react';
+  User,
+} from "lucide-react";
 
-const DeliveryBoyTable = ({ 
-  deliveryBoys, 
-  loading, 
-  onStatusToggle, 
+const DeliveryBoyTable = ({
+  deliveryBoys,
+  loading,
+  onStatusToggle,
   onDelete,
   pagination,
-  onPageChange 
+  onPageChange,
 }) => {
   const [openMenuId, setOpenMenuId] = React.useState(null);
-  console.log("deliveery_boys", deliveryBoys)
+  console.log("deliveery_boys", deliveryBoys);
 
   const formatDate = (date) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('en-IN', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -48,7 +48,7 @@ const DeliveryBoyTable = ({
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
-         <table className="w-full">
+        <table className="w-full">
           <thead className="bg-gray-50 border-b">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -80,7 +80,9 @@ const DeliveryBoyTable = ({
                 <td colSpan="7" className="px-6 py-12 text-center">
                   <div className="flex flex-col items-center">
                     <User className="w-12 h-12 text-gray-400 mb-3" />
-                    <p className="text-gray-500 text-sm">No delivery boys found</p>
+                    <p className="text-gray-500 text-sm">
+                      No delivery boys found
+                    </p>
                     <p className="text-gray-400 text-xs mt-1">
                       Click "Add Delivery Boy" to create one
                     </p>
@@ -95,12 +97,15 @@ const DeliveryBoyTable = ({
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
                         <span className="text-xs font-mono font-medium text-gray-600">
-                          {boy.employment?.employee_id?.slice(-4) || 'DB'}
+                          {boy.employment?.employee_id?.slice(-4) || "DB"}
                         </span>
                       </div>
                       <div className="ml-3">
                         <span className="text-sm font-mono text-gray-700">
-                          DB{(boy.employment?.employee_id || "").slice(-4).toUpperCase() || 'N/A'}
+                          DB
+                          {(boy.employment?.employee_id || "")
+                            .slice(-4)
+                            .toUpperCase() || "N/A"}
                         </span>
                       </div>
                     </div>
@@ -111,7 +116,9 @@ const DeliveryBoyTable = ({
                     <div className="flex items-center">
                       <div className="ml-4">
                         <div className="text-sm font-medium text-gray-900">
-                          {boy.personal_details?.full_name || boy.user_id?.username || 'Not set'}
+                          {boy.personal_details?.full_name ||
+                            boy.user_id?.username ||
+                            "Not set"}
                         </div>
                       </div>
                     </div>
@@ -122,7 +129,9 @@ const DeliveryBoyTable = ({
                     <div className="flex items-center gap-2">
                       <Mail className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-700">
-                        {boy.personal_details?.email || boy.user_id?.email || 'Email not set'}
+                        {boy.personal_details?.email ||
+                          boy.user_id?.email ||
+                          "Email not set"}
                       </span>
                     </div>
                   </td>
@@ -132,7 +141,9 @@ const DeliveryBoyTable = ({
                     <div className="flex items-center gap-2">
                       <Phone className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-700">
-                        {boy.personal_details?.mobile || boy.user_id?.mobile || 'N/A'}
+                        {boy.personal_details?.mobile ||
+                          boy.user_id?.mobile ||
+                          "N/A"}
                       </span>
                     </div>
                     {boy.personal_details?.alternate_mobile && (
@@ -144,27 +155,38 @@ const DeliveryBoyTable = ({
 
                   {/* Status */}
                   <td className="px-6 py-4">
-                    <div className="flex flex-col gap-1">
-                      <button
-                        onClick={() => onStatusToggle(boy._id, boy.user_id?.status)}
-                        className={`inline-flex items-center px-2.5 py-1.5 rounded-full text-xs font-medium ${
-                          boy.user_id?.status
-                            ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                        }`}
-                      >
-                        {boy.user_id?.status ? (
-                          <CheckCircle className="w-3 h-3 mr-1" />
-                        ) : (
-                          <XCircle className="w-3 h-3 mr-1" />
-                        )}
-                        {boy.user_id?.status ? 'Active' : 'Inactive'}
-                      </button>
-                      {boy.availability?.is_available && boy.user_id?.status === true && (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 w-fit">
-                          Available Now
+                    <div className="flex flex-col gap-2">
+                      {/* Switch Row */}
+                      <label className="relative inline-flex items-center cursor-pointer w-fit">
+                        <input
+                          type="checkbox"
+                          className="sr-only peer"
+                          checked={boy.user_id?.status === true}
+                          onChange={() =>
+                            onStatusToggle(boy._id, boy.user_id?.status)
+                          }
+                        />
+                        <div
+                          className="w-11 h-6 bg-gray-200 rounded-full peer 
+        peer-checked:bg-green-500 
+        after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+        after:bg-white after:border after:rounded-full 
+        after:h-5 after:w-5 after:transition-all 
+        peer-checked:after:translate-x-full"
+                        ></div>
+
+                        <span className="ml-3 text-sm font-medium text-gray-900">
+                          {boy.user_id?.status ? "Active" : "Inactive"}
                         </span>
-                      )}
+                      </label>
+
+                      {/* Available Badge Below */}
+                      {boy.availability?.is_available &&
+                        boy.user_id?.status === true && (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 w-fit">
+                            Available
+                          </span>
+                        )}
                     </div>
                   </td>
 
@@ -182,15 +204,17 @@ const DeliveryBoyTable = ({
                   <td className="px-6 py-4 text-right">
                     <div className="relative">
                       <button
-                        onClick={() => setOpenMenuId(openMenuId === boy._id ? null : boy._id)}
+                        onClick={() =>
+                          setOpenMenuId(openMenuId === boy._id ? null : boy._id)
+                        }
                         className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                       >
                         <MoreVertical className="w-4 h-4 text-gray-600" />
                       </button>
-                      
+
                       {openMenuId === boy._id && (
                         <>
-                          <div 
+                          <div
                             className="fixed inset-0 z-10"
                             onClick={() => setOpenMenuId(null)}
                           />
@@ -209,7 +233,7 @@ const DeliveryBoyTable = ({
                               onClick={() => {
                                 setOpenMenuId(null);
                                 // Open edit modal
-                                console.log('Edit delivery boy:', boy._id);
+                                console.log("Edit delivery boy:", boy._id);
                               }}
                               className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                             >
@@ -242,9 +266,13 @@ const DeliveryBoyTable = ({
       {pagination && pagination.total_pages > 1 && (
         <div className="px-6 py-4 border-t flex items-center justify-between">
           <div className="text-sm text-gray-500">
-            Showing {((pagination.current_page - 1) * pagination.items_per_page) + 1} to{' '}
-            {Math.min(pagination.current_page * pagination.items_per_page, pagination.total_items)} of{' '}
-            {pagination.total_items} entries
+            Showing{" "}
+            {(pagination.current_page - 1) * pagination.items_per_page + 1} to{" "}
+            {Math.min(
+              pagination.current_page * pagination.items_per_page,
+              pagination.total_items,
+            )}{" "}
+            of {pagination.total_items} entries
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -260,8 +288,8 @@ const DeliveryBoyTable = ({
                 onClick={() => onPageChange(i + 1)}
                 className={`px-3 py-1 rounded-lg text-sm ${
                   pagination.current_page === i + 1
-                    ? 'bg-blue-600 text-white'
-                    : 'border hover:bg-gray-50'
+                    ? "bg-blue-600 text-white"
+                    : "border hover:bg-gray-50"
                 }`}
               >
                 {i + 1}
