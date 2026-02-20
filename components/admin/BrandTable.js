@@ -23,6 +23,9 @@ export default function BrandTable({
           <thead className="bg-gradient-to-r from-blue-600 to-blue-700">
             <tr>
               <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+                Brand Icon
+              </th>
+              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
                 Brand Name
               </th>
               <th className="px-6 py-4 text-center text-sm font-semibold text-white">
@@ -60,10 +63,27 @@ export default function BrandTable({
 
             {!loading &&
               paginated.map((brand) => (
-                <tr 
-                  key={brand._id} 
+                <tr
+                  key={brand._id}
                   className="hover:bg-blue-50 transition-colors duration-150"
                 >
+                  <td className="px-6 py-4">
+                    {brand.icon ? (
+                      <img
+                        src={brand.icon}
+                        alt={brand.name}
+                        className="w-12 h-12 object-cover rounded-lg border border-gray-200"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = 'https://via.placeholder.com/48?text=No+Image';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+                        <span className="text-xs text-gray-400">No icon</span>
+                      </div>
+                    )}
+                  </td>
                   <td className="px-6 py-4">
                     <span className="font-semibold text-gray-800 text-base">
                       {brand.name}
@@ -95,8 +115,8 @@ export default function BrandTable({
 
                       <span className={`
                         text-xs font-bold px-3 py-1 rounded-full
-                        ${brand.status 
-                          ? "bg-green-100 text-green-700" 
+                        ${brand.status
+                          ? "bg-green-100 text-green-700"
                           : "bg-red-100 text-red-700"
                         }
                       `}>
@@ -144,11 +164,10 @@ export default function BrandTable({
           <button
             onClick={() => setPage(Math.max(1, page - 1))}
             disabled={page === 1}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              page === 1
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${page === 1
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
-            }`}
+              }`}
           >
             Previous
           </button>
@@ -157,11 +176,10 @@ export default function BrandTable({
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                page === i + 1
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${page === i + 1
                   ? "bg-blue-600 text-white shadow-md transform scale-105"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
-              }`}
+                }`}
             >
               {i + 1}
             </button>
@@ -170,11 +188,10 @@ export default function BrandTable({
           <button
             onClick={() => setPage(Math.min(totalPages, page + 1))}
             disabled={page === totalPages}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              page === totalPages
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${page === totalPages
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
-            }`}
+              }`}
           >
             Next
           </button>

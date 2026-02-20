@@ -312,11 +312,12 @@ export const ProductApi = {
       body: data,
     });
   },
-  getProductsByRole: (role) => {
+  getProductsByRole: (role,params = new URLSearchParams()) => {
+    const queryString = params.toString() ? `?${params.toString()}` : '';
     if (role === "admin") {
-      return apiClient("/product/getAllProducts", { method: "GET" });
+      return apiClient(`/product/getAllProducts${queryString}`, { method: "GET" });
     } else {
-      return apiClient("/product/vendor/my-products", { method: "GET" });
+      return apiClient(`/product/vendor/my-products${queryString}`, { method: "GET" });
     }
   },
 
