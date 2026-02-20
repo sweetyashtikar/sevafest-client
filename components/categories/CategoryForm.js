@@ -6,14 +6,16 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
     name: '',
     sub_category: [],
-    image: '',
-    banner: '',
+     image: null, 
+    banner: null,
     row_order: 0,
-    status: 'active'
+    status: true
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [newSubCategory, setNewSubCategory] = useState('');
+    const [imagePreview, setImagePreview] = useState(null);
+  const [bannerPreview, setBannerPreview] = useState(null);
 
   // Initialize form with category data if editing
   useEffect(() => {
@@ -24,8 +26,11 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
         image: category.image || '',
         banner: category.banner || '',
         row_order: category.row_order || 0,
-        status: category.status || 'active'
+        status: category.status || 'true'
       });
+       // Set previews if editing
+      setImagePreview(category.image || null);
+      setBannerPreview(category.banner || null);
     }
   }, [category]);
 
@@ -54,6 +59,61 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
     }));
   };
 
+ // Fixed image upload handler
+  const handleImageUpload = (e, type) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('File size must be less than 5MB');
+        return;
+      }
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please select an image file');
+        return;
+      }
+
+      // Update form data with file
+      setFormData(prev => ({
+        ...prev,
+        [type]: file
+      }));
+
+      // Create preview
+      const previewUrl = URL.createObjectURL(file);
+      if (type === 'image') {
+        setImagePreview(previewUrl);
+      } else {
+        setBannerPreview(previewUrl);
+      }
+      
+      // Clear error
+      setError('');
+    }
+  };
+
+   // Fixed remove image handler
+  const handleRemoveImage = (type) => {
+    setFormData(prev => ({
+      ...prev,
+      [type]: null
+    }));
+    
+    if (type === 'image') {
+      setImagePreview(null);
+    } else {
+      setBannerPreview(null);
+    }
+    
+    // Reset file input
+    const input = document.getElementById(`${type === 'image' ? 'category-image' : 'banner-image'}-upload`);
+    if (input) input.value = '';
+  };
+
+
+  // Handle form submission
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -61,7 +121,33 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
     setError('');
 
     try {
-      const result = await onSubmit(formData);
+      // Create FormData for file upload
+      const submitData = new FormData();
+      
+      // Append all form fields
+      submitData.append('name', formData.name);
+      submitData.append('row_order', formData.row_order);
+      submitData.append('status', formData.status);
+      
+      // Append sub_category array
+      formData.sub_category.forEach((subCat, index) => {
+        submitData.append(`sub_category[${index}]`, subCat);
+      });
+      
+      // Append files if they exist
+      if (formData.image instanceof File) {
+        submitData.append('image', formData.image);
+      } else if (typeof formData.image === 'string' && formData.image) {
+        submitData.append('existing_image', formData.image);
+      }
+      
+      if (formData.banner instanceof File) {
+        submitData.append('banner', formData.banner);
+      } else if (typeof formData.banner === 'string' && formData.banner) {
+        submitData.append('existing_banner', formData.banner);
+      }
+
+      const result = await onSubmit(submitData);
       if (!result.success) {
         setError(result.error);
       }
@@ -72,13 +158,15 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
     }
   };
 
-  // Generate slug from name
+
+ // Generate slug from name
   const generateSlug = () => {
     if (!formData.name) return '';
     return formData.name
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '-')
-      .replace(/-+/g, '-');
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
   };
 
   return (
@@ -169,8 +257,8 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
+              <option value="true">Active</option>
+              <option value="false">Inactive</option>
             </select>
           </div>
         </div>
@@ -178,7 +266,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
         {/* Sub-Categories */}
         <div className="border-t border-gray-200 pt-6">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Sub-Categories</h3>
-          
+
           <div className="mb-4">
             <div className="flex gap-2 mb-3">
               <input
@@ -225,29 +313,50 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
         {/* Images */}
         <div className="border-t border-gray-200 pt-6">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Images</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Category Image */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Category Image URL
+                Category Image
               </label>
-              <input
-                type="url"
-                name="image"
-                value={formData.image}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder="https://example.com/image.jpg"
-              />
-              {formData.image && (
+              <div className="flex items-center space-x-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'image')}
+                  className="hidden"
+                  id="category-image-upload"
+                />
+                <label
+                  htmlFor="category-image-upload"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors"
+                >
+                  Choose Image
+                </label>
+                 {(formData.image || imagePreview) && (
+                  <span className="text-sm text-gray-600">
+                    {formData.image instanceof File ? formData.image.name : 'Image selected'}
+                  </span>
+                )}
+              </div>
+              {(imagePreview || formData.image) && (
                 <div className="mt-2">
                   <img
-                    src={formData.image}
+                    src={imagePreview || (typeof formData.image === 'string' ? formData.image : '')}
                     alt="Preview"
-                    className="h-20 w-20 object-cover rounded"
-                    onError={(e) => e.target.style.display = 'none'}
+                    className="h-20 w-20 object-cover rounded border border-gray-200"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/80?text=Error';
+                    }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage('image')}
+                    className="mt-2 text-sm text-red-600 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
                 </div>
               )}
             </div>
@@ -255,24 +364,45 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
             {/* Banner Image */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Banner Image URL
+                Banner Image
               </label>
-              <input
-                type="url"
-                name="banner"
-                value={formData.banner}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://example.com/banner.jpg"
-              />
-              {formData.banner && (
+              <div className="flex items-center space-x-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImageUpload(e, 'banner')}
+                  className="hidden"
+                  id="banner-image-upload"
+                />
+                <label
+                  htmlFor="banner-image-upload"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors"
+                >
+                  Choose Image
+                </label>
+                 {(formData.banner || bannerPreview) && (
+                  <span className="text-sm text-gray-600">
+                    {formData.banner instanceof File ? formData.banner.name : 'Image selected'}
+                  </span>
+                )}
+              </div>
+            {(bannerPreview || formData.banner) && (
                 <div className="mt-2">
                   <img
-                    src={formData.banner}
+                    src={bannerPreview || (typeof formData.banner === 'string' ? formData.banner : '')}
                     alt="Banner Preview"
-                    className="h-20 w-full object-cover rounded"
-                    onError={(e) => e.target.style.display = 'none'}
+                    className="h-20 w-full object-cover rounded border border-gray-200"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/300x80?text=Error';
+                    }}
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage('banner')}
+                    className="mt-2 text-sm text-red-600 hover:text-red-700"
+                  >
+                    Remove
+                  </button>
                 </div>
               )}
             </div>
@@ -285,6 +415,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
               <li>Banner Image: Wide image, 1200x300 pixels recommended</li>
               <li>Use high-quality, relevant images</li>
               <li>Supported formats: JPG, PNG, WebP</li>
+              <li>Maximum file size: 5MB</li>
             </ul>
           </div>
         </div>
