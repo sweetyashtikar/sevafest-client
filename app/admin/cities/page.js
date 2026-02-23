@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { cityService } from '@/API/CityAPI';
-import DataTable from '@/components/admin/DataTable';
-import Modal from '@/components/admin/Model';
-import BulkUploadModal from '@/components/admin/BulkUploadModal';
+import React, { useState, useEffect } from "react";
+import { cityService } from "@/API/CityAPI";
+import DataTable from "@/components/admin/DataTable";
+import Modal from "@/components/admin/Model";
+import BulkUploadModal from "@/components/admin/BulkUploadModal";
 // import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
 
 const Cities = () => {
@@ -18,8 +18,8 @@ const Cities = () => {
   const [showModal, setShowModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [editingCity, setEditingCity] = useState(null);
-  const [formData, setFormData] = useState({ name: '' });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [formData, setFormData] = useState({ name: "" });
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
 
   useEffect(() => {
@@ -32,13 +32,17 @@ const Cities = () => {
       const response = await cityService.getCities(
         pagination.currentPage,
         10,
-        searchTerm
+        searchTerm,
       );
-      console.log("cities",response.cities)
-      setCities(response.cities);
-      setPagination(response.pagination);
+
+      setCities(response?.cities || []);
+
+      setPagination((prev) => ({
+        ...prev,
+        ...response?.pagination,
+      }));
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error("Error fetching cities:", error);
     } finally {
       setLoading(false);
     }
@@ -50,23 +54,25 @@ const Cities = () => {
       if (editingCity) {
         await cityService.updateCity(editingCity._id, formData);
       } else {
-        await cityService.createCity(formData);
+       const creatCirty =  await cityService.createCity(formData);
+
+       console.log("creatCirty", creatCirty)
       }
       fetchCities();
       setShowModal(false);
       resetForm();
     } catch (error) {
-      console.error('Error saving city:', error);
+      console.error("Error saving city:", error);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this city?')) {
+    if (window.confirm("Are you sure you want to delete this city?")) {
       try {
         await cityService.deleteCity(id);
         fetchCities();
       } catch (error) {
-        console.error('Error deleting city:', error);
+        console.error("Error deleting city:", error);
       }
     }
   };
@@ -79,7 +85,7 @@ const Cities = () => {
         setSelectedRows([]);
         fetchCities();
       } catch (error) {
-        console.error('Error bulk deleting cities:', error);
+        console.error("Error bulk deleting cities:", error);
       }
     }
   };
@@ -90,21 +96,25 @@ const Cities = () => {
       setShowBulkModal(false);
       fetchCities();
     } catch (error) {
-      console.error('Error bulk uploading cities:', error);
+      console.error("Error bulk uploading cities:", error);
     }
   };
 
   const resetForm = () => {
-    setFormData({ name: '' });
+    setFormData({ name: "" });
     setEditingCity(null);
   };
 
   const columns = [
-    { key: 'name', label: 'City Name', sortable: true },
-    { key: 'createdAt', label: 'Created At', render: (date) => new Date(date).toLocaleDateString() },
-    { 
-      key: 'actions', 
-      label: 'Actions',
+    { key: "name", label: "City Name", sortable: true },
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      key: "actions",
+      label: "Actions",
       render: (_, row) => (
         <div className="flex space-x-2">
           <button
@@ -124,8 +134,8 @@ const Cities = () => {
             {/* <TrashIcon className="w-5 h-5" /> */}
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -170,7 +180,9 @@ const Cities = () => {
         data={cities}
         loading={loading}
         pagination={pagination}
-        onPageChange={(page) => setPagination({ ...pagination, currentPage: page })}
+        onPageChange={(page) =>
+          setPagination({ ...pagination, currentPage: page })
+        }
         onRowSelect={setSelectedRows}
         selectedRows={selectedRows}
         onBulkDelete={handleBulkDelete}
@@ -183,7 +195,7 @@ const Cities = () => {
           setShowModal(false);
           resetForm();
         }}
-        title={editingCity ? 'Edit City' : 'Add New City'}
+        title={editingCity ? "Edit City" : "Add New City"}
       >
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -211,7 +223,7 @@ const Cities = () => {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              {editingCity ? 'Update' : 'Create'}
+              {editingCity ? "Update" : "Create"}
             </button>
           </div>
         </form>
@@ -222,7 +234,7 @@ const Cities = () => {
         isOpen={showBulkModal}
         onClose={() => setShowBulkModal(false)}
         onUpload={handleBulkUpload}
-        template={[{ name: 'Mumbai' }, { name: 'Pune' }]}
+        template={[{ name: "Mumbai" }, { name: "Pune" }]}
         entityName="cities"
       />
     </div>

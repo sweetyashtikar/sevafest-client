@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { areaService } from '@/API/areaAPI';
-import { cityService } from '@/API/CityAPI';
-import { zipcodeService } from '@/API/zipcodeAPI';
-import DataTable from '@/components/admin/DataTable';
-import Modal from '@/components/admin/Model';
-import BulkUploadModal from '@/components/admin/BulkUploadModal';
+import React, { useState, useEffect } from "react";
+import { areaService } from "@/API/areaAPI";
+import { cityService } from "@/API/CityAPI";
+import { zipcodeService } from "@/API/zipcodeAPI";
+import DataTable from "@/components/admin/DataTable";
+import Modal from "@/components/admin/Model";
+import BulkUploadModal from "@/components/admin/BulkUploadModal";
 // import { PencilIcon, TrashIcon, PlusIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 
 const Areas = () => {
@@ -19,25 +19,27 @@ const Areas = () => {
     totalPages: 1,
     totalItems: 0,
   });
+
+  const [searchTerm, setSearchTerm] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [editingArea, setEditingArea] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    city_id: '',
-    zipcode_id: '',
-    pincode: '',
+    name: "",
+    city_id: "",
+    zipcode_id: "",
+    pincode: "",
     minimum_free_delivery_order_amount: 100,
     delivery_charges: 0,
     estimated_delivery_days: 2,
     is_cod_available: true,
     is_deliverable: true,
-    active: true
+    active: true,
   });
   const [filters, setFilters] = useState({
-    city_id: '',
-    active: '',
-    pincode: ''
+    city_id: "",
+    active: "",
+    pincode: "",
   });
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -52,43 +54,55 @@ const Areas = () => {
     }
   }, [formData.city_id]);
 
-  const fetchAreas = async () => {
-    setLoading(true);
-    try {
-      const response = await areaService.getAreas(
-        pagination.currentPage,
-        10,
-        filters
-      );
-      setAreas(response.data.areas);
-      setPagination(response.data.pagination);
-    } catch (error) {
-      console.error('Error fetching areas:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchAreas = async () => {
+  setLoading(true);
+  try {
+    const response = await areaService.getAreas(
+      pagination.currentPage,
+      10,
+      filters
+    );
+
+    console.log("Areas Response", response);
+
+    setAreas(response?.data?.areas || []);
+    setPagination(
+      response?.data?.pagination || {
+        currentPage: 1,
+        totalPages: 1,
+        totalItems: 0,
+      }
+    );
+
+  } catch (error) {
+    console.error("Error fetching areas:", error);
+    setAreas([]); // safety
+  } finally {
+    setLoading(false);
+  }
+};
 
   const fetchCities = async () => {
     try {
       const response = await cityService.getCities(
         pagination.currentPage,
         10,
-        searchTerm
+        searchTerm,
       );
-      console.log("response cities", response)
-      setCities(response.data?.cities || []);
+      console.log("response cities", response);
+      setCities(response.cities || []);
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error("Error fetching cities:", error);
     }
   };
 
   const fetchZipcodesByCity = async (cityId) => {
     try {
       const response = await zipcodeService.getZipcodesByCity(cityId);
+      console.log("Zipcode", response)
       setZipcodes(response.data);
     } catch (error) {
-      console.error('Error fetching zipcodes:', error);
+      console.error("Error fetching zipcodes:", error);
     }
   };
 
@@ -104,17 +118,17 @@ const Areas = () => {
       setShowModal(false);
       resetForm();
     } catch (error) {
-      console.error('Error saving area:', error);
+      console.error("Error saving area:", error);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this area?')) {
+    if (window.confirm("Are you sure you want to delete this area?")) {
       try {
         await areaService.deleteArea(id);
         fetchAreas();
       } catch (error) {
-        console.error('Error deleting area:', error);
+        console.error("Error deleting area:", error);
       }
     }
   };
@@ -125,7 +139,7 @@ const Areas = () => {
       setShowBulkModal(false);
       fetchAreas();
     } catch (error) {
-      console.error('Error bulk uploading areas:', error);
+      console.error("Error bulk uploading areas:", error);
     }
   };
 
@@ -134,78 +148,78 @@ const Areas = () => {
       await areaService.toggleAreaStatus(id);
       fetchAreas();
     } catch (error) {
-      console.error('Error toggling area status:', error);
+      console.error("Error toggling area status:", error);
     }
   };
 
   const resetForm = () => {
     setFormData({
-      name: '',
-      city_id: '',
-      zipcode_id: '',
-      pincode: '',
+      name: "",
+      city_id: "",
+      zipcode_id: "",
+      pincode: "",
       minimum_free_delivery_order_amount: 100,
       delivery_charges: 0,
       estimated_delivery_days: 2,
       is_cod_available: true,
       is_deliverable: true,
-      active: true
+      active: true,
     });
     setEditingArea(null);
     setZipcodes([]);
   };
 
   const columns = [
-    { key: 'name', label: 'Area Name', sortable: true },
-    { 
-      key: 'city_id', 
-      label: 'City',
-      render: (city) => city?.name || 'N/A'
+    { key: "name", label: "Area Name", sortable: true },
+    {
+      key: "city_id",
+      label: "City",
+      render: (city) => city?.name || "N/A",
     },
-    { 
-      key: 'pincode', 
-      label: 'PIN Code',
-      render: (pincode, row) => pincode || row.zipcode_id?.zipcode || 'N/A'
+    {
+      key: "pincode",
+      label: "PIN Code",
+      render: (pincode, row) => pincode || row.zipcode_id?.zipcode || "N/A",
     },
-    { 
-      key: 'minimum_free_delivery_order_amount', 
-      label: 'Min Free Amount',
-      render: (amount) => `₹${amount}`
+    {
+      key: "minimum_free_delivery_order_amount",
+      label: "Min Free Amount",
+      render: (amount) => `₹${amount}`,
     },
-    { 
-      key: 'delivery_charges', 
-      label: 'Delivery Charges',
-      render: (charges) => `₹${charges}`
+    {
+      key: "delivery_charges",
+      label: "Delivery Charges",
+      render: (charges) => `₹${charges}`,
     },
-    { 
-      key: 'estimated_delivery_days', 
-      label: 'Delivery Days',
-      render: (days) => `${days} day${days > 1 ? 's' : ''}`
+    {
+      key: "estimated_delivery_days",
+      label: "Delivery Days",
+      render: (days) => `${days} day${days > 1 ? "s" : ""}`,
     },
-    { 
-      key: 'is_cod_available', 
-      label: 'COD',
-      render: (cod) => cod ? '✅ Yes' : '❌ No'
+    {
+      key: "is_cod_available",
+      label: "COD",
+      render: (cod) => (cod ? "✅ Yes" : "❌ No"),
     },
-    { 
-      key: 'active', 
-      label: 'Status',
+    {
+      key: "active",
+      label: "Status",
       render: (active, row) => (
         <button
           onClick={() => toggleActive(row._id, active)}
           className={`px-2 py-1 rounded-full text-xs font-semibold ${
-            active 
-              ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-              : 'bg-red-100 text-red-800 hover:bg-red-200'
+            active
+              ? "bg-green-100 text-green-800 hover:bg-green-200"
+              : "bg-red-100 text-red-800 hover:bg-red-200"
           }`}
         >
-          {active ? 'Active' : 'Inactive'}
+          {active ? "Active" : "Inactive"}
         </button>
-      )
+      ),
     },
-    { 
-      key: 'actions', 
-      label: 'Actions',
+    {
+      key: "actions",
+      label: "Actions",
       render: (_, row) => (
         <div className="flex space-x-2">
           <button
@@ -216,12 +230,13 @@ const Areas = () => {
                 city_id: row.city_id?._id,
                 zipcode_id: row.zipcode_id?._id,
                 pincode: row.pincode,
-                minimum_free_delivery_order_amount: row.minimum_free_delivery_order_amount,
+                minimum_free_delivery_order_amount:
+                  row.minimum_free_delivery_order_amount,
                 delivery_charges: row.delivery_charges,
                 estimated_delivery_days: row.estimated_delivery_days,
                 is_cod_available: row.is_cod_available,
                 is_deliverable: row.is_deliverable,
-                active: row.active
+                active: row.active,
               });
               setShowModal(true);
             }}
@@ -236,8 +251,8 @@ const Areas = () => {
             {/* <TrashIcon className="w-5 h-5" /> */}
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -273,8 +288,10 @@ const Areas = () => {
           className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Cities</option>
-          {cities.map(city => (
-            <option key={city._id} value={city._id}>{city.name}</option>
+          {cities.map((city) => (
+            <option key={city._id} value={city._id}>
+              {city.name}
+            </option>
           ))}
         </select>
         <select
@@ -301,7 +318,9 @@ const Areas = () => {
         data={areas}
         loading={loading}
         pagination={pagination}
-        onPageChange={(page) => setPagination({ ...pagination, currentPage: page })}
+        onPageChange={(page) =>
+          setPagination({ ...pagination, currentPage: page })
+        }
         onRowSelect={setSelectedRows}
         selectedRows={selectedRows}
       />
@@ -313,7 +332,7 @@ const Areas = () => {
           setShowModal(false);
           resetForm();
         }}
-        title={editingArea ? 'Edit Area' : 'Add New Area'}
+        title={editingArea ? "Edit Area" : "Add New Area"}
         size="lg"
       >
         <form onSubmit={handleSubmit}>
@@ -323,7 +342,9 @@ const Areas = () => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -332,13 +353,21 @@ const Areas = () => {
               <label className="block text-gray-700 mb-2">City</label>
               <select
                 value={formData.city_id}
-                onChange={(e) => setFormData({ ...formData, city_id: e.target.value, zipcode_id: '' })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    city_id: e.target.value,
+                    zipcode_id: "",
+                  })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select City</option>
-                {cities.map(city => (
-                  <option key={city._id} value={city._id}>{city.name}</option>
+                {cities.map((city) => (
+                  <option key={city._id} value={city._id}>
+                    {city.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -347,11 +376,13 @@ const Areas = () => {
               <select
                 value={formData.zipcode_id}
                 onChange={(e) => {
-                  const selectedZipcode = zipcodes.find(z => z._id === e.target.value);
-                  setFormData({ 
-                    ...formData, 
+                  const selectedZipcode = zipcodes.find(
+                    (z) => z._id === e.target.value,
+                  );
+                  setFormData({
+                    ...formData,
                     zipcode_id: e.target.value,
-                    pincode: selectedZipcode?.zipcode || ''
+                    pincode: selectedZipcode?.zipcode || "",
                   });
                 }}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -359,41 +390,63 @@ const Areas = () => {
                 disabled={!formData.city_id}
               >
                 <option value="">Select PIN Code</option>
-                {zipcodes.map(zipcode => (
+                {zipcodes.map((zipcode) => (
                   <option key={zipcode._id} value={zipcode._id}>
-                    {zipcode.zipcode} {zipcode.is_deliverable ? '' : '(Not Deliverable)'}
+                    {zipcode.zipcode}{" "}
+                    {zipcode.is_deliverable ? "" : "(Not Deliverable)"}
                   </option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Min Free Delivery Amount (₹)</label>
+              <label className="block text-gray-700 mb-2">
+                Min Free Delivery Amount (₹)
+              </label>
               <input
                 type="number"
                 value={formData.minimum_free_delivery_order_amount}
-                onChange={(e) => setFormData({ ...formData, minimum_free_delivery_order_amount: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    minimum_free_delivery_order_amount: Number(e.target.value),
+                  })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 min="0"
                 required
               />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Delivery Charges (₹)</label>
+              <label className="block text-gray-700 mb-2">
+                Delivery Charges (₹)
+              </label>
               <input
                 type="number"
                 value={formData.delivery_charges}
-                onChange={(e) => setFormData({ ...formData, delivery_charges: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    delivery_charges: Number(e.target.value),
+                  })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 min="0"
                 required
               />
             </div>
             <div>
-              <label className="block text-gray-700 mb-2">Estimated Delivery Days</label>
+              <label className="block text-gray-700 mb-2">
+                Estimated Delivery Days
+              </label>
               <input
                 type="number"
                 value={formData.estimated_delivery_days}
-                onChange={(e) => setFormData({ ...formData, estimated_delivery_days: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    estimated_delivery_days: Number(e.target.value),
+                  })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 min="1"
                 required
@@ -404,7 +457,12 @@ const Areas = () => {
                 <input
                   type="checkbox"
                   checked={formData.is_cod_available}
-                  onChange={(e) => setFormData({ ...formData, is_cod_available: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      is_cod_available: e.target.checked,
+                    })
+                  }
                   className="mr-2"
                 />
                 <span className="text-gray-700">COD Available</span>
@@ -413,7 +471,12 @@ const Areas = () => {
                 <input
                   type="checkbox"
                   checked={formData.is_deliverable}
-                  onChange={(e) => setFormData({ ...formData, is_deliverable: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      is_deliverable: e.target.checked,
+                    })
+                  }
                   className="mr-2"
                 />
                 <span className="text-gray-700">Deliverable</span>
@@ -422,7 +485,9 @@ const Areas = () => {
                 <input
                   type="checkbox"
                   checked={formData.active}
-                  onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, active: e.target.checked })
+                  }
                   className="mr-2"
                 />
                 <span className="text-gray-700">Active</span>
@@ -444,7 +509,7 @@ const Areas = () => {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              {editingArea ? 'Update' : 'Create'}
+              {editingArea ? "Update" : "Create"}
             </button>
           </div>
         </form>
@@ -457,17 +522,17 @@ const Areas = () => {
         onUpload={handleBulkUpload}
         template={[
           {
-            name: 'Colaba',
-            city_id: 'city_id_here',
-            zipcode_id: 'zipcode_id_here',
-            pincode: '400001',
+            name: "Colaba",
+            city_id: "city_id_here",
+            zipcode_id: "zipcode_id_here",
+            pincode: "400001",
             minimum_free_delivery_order_amount: 200,
             delivery_charges: 40,
             estimated_delivery_days: 2,
             is_cod_available: true,
             is_deliverable: true,
-            active: true
-          }
+            active: true,
+          },
         ]}
         entityName="areas"
       />

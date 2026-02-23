@@ -3,6 +3,7 @@ import { apiClient } from "@/services/apiClient";
 export const cityService = {
   // Get all cities with pagination
   getCities: (page = 1, limit = 10, search = '') => {
+    
     const params = new URLSearchParams({ page, limit });
     if (search) params.append('search', search);
     

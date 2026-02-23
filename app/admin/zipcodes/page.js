@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { zipcodeService } from '@/API/zipcodeAPI';
-import { cityService } from '@/API/CityAPI';
-import DataTable from '@/components/admin/DataTable';
-import Modal from '@/components/admin/Model';
-import BulkUploadModal from '@/components/admin/BulkUploadModal';
-// import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
+import React, { useState, useEffect } from "react";
+import { zipcodeService } from "@/API/zipcodeAPI";
+import { cityService } from "@/API/CityAPI";
+import DataTable from "@/components/admin/DataTable";
+import Modal from "@/components/admin/Model";
+import BulkUploadModal from "@/components/admin/BulkUploadModal";
+
 
 const Zipcodes = () => {
   const [zipcodes, setZipcodes] = useState([]);
@@ -21,13 +21,13 @@ const Zipcodes = () => {
   const [showBulkModal, setShowBulkModal] = useState(false);
   const [editingZipcode, setEditingZipcode] = useState(null);
   const [formData, setFormData] = useState({
-    zipcode: '',
-    city_id: '',
-    is_deliverable: true
+    zipcode: "",
+    city_id: "",
+    is_deliverable: true,
   });
   const [filters, setFilters] = useState({
-    city_id: '',
-    is_deliverable: ''
+    city_id: "",
+    is_deliverable: "",
   });
   const [selectedRows, setSelectedRows] = useState([]);
 
@@ -42,12 +42,14 @@ const Zipcodes = () => {
       const response = await zipcodeService.getZipcodes(
         pagination.currentPage,
         10,
-        filters
+        filters,
       );
-      setZipcodes(response.data.zipcodes);
-      setPagination(response.data.pagination);
+
+      console.log("resposne", response);
+      setZipcodes(response?.zipcodes);
+      setPagination(response?.pagination);
     } catch (error) {
-      console.error('Error fetching zipcodes:', error);
+      console.error("Error fetching zipcodes:", error);
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ const Zipcodes = () => {
       const response = await cityService.getCities(1, 100);
       setCities(response.cities);
     } catch (error) {
-      console.error('Error fetching cities:', error);
+      console.error("Error fetching cities:", error);
     }
   };
 
@@ -74,17 +76,17 @@ const Zipcodes = () => {
       setShowModal(false);
       resetForm();
     } catch (error) {
-      console.error('Error saving zipcode:', error);
+      console.error("Error saving zipcode:", error);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this zipcode?')) {
+    if (window.confirm("Are you sure you want to delete this zipcode?")) {
       try {
         await zipcodeService.deleteZipcode(id);
         fetchZipcodes();
       } catch (error) {
-        console.error('Error deleting zipcode:', error);
+        console.error("Error deleting zipcode:", error);
       }
     }
   };
@@ -95,55 +97,61 @@ const Zipcodes = () => {
       setShowBulkModal(false);
       fetchZipcodes();
     } catch (error) {
-      console.error('Error bulk uploading zipcodes:', error);
+      console.error("Error bulk uploading zipcodes:", error);
     }
   };
 
   const toggleDeliverable = async (id, currentStatus) => {
     try {
-      await zipcodeService.updateZipcode(id, { is_deliverable: !currentStatus });
+      await zipcodeService.updateZipcode(id, {
+        is_deliverable: !currentStatus,
+      });
       fetchZipcodes();
     } catch (error) {
-      console.error('Error toggling deliverable status:', error);
+      console.error("Error toggling deliverable status:", error);
     }
   };
 
   const resetForm = () => {
     setFormData({
-      zipcode: '',
-      city_id: '',
-      is_deliverable: true
+      zipcode: "",
+      city_id: "",
+      is_deliverable: true,
     });
     setEditingZipcode(null);
   };
 
   const columns = [
-    { key: 'zipcode', label: 'PIN Code', sortable: true },
-    { 
-      key: 'city_id', 
-      label: 'City',
-      render: (city) => city?.name || 'N/A'
+    { key: "zipcode", label: "PIN Code", sortable: true },
+    {
+      key: "city_id",
+      label: "City",
+      render: (city) => city?.name || "N/A",
     },
-    { 
-      key: 'is_deliverable', 
-      label: 'Status',
+    {
+      key: "is_deliverable",
+      label: "Status",
       render: (value, row) => (
         <button
           onClick={() => toggleDeliverable(row._id, value)}
           className={`px-2 py-1 rounded-full text-xs font-semibold ${
-            value 
-              ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-              : 'bg-red-100 text-red-800 hover:bg-red-200'
+            value
+              ? "bg-green-100 text-green-800 hover:bg-green-200"
+              : "bg-red-100 text-red-800 hover:bg-red-200"
           }`}
         >
-          {value ? 'Deliverable' : 'Not Deliverable'}
+          {value ? "Deliverable" : "Not Deliverable"}
         </button>
-      )
+      ),
     },
-    { key: 'createdAt', label: 'Created At', render: (date) => new Date(date).toLocaleDateString() },
-    { 
-      key: 'actions', 
-      label: 'Actions',
+    {
+      key: "createdAt",
+      label: "Created At",
+      render: (date) => new Date(date).toLocaleDateString(),
+    },
+    {
+      key: "actions",
+      label: "Actions",
       render: (_, row) => (
         <div className="flex space-x-2">
           <button
@@ -152,7 +160,7 @@ const Zipcodes = () => {
               setFormData({
                 zipcode: row.zipcode,
                 city_id: row.city_id?._id,
-                is_deliverable: row.is_deliverable
+                is_deliverable: row.is_deliverable,
               });
               setShowModal(true);
             }}
@@ -167,14 +175,16 @@ const Zipcodes = () => {
             {/* <TrashIcon className="w-5 h-5" /> */}
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <div className="container mx-auto px-4">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">PIN Codes Management</h1>
+        <h1 className="text-2xl font-bold text-gray-800">
+          PIN Codes Management
+        </h1>
         <div className="flex space-x-2">
           <button
             onClick={() => setShowBulkModal(true)}
@@ -204,13 +214,17 @@ const Zipcodes = () => {
           className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Cities</option>
-          {cities.map(city => (
-            <option key={city._id} value={city._id}>{city.name}</option>
+          {cities.map((city) => (
+            <option key={city._id} value={city._id}>
+              {city.name}
+            </option>
           ))}
         </select>
         <select
           value={filters.is_deliverable}
-          onChange={(e) => setFilters({ ...filters, is_deliverable: e.target.value })}
+          onChange={(e) =>
+            setFilters({ ...filters, is_deliverable: e.target.value })
+          }
           className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Status</option>
@@ -225,7 +239,9 @@ const Zipcodes = () => {
         data={zipcodes}
         loading={loading}
         pagination={pagination}
-        onPageChange={(page) => setPagination({ ...pagination, currentPage: page })}
+        onPageChange={(page) =>
+          setPagination({ ...pagination, currentPage: page })
+        }
         onRowSelect={setSelectedRows}
         selectedRows={selectedRows}
       />
@@ -237,7 +253,7 @@ const Zipcodes = () => {
           setShowModal(false);
           resetForm();
         }}
-        title={editingZipcode ? 'Edit PIN Code' : 'Add New PIN Code'}
+        title={editingZipcode ? "Edit PIN Code" : "Add New PIN Code"}
       >
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
@@ -246,7 +262,9 @@ const Zipcodes = () => {
               <input
                 type="text"
                 value={formData.zipcode}
-                onChange={(e) => setFormData({ ...formData, zipcode: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, zipcode: e.target.value })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
                 pattern="\d{6}"
@@ -257,13 +275,17 @@ const Zipcodes = () => {
               <label className="block text-gray-700 mb-2">City</label>
               <select
                 value={formData.city_id}
-                onChange={(e) => setFormData({ ...formData, city_id: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, city_id: e.target.value })
+                }
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select City</option>
-                {cities.map(city => (
-                  <option key={city._id} value={city._id}>{city.name}</option>
+                {cities.map((city) => (
+                  <option key={city._id} value={city._id}>
+                    {city.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -271,7 +293,9 @@ const Zipcodes = () => {
               <input
                 type="checkbox"
                 checked={formData.is_deliverable}
-                onChange={(e) => setFormData({ ...formData, is_deliverable: e.target.checked })}
+                onChange={(e) =>
+                  setFormData({ ...formData, is_deliverable: e.target.checked })
+                }
                 className="mr-2"
               />
               <label className="text-gray-700">Deliverable</label>
@@ -292,7 +316,7 @@ const Zipcodes = () => {
               type="submit"
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
             >
-              {editingZipcode ? 'Update' : 'Create'}
+              {editingZipcode ? "Update" : "Create"}
             </button>
           </div>
         </form>
@@ -304,8 +328,8 @@ const Zipcodes = () => {
         onClose={() => setShowBulkModal(false)}
         onUpload={handleBulkUpload}
         template={[
-          { zipcode: '400001', city_id: 'city_id_here', is_deliverable: true },
-          { zipcode: '400002', city_id: 'city_id_here', is_deliverable: true }
+          { zipcode: "400001", city_id: "city_id_here", is_deliverable: true },
+          { zipcode: "400002", city_id: "city_id_here", is_deliverable: true },
         ]}
         entityName="zipcodes"
       />
