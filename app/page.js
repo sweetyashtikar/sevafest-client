@@ -8,23 +8,23 @@ import Grocery from "@/assets/images/SEVAFASTSLIDING1.jpg";
 import TopTrendingProducts from "@/ui/TopTrendingProducts";
 import HomeBannerSlider from "@/ui/HomeBannerSlider";
 import Swiper from "@/ui/Swiper";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchActiveCategories } from "@/redux/slices/categorySlice";
 
 export default function Page() {
+  const dispatch = useDispatch();
+  const { categories, loading } = useSelector((state) => state.category);
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [banners, setBanners] = useState([]);
 
   const fetchProducts = async () => {
     try {
-      setLoading(true);
       const res = await apiClient(`product?page=1&limit=1000`);
       if (res?.success) {
         setProducts(res.data.products || []);
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -42,13 +42,14 @@ export default function Page() {
   useEffect(() => {
     fetchProducts();
     fetchBanners();
+    dispatch(fetchActiveCategories);
   }, []);
   return (
     <>
       <main className="min-h-screen bg-white">
         <div className="py-5  " />
         <HomeBannerSlider banners={banners} />
-        <Swiper/>
+        <Swiper />
         <HeroSection />
         <OfferBanner />
         <OfferBannerSecond />

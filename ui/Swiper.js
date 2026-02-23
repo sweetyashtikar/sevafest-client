@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 
 const Swiper = () => {
-
+    
   const { categories, loading } = useSelector((state) => state.category);
 
   console.log("categories", categories);
@@ -20,17 +20,17 @@ const Swiper = () => {
           transition={{ duration: 0.6 }}
           className="text-3xl md:text-4xl font-bold text-slate-800 mb-2"
         >
-          Kids Birthday Decorations
+          Explore Products
         </motion.h2>
         <div className="w-64 h-1 bg-yellow-400 mx-auto mb-4 rounded-full" />
         <p className="text-slate-500 font-medium">
-          Fun-Filled Themes for Every Celebration!
+          Fresh, Organic & Daily Essentials Delivered to Your Doorstep
         </p>
       </div>
 
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
-          {categories?.map((theme, index) => (
+          {categories?.data?.map((theme, index) => (
             <motion.div
               key={theme.id}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -42,7 +42,7 @@ const Swiper = () => {
               <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-yellow-400 p-1 bg-white overflow-hidden transition-transform duration-300 group-hover:scale-110 shadow-lg group-hover:shadow-yellow-200">
                 <div className="relative w-full h-full rounded-full overflow-hidden">
                   <Image
-                    src={theme.img}
+                    src={theme.image}
                     alt={theme.name}
                     fill
                     className="object-cover"
