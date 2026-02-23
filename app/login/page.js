@@ -138,7 +138,7 @@ export default function Page() {
             break;
           case "web designer":
           case "webdesigner":
-            router.push("/designer-portal");
+            router.push("/designer");
             break;
           case "worker":
             router.push("/worker");

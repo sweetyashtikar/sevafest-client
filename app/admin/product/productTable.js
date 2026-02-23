@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
 const ProductTable = () => {
+  
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const isAdmin = user?.role?.role === "admin";
@@ -161,6 +162,7 @@ const ProductTable = () => {
   };
 
   const handleEdit = (product) => {
+
     setEditingProduct(product);
 
     // Initialize form data with product data
@@ -907,7 +909,7 @@ const ProductTable = () => {
           }}
         />
 
-        <EditProductModal
+        {/* <EditProductModal
           open={isEditModalOpen}
           product={editingProduct}
           formData={editFormData}
@@ -922,7 +924,7 @@ const ProductTable = () => {
           onSubmit={handleUpdateProduct}
           onChange={handleEditInputChange}
           onNestedChange={handleNestedChange}
-        />
+        /> */}
       </div>
     </div>
   );

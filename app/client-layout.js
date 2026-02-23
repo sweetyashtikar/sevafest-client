@@ -18,9 +18,10 @@ export default function ClientLayout({ children }) {
   // ===== ADMIN & VENDOR (THEIR OWN LAYOUTS) =====
   const isAdminPage = pathname.startsWith("/admin");
   const isVendorPage = pathname.startsWith("/vendor");
-  const isDeliveryBoyPage = pathname.startsWith("/delivery-boy");
+  const isDeliveryBoyPage = pathname.startsWith("/delivery");
+  const isDesigner = pathname.startsWith("/designer");
 
-  if (isAdminPage || isVendorPage || isDeliveryBoyPage) {
+  if (isAdminPage || isVendorPage || isDeliveryBoyPage || isDesigner) {
     return <>{children}</>;
   }
 

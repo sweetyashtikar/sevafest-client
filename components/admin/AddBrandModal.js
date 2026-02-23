@@ -21,6 +21,10 @@ export default function AddBrandModal({
     if (initialData) {
       setName(initialData.name || "");
       setIsPublic(initialData.status ?? true);
+
+      if (initialData.icon) {
+        setPreview(initialData.icon);
+      }
     }
   }, [initialData]);
 
@@ -35,15 +39,16 @@ export default function AddBrandModal({
   const handleSubmit = async () => {
     try {
       // Create FormData object
-    const formData = new FormData();
-    formData.append('name', name.trim());
-    formData.append('status', isPublic);
-    
-    // Append the image if one was selected
-    if (icon) {
-      formData.append('icon', icon);
-    }
-    console.log("formData", formData)
+      const formData = new FormData();
+      formData.append("name", name.trim());
+      formData.append("status", isPublic ? "true" : "false");
+
+      // Append the image if one was selected
+      if (icon) {
+        formData.append("icon", icon);
+      }
+      console.log("formData", formData);
+
       if (isEdit) {
         await apiClient(`/brands/${initialData._id}`, {
           method: "PATCH",
@@ -124,7 +129,7 @@ export default function AddBrandModal({
                 ref={fileInputRef}
                 onChange={handleImageChange}
                 className="hidden"
-             accept="image/*"
+                accept="image/*"
               />
             </div>
           </div>

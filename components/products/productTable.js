@@ -20,10 +20,11 @@ import { ProductViewModal } from "@/components/admin/ProductViewModal";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const ProductTable = ({ path }) => {
+const ProductTable = ({ path, editPath }) => {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
-  console.log("user", user)
+
+  console.log("user", user);
 
   const isAdmin = user?.role?.role === "admin";
 
@@ -47,146 +48,6 @@ const ProductTable = ({ path }) => {
   const [updateError, setUpdateError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
-  category: "",
-  vendor: "",
-  brand: "",
-  indicator: "",
-  productType: "",
-  minPrice: "",
-  maxPrice: "",
-  inStock: "",
-  status: "",
-  isApproved: "",
-  search: "",
-  sortBy: "createdAt",
-  sortOrder: "desc",
-  page: 1,
-  limit: 20
-});
-
-const [categories, setCategories] = useState([]);
-const [vendors, setVendors] = useState([]);
-const [brands, setBrands] = useState([]);
-const [pagination, setPagination] = useState({
-  currentPage: 1,
-  totalPages: 1,
-  totalProducts: 0,
-  productsPerPage: 20
-});
-
-const [showFilters, setShowFilters] = useState(false);
-
-  useEffect(() => {
-    fetchProducts();
-    fetchFilterOptions();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-
-       // Build query params
-    const params = new URLSearchParams();
-
-     // Add all non-empty filters
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== "" && value !== null && value !== undefined) {
-        params.append(key, value);
-        console.log("params", params)
-      }
-    });
-
-      const role = user?.role?.role;
-    
-    console.log("Sending params:", params); // Debug log
-      const response = await ProductApi.getProductsByRole(role, params);
-      console.log("products fetched", response)
-
-      let productsData = [];
-       let paginationData = null;
-
-      if (Array.isArray(response.data)) {
-        productsData = response.data;
-      } else if (response.data && Array.isArray(response.data.products)) {
-        productsData = response.data.products;
-        paginationData = response.data.pagination;
-        console.log("pagination",response.data.pagination)
-      } else if (
-        response.data &&
-        response.data.data &&
-        Array.isArray(response.data.data.products)
-      ) {
-        productsData = response.data.data.products;
-      } else if (
-        response.data &&
-        response.data.success &&
-        Array.isArray(response.data.data)
-      ) {
-        productsData = response.data.data;
-      }
-
-    //     if (response.data && response.data.data) {
-    //   productsData = response.data.data.products || [];
-    //   paginationData = response.data.data.pagination;
-    // } else if (Array.isArray(response.data)) {
-    //   productsData = response.data;
-    // }
-
-      setProducts(productsData);
-
-         if (paginationData) {
-      setPagination(paginationData);
-    }
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      setError("Failed to load products");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Fetch filter options (categories, vendors, brands)
-const fetchFilterOptions = async () => {
-  try {
-    // Fetch categories
-    const categoriesRes = await apiClient('/category?limit=100');
-    if (categoriesRes.success) {
-      setCategories(categoriesRes.data || []);
-    }
-    
-    // Fetch vendors
-    const vendorsRes = await apiClient('/vendor?limit=100');
-    if (vendorsRes.success) {
-      setVendors(vendorsRes.data || []);
-    }
-    
-    // Extract unique brands from products or fetch from API
-    const brandsRes = await apiClient('/products/brands');
-    if (brandsRes.success) {
-      setBrands(brandsRes.data || []);
-    }
-  } catch (error) {
-    console.error("Error fetching filter options:", error);
-  }
-};
-
-// Handle filter changes
-const handleFilterChange = (key, value) => {
-  setFilters(prev => ({
-    ...prev,
-    [key]: value,
-    page: 1 // Reset to first page when filter changes
-  }));
-};
-
-// Apply filters
-const applyFilters = () => {
-  fetchProducts();
-};
-
-// Reset all filters
-const resetFilters = () => {
-  setFilters({
     category: "",
     vendor: "",
     brand: "",
@@ -201,20 +62,160 @@ const resetFilters = () => {
     sortBy: "createdAt",
     sortOrder: "desc",
     page: 1,
-    limit: 20
+    limit: 20,
   });
-    // Fetch products without filters
-  setTimeout(() => fetchProducts(), 100);
-};
 
-// Handle page change
-const handlePageChange = (newPage) => {
-  setFilters(prev => ({
-    ...prev,
-    page: newPage
-  }));
-  fetchProducts();
-};
+  const [categories, setCategories] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalProducts: 0,
+    productsPerPage: 20,
+  });
+
+  const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    fetchProducts();
+    fetchFilterOptions();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+
+      // Build query params
+      const params = new URLSearchParams();
+
+      // Add all non-empty filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== "" && value !== null && value !== undefined) {
+          params.append(key, value);
+          console.log("params", params);
+        }
+      });
+
+      const role = user?.role?.role;
+
+      console.log("Sending params:", params); // Debug log
+      const response = await ProductApi.getProductsByRole(role, params);
+      console.log("products fetched", response);
+
+      let productsData = [];
+      let paginationData = null;
+
+      if (Array.isArray(response.data)) {
+        productsData = response.data;
+      } else if (response.data && Array.isArray(response.data.products)) {
+        productsData = response.data.products;
+        paginationData = response.data.pagination;
+        console.log("pagination", response.data.pagination);
+      } else if (
+        response.data &&
+        response.data.data &&
+        Array.isArray(response.data.data.products)
+      ) {
+        productsData = response.data.data.products;
+      } else if (
+        response.data &&
+        response.data.success &&
+        Array.isArray(response.data.data)
+      ) {
+        productsData = response.data.data;
+      }
+
+      //     if (response.data && response.data.data) {
+      //   productsData = response.data.data.products || [];
+      //   paginationData = response.data.data.pagination;
+      // } else if (Array.isArray(response.data)) {
+      //   productsData = response.data;
+      // }
+
+      setProducts(productsData);
+
+      if (paginationData) {
+        setPagination(paginationData);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setError("Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Fetch filter options (categories, vendors, brands)
+  const fetchFilterOptions = async () => {
+    try {
+      // Fetch categories
+      const categoriesRes = await apiClient("/category?limit=100");
+      if (categoriesRes.success) {
+        setCategories(categoriesRes.data || []);
+      }
+
+      // Fetch vendors
+      const vendorsRes = await apiClient("/vendor?limit=100");
+      if (vendorsRes.success) {
+        setVendors(vendorsRes.data || []);
+      }
+
+      // Extract unique brands from products or fetch from API
+      const brandsRes = await apiClient("/products/brands");
+      if (brandsRes.success) {
+        setBrands(brandsRes.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+      page: 1, // Reset to first page when filter changes
+    }));
+  };
+
+  // Apply filters
+  const applyFilters = () => {
+    fetchProducts();
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilters({
+      category: "",
+      vendor: "",
+      brand: "",
+      indicator: "",
+      productType: "",
+      minPrice: "",
+      maxPrice: "",
+      inStock: "",
+      status: "",
+      isApproved: "",
+      search: "",
+      sortBy: "createdAt",
+      sortOrder: "desc",
+      page: 1,
+      limit: 20,
+    });
+    // Fetch products without filters
+    setTimeout(() => fetchProducts(), 100);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+    fetchProducts();
+  };
 
   const handleSort = (key) => {
     let direction = "asc";
@@ -353,34 +354,34 @@ const handlePageChange = (newPage) => {
       ...(product.tags && product.tags.length > 0 && { tags: product.tags }),
       ...(product.attributeValues &&
         product.attributeValues.length > 0 && {
-        attributeValues: product.attributeValues,
-      }),
+          attributeValues: product.attributeValues,
+        }),
       ...(product.variants &&
         product.variants.length > 0 && {
-        variants: product.variants,
-      }),
+          variants: product.variants,
+        }),
       ...(product.deliverableZipcodes &&
         product.deliverableZipcodes.length > 0 && {
-        deliverableZipcodes: product.deliverableZipcodes,
-      }),
+          deliverableZipcodes: product.deliverableZipcodes,
+        }),
 
       // Objects - only if they have properties
       ...(product.dimensions &&
         Object.keys(product.dimensions).length > 0 && {
-        dimensions: product.dimensions,
-      }),
+          dimensions: product.dimensions,
+        }),
       ...(product.video &&
         Object.keys(product.video).length > 0 && {
-        video: product.video,
-      }),
+          video: product.video,
+        }),
       ...(product.productLevelStock &&
         Object.keys(product.productLevelStock).length > 0 && {
-        productLevelStock: product.productLevelStock,
-      }),
+          productLevelStock: product.productLevelStock,
+        }),
       ...(product.simpleProduct &&
         Object.keys(product.simpleProduct).length > 0 && {
-        simpleProduct: product.simpleProduct,
-      }),
+          simpleProduct: product.simpleProduct,
+        }),
 
       // Handle existing images
       ...(product.mainImage && {
@@ -388,11 +389,11 @@ const handlePageChange = (newPage) => {
       }),
       ...(product.otherImages &&
         product.otherImages.length > 0 && {
-        otherImages: product.otherImages.map((url) => ({
-          url,
-          type: "existing",
-        })),
-      }),
+          otherImages: product.otherImages.map((url) => ({
+            url,
+            type: "existing",
+          })),
+        }),
     };
 
     setEditFormData(formData);
@@ -545,7 +546,7 @@ const handlePageChange = (newPage) => {
         // Add productLevelStock if using product-level stock
         if (
           editFormData.variantStockLevelType ===
-          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           editFormData.productLevelStock
         ) {
           formDataToSend.append(
@@ -680,333 +681,365 @@ const handlePageChange = (newPage) => {
     );
   }
 
-
   return (
     <div className="p-6">
-         <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
-      {/* Search Bar */}
-      <div className="relative w-full md:w-96">
-        <input
-          type="text"
-          placeholder="Search products by name, brand, category..."
-          value={filters.search}
-          onChange={(e) => handleFilterChange("search", e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && applyFilters()}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-        <svg
-          className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+      <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+        {/* Search Bar */}
+        <div className="relative w-full md:w-96">
+          <input
+            type="text"
+            placeholder="Search products by name, brand, category..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange("search", e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && applyFilters()}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-        </svg>
-      </div>
-      
-      <div className="flex gap-3">
-        <button
-          onClick={() => setShowFilters(!showFilters)}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          <svg
+            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
-          {showFilters ? "Hide Filters" : "Show Filters"}
-        </button>
-        
-        <button
-          onClick={applyFilters}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Apply Filters
-        </button>
-        
-        <button
-          onClick={resetFilters}
-          className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-        >
-          Reset
-        </button>
-      </div>
-    </div>
-    
-    {/* Filter Panel */}
-    {showFilters && (
-      <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">Filters</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* Category Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
-            <select
-              value={filters.category}
-              onChange={(e) => handleFilterChange("category", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {/* Vendor Filter (Admin only) */}
-          {isAdmin && (
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+              />
+            </svg>
+            {showFilters ? "Hide Filters" : "Show Filters"}
+          </button>
+
+          <button
+            onClick={applyFilters}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Apply Filters
+          </button>
+
+          <button
+            onClick={resetFilters}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Filters</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {/* Category Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Vendor
+                Category
               </label>
               <select
-                value={filters.vendor}
-                onChange={(e) => handleFilterChange("vendor", e.target.value)}
+                value={filters.category}
+                onChange={(e) => handleFilterChange("category", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Vendors</option>
-                {vendors.map((ven) => (
-                  <option key={ven._id} value={ven._id}>
-                    {ven.username || ven.company}
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
                   </option>
                 ))}
               </select>
             </div>
-          )}
-          
-          {/* Brand Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Brand
-            </label>
-            <select
-              value={filters.brand}
-              onChange={(e) => handleFilterChange("brand", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Brands</option>
-              {brands.map((brand) => (
-                <option key={brand} value={brand}>
-                  {brand}
-                </option>
-              ))}
-            </select>
-          </div>
-          
-          {/* Product Type Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Type
-            </label>
-            <select
-              value={filters.productType}
-              onChange={(e) => handleFilterChange("productType", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Types</option>
-              <option value="simple">Simple</option>
-              <option value="variable">Variable</option>
-              <option value="digital">Digital</option>
-              <option value="service">Service</option>
-            </select>
-          </div>
-          
-          {/* Price Range */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Min Price
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={filters.minPrice}
-              onChange={(e) => handleFilterChange("minPrice", e.target.value)}
-              placeholder="Min"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Max Price
-            </label>
-            <input
-              type="number"
-              min="0"
-              value={filters.maxPrice}
-              onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
-              placeholder="Max"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          
-          {/* Indicator (Veg/Non-Veg) */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Indicator
-            </label>
-            <select
-              value={filters.indicator}
-              onChange={(e) => handleFilterChange("indicator", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All</option>
-              <option value="0">None</option>
-              <option value="1">Veg</option>
-              <option value="2">Non-Veg</option>
-            </select>
-          </div>
-          
-          {/* Stock Status */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Stock Status
-            </label>
-            <select
-              value={filters.inStock}
-              onChange={(e) => handleFilterChange("inStock", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All</option>
-              <option value="true">In Stock</option>
-              <option value="false">Out of Stock</option>
-            </select>
-          </div>
-          
-          {/* Status Filter */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              value={filters.status}
-              onChange={(e) => handleFilterChange("status", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All</option>
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </div>
-          
-          {/* Approval Status (Admin only) */}
-          {isAdmin && (
+
+            {/* Vendor Filter (Admin only) */}
+            {isAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
+                <select
+                  value={filters.vendor}
+                  onChange={(e) => handleFilterChange("vendor", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Vendors</option>
+                  {vendors.map((ven) => (
+                    <option key={ven._id} value={ven._id}>
+                      {ven.username || ven.company}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Brand Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Approval Status
+                Brand
               </label>
               <select
-                value={filters.isApproved}
-                onChange={(e) => handleFilterChange("isApproved", e.target.value)}
+                value={filters.brand}
+                onChange={(e) => handleFilterChange("brand", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Brands</option>
+                {brands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Product Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Product Type
+              </label>
+              <select
+                value={filters.productType}
+                onChange={(e) =>
+                  handleFilterChange("productType", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Types</option>
+                <option value="simple">Simple</option>
+                <option value="variable">Variable</option>
+                <option value="digital">Digital</option>
+                <option value="service">Service</option>
+              </select>
+            </div>
+
+            {/* Price Range */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Min Price
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange("minPrice", e.target.value)}
+                placeholder="Min"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Max Price
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+                placeholder="Max"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Indicator (Veg/Non-Veg) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Indicator
+              </label>
+              <select
+                value={filters.indicator}
+                onChange={(e) =>
+                  handleFilterChange("indicator", e.target.value)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">All</option>
-                <option value="true">Approved</option>
-                <option value="false">Pending</option>
+                <option value="0">None</option>
+                <option value="1">Veg</option>
+                <option value="2">Non-Veg</option>
               </select>
             </div>
-          )}
-          
-          {/* Sort By */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sort By
-            </label>
-            <select
-              value={filters.sortBy}
-              onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="createdAt">Created Date</option>
-              <option value="name">Name</option>
-              <option value="row_order">Display Order</option>
-              <option value="clicks">Popularity</option>
-            </select>
-          </div>
-          
-          {/* Sort Order */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sort Order
-            </label>
-            <select
-              value={filters.sortOrder}
-              onChange={(e) => handleFilterChange("sortOrder", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="desc">Descending</option>
-              <option value="asc">Ascending</option>
-            </select>
-          </div>
-          
-          {/* Items Per Page */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Items Per Page
-            </label>
-            <select
-              value={filters.limit}
-              onChange={(e) => handleFilterChange("limit", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="10">10</option>
-              <option value="20">20</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </select>
-          </div>
-        </div>
-        
-        {/* Active Filters Summary */}
-        <div className="mt-4 pt-3 border-t border-gray-200">
-          <div className="flex flex-wrap gap-2 items-center">
-            <span className="text-sm text-gray-600">Active Filters:</span>
-            {Object.entries(filters).map(([key, value]) => {
-              if (value && key !== 'page' && key !== 'limit' && key !== 'sortBy' && key !== 'sortOrder') {
-                let displayValue = value;
-                
-                // Format display values
-                if (key === 'category') {
-                  const cat = categories.find(c => c._id === value);
-                  displayValue = cat?.name || value;
-                } else if (key === 'vendor') {
-                  const ven = vendors.find(v => v._id === value);
-                  displayValue = ven?.username || ven?.company || value;
-                } else if (key === 'indicator') {
-                  const indicators = { '0': 'None', '1': 'Veg', '2': 'Non-Veg' };
-                  displayValue = indicators[value] || value;
-                } else if (key === 'status' || key === 'isApproved' || key === 'inStock') {
-                  displayValue = value === 'true' ? 'Yes' : value === 'false' ? 'No' : value;
+
+            {/* Stock Status */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Stock Status
+              </label>
+              <select
+                value={filters.inStock}
+                onChange={(e) => handleFilterChange("inStock", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="true">In Stock</option>
+                <option value="false">Out of Stock</option>
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+
+            {/* Approval Status (Admin only) */}
+            {isAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Approval Status
+                </label>
+                <select
+                  value={filters.isApproved}
+                  onChange={(e) =>
+                    handleFilterChange("isApproved", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All</option>
+                  <option value="true">Approved</option>
+                  <option value="false">Pending</option>
+                </select>
+              </div>
+            )}
+
+            {/* Sort By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sort By
+              </label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="createdAt">Created Date</option>
+                <option value="name">Name</option>
+                <option value="row_order">Display Order</option>
+                <option value="clicks">Popularity</option>
+              </select>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sort Order
+              </label>
+              <select
+                value={filters.sortOrder}
+                onChange={(e) =>
+                  handleFilterChange("sortOrder", e.target.value)
                 }
-                
-                return (
-                  <span
-                    key={key}
-                    className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800"
-                  >
-                    {key}: {displayValue}
-                  </span>
-                );
-              }
-              return null;
-            })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+
+            {/* Items Per Page */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Items Per Page
+              </label>
+              <select
+                value={filters.limit}
+                onChange={(e) => handleFilterChange("limit", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Active Filters Summary */}
+          <div className="mt-4 pt-3 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-gray-600">Active Filters:</span>
+              {Object.entries(filters).map(([key, value]) => {
+                if (
+                  value &&
+                  key !== "page" &&
+                  key !== "limit" &&
+                  key !== "sortBy" &&
+                  key !== "sortOrder"
+                ) {
+                  let displayValue = value;
+
+                  // Format display values
+                  if (key === "category") {
+                    const cat = categories.find((c) => c._id === value);
+                    displayValue = cat?.name || value;
+                  } else if (key === "vendor") {
+                    const ven = vendors.find((v) => v._id === value);
+                    displayValue = ven?.username || ven?.company || value;
+                  } else if (key === "indicator") {
+                    const indicators = { 0: "None", 1: "Veg", 2: "Non-Veg" };
+                    displayValue = indicators[value] || value;
+                  } else if (
+                    key === "status" ||
+                    key === "isApproved" ||
+                    key === "inStock"
+                  ) {
+                    displayValue =
+                      value === "true"
+                        ? "Yes"
+                        : value === "false"
+                          ? "No"
+                          : value;
+                  }
+
+                  return (
+                    <span
+                      key={key}
+                      className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800"
+                    >
+                      {key}: {displayValue}
+                    </span>
+                  );
+                }
+                return null;
+              })}
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Products Count */}
+      <div className="mb-4 text-sm text-gray-600">
+        Showing {filteredProducts.length} of {pagination.totalProducts} products
       </div>
-    )}
-    
-    {/* Products Count */}
-    <div className="mb-4 text-sm text-gray-600">
-      Showing {filteredProducts.length} of {pagination.totalProducts} products
-    </div>
       {/* ===== PAGE HEADER ===== */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         {/* LEFT: HEADING */}
@@ -1168,12 +1201,13 @@ const handlePageChange = (newPage) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.productType === "Physical"
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.productType === "Physical"
                             ? "bg-green-100 text-green-800"
                             : product.productType === "Digital"
                               ? "bg-purple-100 text-purple-800"
                               : "bg-gray-100 text-gray-800"
-                          }`}
+                        }`}
                       >
                         {product.productType || "Unknown"}
                       </span>
@@ -1196,10 +1230,11 @@ const handlePageChange = (newPage) => {
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === true
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.status === true
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
-                          }`}
+                        }`}
                       >
                         {product.status === true ? "Active" : "Inactive"}
                       </span>
@@ -1246,10 +1281,11 @@ const handlePageChange = (newPage) => {
                       ) : (
                         /* --- NON-ADMIN VIEW: Static Status Badge --- */
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${product.isApproved
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            product.isApproved
                               ? "bg-green-100 text-green-700"
                               : "bg-yellow-100 text-yellow-700"
-                            }`}
+                          }`}
                         >
                           {product.isApproved ? "Approved" : "Pending"}
                         </span>
@@ -1266,7 +1302,9 @@ const handlePageChange = (newPage) => {
                           <FiEye size={18} />
                         </button>
                         <button
-                          onClick={() => handleEdit(product)}
+                          onClick={() =>
+                            router.push(`${editPath}/${product._id}`)
+                          }
                           className="text-yellow-600 hover:text-yellow-900 transition-colors"
                           title="Edit"
                         >
@@ -1319,10 +1357,11 @@ const handlePageChange = (newPage) => {
                           <div>
                             <p className="font-medium text-gray-500">Stock</p>
                             <p
-                              className={`font-semibold ${(product.stock || 0) > 0
+                              className={`font-semibold ${
+                                (product.stock || 0) > 0
                                   ? "text-green-600"
                                   : "text-red-600"
-                                }`}
+                              }`}
                             >
                               {product.stock || 0} units
                             </p>
@@ -1332,8 +1371,8 @@ const handlePageChange = (newPage) => {
                             <p className="text-gray-900">
                               {product.createdAt
                                 ? new Date(
-                                  product.createdAt,
-                                ).toLocaleDateString()
+                                    product.createdAt,
+                                  ).toLocaleDateString()
                                 : "N/A"}
                             </p>
                           </div>
@@ -1367,40 +1406,40 @@ const handlePageChange = (newPage) => {
             </tbody>
           </table>
 
-           {/* Pagination */}
-    {pagination.totalPages > 1 && (
-      <div className="mt-6 flex justify-center gap-2">
-        <button
-          onClick={() => handlePageChange(filters.page - 1)}
-          disabled={filters.page === 1}
-          className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        >
-          Previous
-        </button>
-        
-        {[...Array(pagination.totalPages)].map((_, i) => (
-          <button
-            key={i}
-            onClick={() => handlePageChange(i + 1)}
-            className={`px-4 py-2 border rounded-md ${
-              filters.page === i + 1
-                ? "bg-blue-600 text-white border-blue-600"
-                : "border-gray-300 hover:bg-gray-50"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-        
-        <button
-          onClick={() => handlePageChange(filters.page + 1)}
-          disabled={filters.page === pagination.totalPages}
-          className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-        >
-          Next
-        </button>
-      </div>
-    )}
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                onClick={() => handlePageChange(filters.page - 1)}
+                disabled={filters.page === 1}
+                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Previous
+              </button>
+
+              {[...Array(pagination.totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`px-4 py-2 border rounded-md ${
+                    filters.page === i + 1
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(filters.page + 1)}
+                disabled={filters.page === pagination.totalPages}
+                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
 
         <ProductViewModal

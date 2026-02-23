@@ -24,8 +24,7 @@ import { useRouter } from "next/navigation";
 import { fetchCart } from "@/redux/slices/cartSlice";
 import { SupportModal } from "@/ui/SupportModal";
 import { AddressModal } from "@/ui/AddressModal";
-
-
+import {CategoryDropdown} from "@/components/header/CategoryDropdown"
 
 export default function TopBar() {
   const dispatch = useDispatch();
@@ -40,6 +39,7 @@ export default function TopBar() {
   const [isPagesOpen, setIsPagesOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isAddressOpen, setIsAddressOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -54,10 +54,25 @@ export default function TopBar() {
         <div className="max-w-7xl mx-auto px-4 py-3 relative">
           <div className="flex items-center justify-between gap-4">
             <nav className="hidden lg:flex items-center gap-6 text-white font-medium">
-              <button className=" group flex items-center gap-1 text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110 ">
-                Browse Category
-                <ChevronDown className="w-4 h-4 transition-transform duration-500 ease-in-out group-hover:rotate-180 " />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                  onMouseEnter={() => setIsCategoryOpen(true)}
+                  className="group flex items-center gap-1 text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110"
+                >
+                  Browse Category
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      isCategoryOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                <CategoryDropdown
+                  isOpen={isCategoryOpen}
+                  onClose={() => setIsCategoryOpen(false)}
+                />
+              </div>
 
               {[
                 { name: "Home", href: "/" },

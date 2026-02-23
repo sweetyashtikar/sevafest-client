@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
+  Megaphone,
   Package,
 } from "lucide-react";
 import { useState } from "react";
@@ -11,12 +12,12 @@ export const menuItems = [
   {
     label: "Dashboard",
     icon: LayoutDashboard,
-    path: "/delivery",
+    path: "/designer",
   },
   {
-    label: "Orders",
-    icon: Package,
-    path: "/delivery/orders",
+    label: "Banners",
+    icon: Megaphone,
+    path: "/designer/banners",
   },
  
 ];
@@ -26,12 +27,11 @@ export default function Sidebar() {
   const router = useRouter();
   const [openCatalog, setOpenCatalog] = useState(true);
 
-  // ✅ RETURN WAS MISSING
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200">
 
       <div className="px-6 py-5 text-lg font-semibold text-gray-800">
-        Delivery boy Panel
+        Designer Panel
       </div>
 
       {/* MENU */}
