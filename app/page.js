@@ -42,7 +42,7 @@ export default function Page() {
   useEffect(() => {
     fetchProducts();
     fetchBanners();
-    dispatch(fetchActiveCategories);
+    dispatch(fetchActiveCategories());
   }, []);
   return (
     <>

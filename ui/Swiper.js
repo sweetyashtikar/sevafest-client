@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
 
 const Swiper = () => {
-    
   const { categories, loading } = useSelector((state) => state.category);
 
   console.log("categories", categories);
@@ -32,13 +31,12 @@ const Swiper = () => {
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
           {categories?.data?.map((theme, index) => (
             <motion.div
-              key={theme.id}
+              key={theme?._id || index}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.1, duration: 0.5 }}
               className="flex flex-col items-center group cursor-pointer w-[140px] md:w-[180px]"
             >
-              {/* Circle Image Container */}
               <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-yellow-400 p-1 bg-white overflow-hidden transition-transform duration-300 group-hover:scale-110 shadow-lg group-hover:shadow-yellow-200">
                 <div className="relative w-full h-full rounded-full overflow-hidden">
                   <Image
