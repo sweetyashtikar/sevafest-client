@@ -84,7 +84,7 @@ export function OrderTable({
                 </td>
 
                   <td className="px-6 py-4 text-sm text-black">
-                  {row.order_id.delivery_info.boy_id?.user_id?.username || '-'}
+              {row.order_details?.delivery_info?.boy_name || '-'}
                 </td>
 
                 <td className="px-6 py-4 text-sm">
