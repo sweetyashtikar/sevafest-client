@@ -147,7 +147,11 @@ const DeliveryStaffPage = () => {
     try {
       await deliveryBoyService.updateStatus(id, !currentStatus);
       
+<<<<<<< HEAD
       // Update local state
+=======
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
       setDeliveryBoys(prev => 
         prev.map(boy => 
           boy._id === id 

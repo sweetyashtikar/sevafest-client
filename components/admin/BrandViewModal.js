@@ -34,9 +34,9 @@ export default function BrandViewModal({ brand, onClose }) {
                 <ImageIcon size={16} /> Brand Logo / Cover
               </label>
               <div className="aspect-video w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden">
-                {brand.image ? (
+                {brand.icon ? (
                   <img 
-                    src={brand.image} 
+                    src={brand.icon} 
                     alt={brand.name} 
                     className="w-full h-full object-contain p-4"
                   />

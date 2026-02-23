@@ -136,6 +136,10 @@ export const attributeValueApi = {
     apiClient(`/attributeValue/${id}`, {
       method: "DELETE",
     }),
+    getStatusTrue: (id) =>
+    apiClient(`/attributeValue/status-true`, {
+      method: "GET",
+    }),
 };
 
 export const categoryApi = {
@@ -307,16 +311,4 @@ export const ProductApi = {
       body: data,
     });
   },
-  getProductsByRole: (role) => {
-    if (role === "admin") {
-      return apiClient("/product/getAllProducts", { method: "GET" });
-    } else {
-      return apiClient("/product/vendor/my-products", { method: "GET" });
-    }
-  },
-
-  delete: (id) => apiClient(`/product/${id}`, { method: "DELETE" }),
-  getStatusTrue: () => apiClient("/product/status-true", { method: "GET" }),
-
-  getVendorProducts :(params = {}) => apiClient('/product/vendor/my-products',{ method: "GET", params })
 };

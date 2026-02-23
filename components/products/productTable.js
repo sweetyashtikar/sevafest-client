@@ -21,9 +21,9 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
 const ProductTable = ({ path }) => {
+  
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
-
   const isAdmin = user?.role?.role === "admin";
 
   console.log("Role", isAdmin);
@@ -45,24 +45,55 @@ const ProductTable = ({ path }) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateError, setUpdateError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({
+    category: "",
+    vendor: "",
+    brand: "",
+    indicator: "",
+    productType: "",
+    minPrice: "",
+    maxPrice: "",
+    inStock: "",
+    status: "",
+    isApproved: "",
+    search: "",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+    page: 1,
+    limit: 20,
+  });
+
+  const [categories, setCategories] = useState([]);
+  const [vendors, setVendors] = useState([]);
+  const [brands, setBrands] = useState([]);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalProducts: 0,
+    productsPerPage: 20,
+  });
+
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     fetchProducts();
+    fetchFilterOptions();
   }, []);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
-
-      const role = user?.role?.role;
-      const response = await ProductApi.getProductsByRole(role);
-      console.log("products fetched of the vendor", response)
+      const response = await ProductApi.getAllProducts();
 
       let productsData = [];
+      let paginationData = null;
+
       if (Array.isArray(response.data)) {
         productsData = response.data;
       } else if (response.data && Array.isArray(response.data.products)) {
         productsData = response.data.products;
+        paginationData = response.data.pagination;
+        console.log("pagination", response.data.pagination);
       } else if (
         response.data &&
         response.data.data &&
@@ -76,13 +107,89 @@ const ProductTable = ({ path }) => {
       ) {
         productsData = response.data.data;
       }
+
       setProducts(productsData);
+
+      if (paginationData) {
+        setPagination(paginationData);
+      }
     } catch (error) {
       console.error("Error fetching products:", error);
       setError("Failed to load products");
     } finally {
       setLoading(false);
     }
+  };
+
+  // Fetch filter options (categories, vendors, brands)
+  const fetchFilterOptions = async () => {
+    try {
+      // Fetch categories
+      const categoriesRes = await apiClient("/category?limit=100");
+      if (categoriesRes.success) {
+        setCategories(categoriesRes.data || []);
+      }
+
+      // Fetch vendors
+      const vendorsRes = await apiClient("/vendor?limit=100");
+      if (vendorsRes.success) {
+        setVendors(vendorsRes.data || []);
+      }
+
+      // Extract unique brands from products or fetch from API
+      const brandsRes = await apiClient("/products/brands");
+      if (brandsRes.success) {
+        setBrands(brandsRes.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching filter options:", error);
+    }
+  };
+
+  // Handle filter changes
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value,
+      page: 1, // Reset to first page when filter changes
+    }));
+  };
+
+  // Apply filters
+  const applyFilters = () => {
+    fetchProducts();
+  };
+
+  // Reset all filters
+  const resetFilters = () => {
+    setFilters({
+      category: "",
+      vendor: "",
+      brand: "",
+      indicator: "",
+      productType: "",
+      minPrice: "",
+      maxPrice: "",
+      inStock: "",
+      status: "",
+      isApproved: "",
+      search: "",
+      sortBy: "createdAt",
+      sortOrder: "desc",
+      page: 1,
+      limit: 20,
+    });
+    // Fetch products without filters
+    setTimeout(() => fetchProducts(), 100);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    setFilters((prev) => ({
+      ...prev,
+      page: newPage,
+    }));
+    fetchProducts();
   };
 
   const handleSort = (key) => {
@@ -549,9 +656,37 @@ const ProductTable = ({ path }) => {
     );
   }
 
+  if (!Array.isArray(products) || products.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 text-lg">No products found</p>
+        <p className="text-gray-400 text-sm mt-2">
+          Products data is not in expected format
+        </p>
+      </div>
+    );
+  }
 
-  return (
-    <div className="p-6">
+                  return (
+                    <span
+                      key={key}
+                      className="inline-flex items-center px-2 py-1 rounded-md text-xs bg-blue-100 text-blue-800"
+                    >
+                      {key}: {displayValue}
+                    </span>
+                  );
+                }
+                return null;
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Products Count */}
+      <div className="mb-4 text-sm text-gray-600">
+        Showing {filteredProducts.length} of {pagination.totalProducts} products
+      </div>
       {/* ===== PAGE HEADER ===== */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         {/* LEFT: HEADING */}
@@ -752,7 +887,7 @@ const ProductTable = ({ path }) => {
                       </span>
                     </td>
 
-                    {isAdmin && (
+                    {/* {isAdmin && (
                       <td className="px-6 py-4 whitespace-nowrap">
                         <label className="inline-flex items-center cursor-pointer">
                           <input
@@ -776,7 +911,33 @@ const ProductTable = ({ path }) => {
                           />
                         </label>
                       </td>
-                    )}
+                    )} */}
+
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {isAdmin ? (
+                        /* --- ADMIN VIEW: Interactive Toggle --- */
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={product.isApproved === true}
+                            onChange={() => handleApproveToggle(product)}
+                            className="sr-only peer"
+                          />
+                          <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
+                        </label>
+                      ) : (
+                        /* --- NON-ADMIN VIEW: Static Status Badge --- */
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            product.isApproved
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {product.isApproved ? "Approved" : "Pending"}
+                        </span>
+                      )}
+                    </td>
 
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-3">
@@ -788,7 +949,9 @@ const ProductTable = ({ path }) => {
                           <FiEye size={18} />
                         </button>
                         <button
-                          onClick={() => handleEdit(product)}
+                          onClick={() =>
+                            router.push(`${editPath}/${product._id}`)
+                          }
                           className="text-yellow-600 hover:text-yellow-900 transition-colors"
                           title="Edit"
                         >
@@ -889,6 +1052,41 @@ const ProductTable = ({ path }) => {
               ))}
             </tbody>
           </table>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="mt-6 flex justify-center gap-2">
+              <button
+                onClick={() => handlePageChange(filters.page - 1)}
+                disabled={filters.page === 1}
+                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Previous
+              </button>
+
+              {[...Array(pagination.totalPages)].map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => handlePageChange(i + 1)}
+                  className={`px-4 py-2 border rounded-md ${
+                    filters.page === i + 1
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 hover:bg-gray-50"
+                  }`}
+                >
+                  {i + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(filters.page + 1)}
+                disabled={filters.page === pagination.totalPages}
+                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
 
         <ProductViewModal

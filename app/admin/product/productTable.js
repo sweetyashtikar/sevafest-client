@@ -20,6 +20,10 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
 const ProductTable = () => {
+<<<<<<< HEAD
+=======
+  
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const isAdmin = user?.role?.role === "admin";
@@ -161,6 +165,10 @@ const ProductTable = () => {
   };
 
   const handleEdit = (product) => {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
     setEditingProduct(product);
 
     // Initialize form data with product data
@@ -848,12 +856,20 @@ const ProductTable = () => {
                             <p className="font-medium text-gray-500">Stock</p>
                             <p
                               className={`font-semibold ${
+<<<<<<< HEAD
                                 (product.stock || 0) > 0
+=======
+                                (product.simpleProduct?.sp_totalStock ?? product.productLevelStock?.pls_totalStock ?? 0) > 0
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
                                   ? "text-green-600"
                                   : "text-red-600"
                               }`}
                             >
+<<<<<<< HEAD
                               {product.stock || 0} units
+=======
+                            {product.simpleProduct?.sp_totalStock ?? product.productLevelStock?.pls_totalStock ?? 0} units
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
                             </p>
                           </div>
                           <div>
@@ -907,7 +923,11 @@ const ProductTable = () => {
           }}
         />
 
+<<<<<<< HEAD
         <EditProductModal
+=======
+        {/* <EditProductModal
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
           open={isEditModalOpen}
           product={editingProduct}
           formData={editFormData}
@@ -922,7 +942,11 @@ const ProductTable = () => {
           onSubmit={handleUpdateProduct}
           onChange={handleEditInputChange}
           onNestedChange={handleNestedChange}
+<<<<<<< HEAD
         />
+=======
+        /> */}
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
       </div>
     </div>
   );

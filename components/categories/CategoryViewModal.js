@@ -22,6 +22,7 @@ export function CategoryViewModal({ id, onClose }) {
       try {
         setLoading(true);
         const res = await apiClient(`/category/${id}`);
+        console.log("rescategory", res)
 
         if (!res?.success) {
           throw new Error(res?.message || "Failed to load category");
@@ -232,14 +233,20 @@ function ImagePreview({ label, src, wide = false }) {
 
       {src ? (
         <img
-          src={`${process.env.NEXT_PUBLIC_API_URL || ""}/${src}`}
+          src={src}  // Just use the src directly since it's already a full URL
           alt={label}
           className={`rounded border object-cover
             ${wide ? "h-24 w-full" : "h-20 w-20"}`}
-          onError={(e) => (e.target.style.display = "none")}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = 'https://via.placeholder.com/300?text=Image+Error';
+          }}
         />
       ) : (
-        <p className="text-gray-500 text-sm">No image</p>
+        <div className={`rounded border bg-gray-100 flex items-center justify-center
+          ${wide ? "h-24 w-full" : "h-20 w-20"}`}>
+          <p className="text-gray-500 text-sm">No image</p>
+        </div>
       )}
     </div>
   );

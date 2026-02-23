@@ -13,7 +13,7 @@ import ProductSEO from '@/components/products/ProductSEO';
 import ProductVariants from '@/components/products/ProductVariants';
 import { PRODUCT_TYPES, VARIANT_STOCK_LEVEL_TYPES } from '@/components/products/productTypes';
 import { apiClient } from '@/services/apiClient';
-import {  ProductApi } from '@/API/api';
+import {  ProductApi } from '@/components/attributes/api';
 
 
 export default function AddProductPage() {
@@ -46,8 +46,8 @@ export default function AddProductPage() {
 
     // Product Type & Stock
     productType: PRODUCT_TYPES.SIMPLE,
-    variantStockLevelType: '',
-    
+    variantStockLevelType: "",
+
     // Simple Product Data
     simpleProduct: {
       sp_price: 0,
@@ -134,129 +134,169 @@ export default function AddProductPage() {
     setLoading(true);
     setError("");
 
-  try {
-    // Create FormData
-    const formDataToSend = new FormData();
-    
-    // Append all simple fields
-    const simpleFields = [
-      'name', 'shortDescription', 'description', 'extraDescription',
-      'categoryId', 'brand', 'hsnCode', 'madeIn', 'indicator',
-      'taxId', 'isPricesInclusiveTax', 'totalAllowedQuantity',
-      'minimumOrderQuantity', 'quantityStepSize', 'productType',
-      'deliverableType', 'pickupLocation', 'codAllowed',
-      'isReturnable', 'isCancelable', 'cancelableTill',
-      'warrantyPeriod', 'guaranteePeriod', 'downloadAllowed',
-      'downloadLinkType', 'downloadFile', 'downloadLink', 'status'
-    ];
-    
-    simpleFields.forEach(field => {
-      if (formData[field] !== undefined && formData[field] !== null) {
-        formDataToSend.append(field, String(formData[field]));
-      }
-    });
-    
-    // Handle arrays (tags, attributeValues, deliverableZipcodes, etc.)
-    if (formData.tags && Array.isArray(formData.tags)) {
-      formDataToSend.append('tags', JSON.stringify(formData.tags));
-    }
-    
-    if (formData.attributeValues && Array.isArray(formData.attributeValues)) {
-      formDataToSend.append('attributeValues', JSON.stringify(formData.attributeValues));
-    }
+    try {
+      // Create FormData
+      const formDataToSend = new FormData();
 
-        // In handleSubmit, add variants handling
-    if (formData.variants && Array.isArray(formData.variants)) {
-      formDataToSend.append('variants', JSON.stringify(formData.variants));
-    }
+      // Append all simple fields
+      const simpleFields = [
+        "name",
+        "shortDescription",
+        "description",
+        "extraDescription",
+        "categoryId",
+        "brand",
+        "hsnCode",
+        "madeIn",
+        "indicator",
+        "taxId",
+        "isPricesInclusiveTax",
+        "totalAllowedQuantity",
+        "minimumOrderQuantity",
+        "quantityStepSize",
+        "productType",
+        "deliverableType",
+        "pickupLocation",
+        "codAllowed",
+        "isReturnable",
+        "isCancelable",
+        "cancelableTill",
+        "warrantyPeriod",
+        "guaranteePeriod",
+        "downloadAllowed",
+        "downloadLinkType",
+        "downloadFile",
+        "downloadLink",
+        "status",
+      ];
 
-    // Add variantStockLevelType if needed
-    // if (formData.variantStockLevelType) {
-    //   formDataToSend.append('variantStockLevelType', formData.variantStockLevelType);
-    // }
-
-    // Add productLevelStock if needed
-    // if (formData.productLevelStock) {
-    //   formDataToSend.append('productLevelStock', formData.productLevelStock);
-    // }
-    
-    if (formData.deliverableZipcodes && Array.isArray(formData.deliverableZipcodes)) {
-      formDataToSend.append('deliverableZipcodes', JSON.stringify(formData.deliverableZipcodes));
-    }
-    
-    // Handle nested objects
-    if (formData.dimensions) {
-      formDataToSend.append('dimensions', JSON.stringify(formData.dimensions));
-    }
-    
-    if (formData.video) {
-      formDataToSend.append('video', JSON.stringify(formData.video));
-    }
-    
-   // ⭐⭐ FIX: Handle simpleProduct as a JSON string (not individual fields)
-    if (formData.simpleProduct) {
-      // Convert to proper object format
-      const simpleProductData = {
-        sp_price: formData.simpleProduct.sp_price || 0,
-        sp_specialPrice: formData.simpleProduct.sp_specialPrice || 0,
-        sp_sku: formData.simpleProduct.sp_sku || '',
-        sp_totalStock: formData.simpleProduct.sp_totalStock || 0,
-        sp_stockStatus: formData.simpleProduct.sp_stockStatus || 'in_stock'
-      };
-      formDataToSend.append('simpleProduct', JSON.stringify(simpleProductData));
-    }
-    
-
-
-        // Add after otherImages handling, before console.log
-    if (formData.productType === PRODUCT_TYPES.VARIABLE) {
-      // Add variantStockLevelType
-      if (formData.variantStockLevelType) {
-        formDataToSend.append('variantStockLevelType', formData.variantStockLevelType);
-      }
-
-  // Add productLevelStock if using product-level stock
-      if (formData.variantStockLevelType === VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL && formData.productLevelStock) {
-        formDataToSend.append('productLevelStock', JSON.stringify(formData.productLevelStock));
-      }
-    }
-
-
-
- //Handle image files separately
-    if (formData.mainImage && formData.mainImage instanceof File) {
-      formDataToSend.append('mainImage', formData.mainImage);
-    }
-    
-    if (formData.otherImages && Array.isArray(formData.otherImages)) {
-      const fileObjects = formData.otherImages.filter(item => item instanceof File);
-      fileObjects.forEach((file) => {
-        formDataToSend.append('otherImages', file);
+      simpleFields.forEach((field) => {
+        if (formData[field] !== undefined && formData[field] !== null) {
+          formDataToSend.append(field, String(formData[field]));
+        }
       });
-      console.log(`Appended ${fileObjects.length} other images`);
-    }
 
-    console.log('Submitting form data:', formDataToSend);
-    // Use the ProductApi
-    const response = await ProductApi.create(formDataToSend);
-    if(response.success === true){
- alert('Product created successfully!');
-    console.log('Created product:', response);
-    }
+      // Handle arrays (tags, attributeValues, deliverableZipcodes, etc.)
+      if (formData.tags && Array.isArray(formData.tags)) {
+        formDataToSend.append("tags", JSON.stringify(formData.tags));
+      }
 
-   
-    
-    // Reset form or redirect
-    // setFormData(initialFormState);
-    // router.push('/products');
-    
-  } catch (err) {
-    console.error('Error:', err);
-    setError(err.message || 'Something went wrong');
-  } finally {
-    setLoading(false);
-  }
-};
+      if (formData.attributeValues && Array.isArray(formData.attributeValues)) {
+        formDataToSend.append(
+          "attributeValues",
+          JSON.stringify(formData.attributeValues),
+        );
+      }
+
+      // In handleSubmit, add variants handling
+      if (formData.variants && Array.isArray(formData.variants)) {
+        formDataToSend.append("variants", JSON.stringify(formData.variants));
+      }
+
+      // Add variantStockLevelType if needed
+      // if (formData.variantStockLevelType) {
+      //   formDataToSend.append('variantStockLevelType', formData.variantStockLevelType);
+      // }
+
+      // Add productLevelStock if needed
+      // if (formData.productLevelStock) {
+      //   formDataToSend.append('productLevelStock', formData.productLevelStock);
+      // }
+
+      if (
+        formData.deliverableZipcodes &&
+        Array.isArray(formData.deliverableZipcodes)
+      ) {
+        formDataToSend.append(
+          "deliverableZipcodes",
+          JSON.stringify(formData.deliverableZipcodes),
+        );
+      }
+
+      // Handle nested objects
+      if (formData.dimensions) {
+        formDataToSend.append(
+          "dimensions",
+          JSON.stringify(formData.dimensions),
+        );
+      }
+
+      if (formData.video) {
+        formDataToSend.append("video", JSON.stringify(formData.video));
+      }
+
+      // ⭐⭐ FIX: Handle simpleProduct as a JSON string (not individual fields)
+      if (formData.simpleProduct) {
+        // Convert to proper object format
+        const simpleProductData = {
+          sp_price: formData.simpleProduct.sp_price || 0,
+          sp_specialPrice: formData.simpleProduct.sp_specialPrice || 0,
+          sp_sku: formData.simpleProduct.sp_sku || "",
+          sp_totalStock: formData.simpleProduct.sp_totalStock || 0,
+          sp_stockStatus: formData.simpleProduct.sp_stockStatus || "in_stock",
+        };
+        formDataToSend.append(
+          "simpleProduct",
+          JSON.stringify(simpleProductData),
+        );
+      }
+
+      // Add after otherImages handling, before console.log
+      if (formData.productType === PRODUCT_TYPES.VARIABLE) {
+        // Add variantStockLevelType
+        if (formData.variantStockLevelType) {
+          formDataToSend.append(
+            "variantStockLevelType",
+            formData.variantStockLevelType,
+          );
+        }
+
+        // Add productLevelStock if using product-level stock
+        if (
+          formData.variantStockLevelType ===
+            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+          formData.productLevelStock
+        ) {
+          formDataToSend.append(
+            "productLevelStock",
+            JSON.stringify(formData.productLevelStock),
+          );
+        }
+      }
+
+      //Handle image files separately
+      if (formData.mainImage && formData.mainImage instanceof File) {
+        formDataToSend.append("mainImage", formData.mainImage);
+      }
+
+      if (formData.otherImages && Array.isArray(formData.otherImages)) {
+        const fileObjects = formData.otherImages.filter(
+          (item) => item instanceof File,
+        );
+        fileObjects.forEach((file) => {
+          formDataToSend.append("otherImages", file);
+        });
+        console.log(`Appended ${fileObjects.length} other images`);
+      }
+
+      console.log("Submitting form data:", formDataToSend);
+      // Use the ProductApi
+      const response = await ProductApi.create(formDataToSend);
+      if (response.success === true) {
+        alert("Product created successfully!");
+        console.log("Created product:", response);
+      }
+
+      // Reset form or redirect
+      // setFormData(initialFormState);
+      // router.push('/products');
+    } catch (err) {
+      console.error("Error:", err);
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -308,9 +348,9 @@ export default function AddProductPage() {
           <ProductMedia formData={formData} updateFormData={updateFormData} />
         );
       case 8:
-        return formData.productType === PRODUCT_TYPES.DIGITAL ? 
-          <ProductDigital formData={formData} updateFormData={updateFormData} /> : 
-         null
+        return formData.productType === PRODUCT_TYPES.DIGITAL ? (
+          <ProductDigital formData={formData} updateFormData={updateFormData} />
+        ) : null;
       // case 9:
       //   return <ProductSEO formData={formData} updateFormData={updateFormData} />;
       default:
@@ -350,7 +390,11 @@ export default function AddProductPage() {
             </span>
             <span>Policies</span>
             <span>Media</span>
-            <span>{formData.productType === PRODUCT_TYPES.DIGITAL ? 'Digital' : null}</span>
+            <span>
+              {formData.productType === PRODUCT_TYPES.DIGITAL
+                ? "Digital"
+                : null}
+            </span>
             {/* <span>SEO/Review</span> */}
           </div>
         </div>

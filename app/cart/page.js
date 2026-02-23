@@ -17,6 +17,11 @@ const CartPage = () => {
     dispatch(fetchCart());
   }, [dispatch]);
 
+<<<<<<< HEAD
+=======
+  console.log("item", items);
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   const updateQty = useCallback(
     async (cartItemId, qty) => {
       try {
@@ -36,11 +41,22 @@ const CartPage = () => {
   );
 
   const removeItem = useCallback(
+<<<<<<< HEAD
     async (productId, variantId = null) => {
       try {
         await apiClient("/cart", {
           method: "DELETE",
           data: {
+=======
+    
+    async (productId, variantId) => {
+      console.log("variantId", variantId);
+      console.log("productId", productId);
+      try {
+        await apiClient("/cart", {
+          method: "DELETE",
+          body: {
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
             productId,
             variantId,
           },
@@ -80,8 +96,11 @@ const CartPage = () => {
     };
   }, [items]);
 
+<<<<<<< HEAD
   
  
+=======
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">

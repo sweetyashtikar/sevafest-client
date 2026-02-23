@@ -36,6 +36,7 @@ export const menuItems = [
       { label: "Attributes", path: "/admin/attributes", icon: Tags },
       { label: "Coupons", path: "/admin/coupon", icon: Percent },
       { label: "Brands", path: "/admin/brands", icon: Store },
+         { label: "Banner", path: "/admin/banner", icon: Store },
     ],
   },
   {

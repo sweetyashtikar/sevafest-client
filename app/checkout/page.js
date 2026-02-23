@@ -7,11 +7,18 @@ import { User, Mail, Phone, MapPin, Edit3 } from "lucide-react";
 import SimpleTezPaymentButton from "@/components/tez/tezPaymentButton";
 import { useSelector } from "react-redux";
 import AddressModal from "@/components/address/addressModal";
+<<<<<<< HEAD
+=======
+import CouponApply from "@/components/coupon/couponApply"
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
 
 const CheckoutPage = () => {
 
   const { user } = useSelector((a) => a.auth);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   const [cartData, setCartData] = useState(null);
   const [profile, setProfile] = useState(null);
   const [address, setAddress] = useState(null);
@@ -19,6 +26,13 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState(null);
 
+<<<<<<< HEAD
+=======
+  // Coupon state
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [orderTotal, setOrderTotal] = useState(0);
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
  
   const fetchCheckoutData = useCallback(async () => {
     if (!user?.id) return;
@@ -33,6 +47,10 @@ const CheckoutPage = () => {
 
       if (cartRes?.success) {
         setCartData(cartRes.data);
+<<<<<<< HEAD
+=======
+        setOrderTotal(cartRes.data.summary?.finalTotal || 0);
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
 
         // Generate order ID based on cart
         const timestamp = Date.now();
@@ -40,12 +58,17 @@ const CheckoutPage = () => {
         setOrderId(`ORD_${timestamp}_${randomNum}`);
       }
 
+<<<<<<< HEAD
       if (profileRes?.success) {
         setProfile(profileRes.data);
       }
       if (addressRes?.success) {
         setAddress(addressRes.data);
       }
+=======
+      if (profileRes?.success) setProfile(profileRes.data);
+      if (addressRes?.success) setAddress(addressRes.data);
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
     } catch (err) {
       console.error("Checkout fetch failed", err);
     } finally {
@@ -64,6 +87,18 @@ const CheckoutPage = () => {
     // You can update delivery charges, etc. here
   };
 
+<<<<<<< HEAD
+=======
+  const handleCouponApplied = (couponData) => {
+    setAppliedCoupon(couponData);
+    if (couponData) {
+      setOrderTotal((cartData?.summary?.finalTotal || 0) - couponData.discount);
+    } else {
+      setOrderTotal(cartData?.summary?.finalTotal || 0);
+    }
+  };
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   // ================= MEMOIZED DATA =================
   const items = useMemo(() => cartData?.items || [], [cartData]);
   const summary = useMemo(() => cartData?.summary || {}, [cartData]);
@@ -108,6 +143,43 @@ const CheckoutPage = () => {
       return null;
     }
   };
+<<<<<<< HEAD
+=======
+
+    const handlePlaceOrder = async () => {
+    try {
+      const orderData = {
+        address_id: selectedAddress?._id,
+        items: items.map(item => ({
+          product_id: item.productId,
+          product_variant_id: item.variantId,
+          quantity: item.qty,
+          price: item.price
+        })),
+        payment_method: "upi",
+        promo_details: appliedCoupon ? {
+          code: appliedCoupon.code,
+          discount: appliedCoupon.discount
+        } : null,
+        // ... other required fields
+      };
+
+      const response = await apiClient("/order-items", {
+        method: "POST",
+        body: orderData
+      });
+
+      if (response.success) {
+        // Redirect to success page or payment
+        const paymentUrl = await getPaymentUrl();
+        if (paymentUrl) window.location.href = paymentUrl;
+      }
+    } catch (error) {
+      console.error("Order placement failed:", error);
+    }
+  };
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   // ================= LOADING =================
   if (loading) {
     return (
@@ -128,6 +200,7 @@ const CheckoutPage = () => {
             address={address}
             onAddressChange={handleAddressChange}
           />
+<<<<<<< HEAD
           <Payment 
             summary={summary}
             profile={profile}
@@ -135,12 +208,28 @@ const CheckoutPage = () => {
                selectedAddress={selectedAddress}
             getPaymentUrl={getPaymentUrl}
           />
+=======
+          {/* <Payment 
+            summary={summary}
+            profile={profile}
+            orderId={orderId}
+            selectedAddress={selectedAddress}
+            getPaymentUrl={getPaymentUrl}
+          /> */}
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
           <ReviewItems items={items} />
         </div>
         <OrderPlace
           summary={summary}
           orderId={orderId}
           selectedAddress={selectedAddress}
+<<<<<<< HEAD
+=======
+           onPlaceOrder={handlePlaceOrder}
+            appliedCoupon={appliedCoupon}
+            onCouponApplied={handleCouponApplied}
+            orderTotal={orderTotal}
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
         />
       </div>
     </div>
@@ -149,6 +238,7 @@ const CheckoutPage = () => {
 
 export default CheckoutPage;
 
+<<<<<<< HEAD
 // const Delivery = React.memo(({ profile , address}) => {
 //   console.log("address", address)
 //   const defaultAddress = useMemo(() => {
@@ -225,6 +315,8 @@ export default CheckoutPage;
 //   );
 // });
 
+=======
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
 const Delivery = React.memo(({ profile, address, onAddressChange }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -575,6 +667,7 @@ const ReviewItems = React.memo(({ items }) => {
   );
 });
 
+<<<<<<< HEAD
 const OrderPlace = React.memo(({ summary, orderId }) => {
   const handlePlaceOrder = () => {
     // Here you would implement the actual order placement logic
@@ -584,10 +677,27 @@ const OrderPlace = React.memo(({ summary, orderId }) => {
     // Redirect to order confirmation page
     // window.location.href = `/order-confirmation/${orderId}`;
   };
+=======
+const OrderPlace = React.memo(({ summary, orderId , selectedAddress, 
+  onPlaceOrder,
+  appliedCoupon,
+  onCouponApplied,
+  orderTotal
+}) => {
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
   return (
     <div className="bg-white rounded-lg p-5 shadow h-fit">
       <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
 
+<<<<<<< HEAD
+=======
+          {/* COUPON APPLY COMPONENT */}
+      <CouponApply 
+        cartTotal={summary?.total || 0}
+        onCouponApplied={onCouponApplied}
+      />
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
       <div className="space-y-2 text-sm">
         <div className="flex justify-between">
           <span>Items ({summary.itemsCount})</span>
@@ -604,6 +714,16 @@ const OrderPlace = React.memo(({ summary, orderId }) => {
           <span>₹{summary.deliveryCharge}</span>
         </div>
 
+<<<<<<< HEAD
+=======
+           {appliedCoupon && (
+          <div className="flex justify-between text-sm text-green-600">
+            <span>Coupon ({appliedCoupon.code})</span>
+            <span>- ₹{appliedCoupon.discount}</span>
+          </div>
+        )}
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
         <hr />
 
         <div className="flex justify-between font-semibold text-lg">
@@ -612,9 +732,30 @@ const OrderPlace = React.memo(({ summary, orderId }) => {
         </div>
       </div>
 
+<<<<<<< HEAD
       <button className="w-full mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded">
         Place Order
       </button>
     </div>
   );
 });
+=======
+      <button className="w-full mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded"
+       onClick={onPlaceOrder}
+        disabled={!selectedAddress}
+        >
+        Place Order
+      </button>
+
+      {!selectedAddress && (
+        <p className="text-xs text-red-600 mt-2 text-center">
+          Please select a delivery address
+        </p>
+      )}
+    </div>
+  );
+});
+
+
+
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d

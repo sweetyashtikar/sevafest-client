@@ -35,6 +35,7 @@ export default function Page() {
         <HeroSection />
         <OfferBanner />
         <OfferBannerSecond />
+        <TopTrendingProducts products={products} loading={loading} />
       </main>
     </>
   );

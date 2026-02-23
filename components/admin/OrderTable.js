@@ -41,6 +41,9 @@ export function OrderTable({
               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
                 Status
               </th>
+                <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+                Payment Status
+              </th>
               <th className="px-6 py-3 text-center text-xs font-semibold text-black uppercase">
                 Action
               </th>
@@ -81,7 +84,11 @@ export function OrderTable({
                 </td>
 
                   <td className="px-6 py-4 text-sm text-black">
+<<<<<<< HEAD
                   {row.order_id.delivery_info.boy_id?.user_id?.username || '-'}
+=======
+              {row.order_details?.delivery_info?.boy_name || '-'}
+>>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
                 </td>
 
                 <td className="px-6 py-4 text-sm">
@@ -94,6 +101,10 @@ export function OrderTable({
                   >
                     {row.status}
                   </span>
+                </td>
+
+                 <td className="px-6 py-4 text-sm text-black">
+                 {`${row.order_id.payment?.method} / ${row.order_id.payment?.status}`}
                 </td>
 
                 <td className="px-6 py-4 text-center">
