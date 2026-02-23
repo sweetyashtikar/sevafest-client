@@ -1,6 +1,5 @@
-// app/products/page.jsx
 "use client";
-import React from "react";
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -20,14 +19,10 @@ import { ProductViewModal } from "@/components/admin/ProductViewModal";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const ProductTable = ({ path }) => {
+const ProductTable = () => {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
-
   const isAdmin = user?.role?.role === "admin";
-
-  console.log("Role", isAdmin);
-
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -53,10 +48,7 @@ const ProductTable = ({ path }) => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-
-      const role = user?.role?.role;
-      const response = await ProductApi.getProductsByRole(role);
-      console.log("products fetched of the vendor", response)
+      const response = await ProductApi.getAllProducts();
 
       let productsData = [];
       if (Array.isArray(response.data)) {
@@ -76,6 +68,7 @@ const ProductTable = ({ path }) => {
       ) {
         productsData = response.data.data;
       }
+
       setProducts(productsData);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -549,6 +542,16 @@ const ProductTable = ({ path }) => {
     );
   }
 
+  if (!Array.isArray(products) || products.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500 text-lg">No products found</p>
+        <p className="text-gray-400 text-sm mt-2">
+          Products data is not in expected format
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
@@ -578,7 +581,7 @@ const ProductTable = ({ path }) => {
 
           {/* ADD PRODUCT */}
           <button
-            onClick={() => router.push(path)}
+            onClick={() => router.push("/admin/product/create")}
             className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition flex items-center gap-2"
           >
             <FiPlus /> Add Product
@@ -680,8 +683,11 @@ const ProductTable = ({ path }) => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredProducts.map((product) => (
-                <React.Fragment key={product._id || product.id}>
-                  <tr className="hover:bg-gray-50 transition-colors duration-150">
+                <>
+                  <tr
+                    key={product._id || product.id}
+                    className="hover:bg-gray-50 transition-colors duration-150"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="font-mono text-sm font-medium text-gray-900">
                         {product.serialNo ||
@@ -885,7 +891,7 @@ const ProductTable = ({ path }) => {
                       </td>
                     </tr>
                   )}
-                </React.Fragment>
+                </>
               ))}
             </tbody>
           </table>

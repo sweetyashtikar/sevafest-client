@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { attributeSetApi } from './api';
+import { attributeSetApi } from '../../API/api';
 
 export default function AttributeSet() {
   const [sets, setSets] = useState([]);

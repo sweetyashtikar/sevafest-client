@@ -3,15 +3,40 @@
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Grocery from "@/assets/images/SEVAFASTSLIDING1.jpg";
+import TopTrendingProducts from "@/ui/TopTrendingProducts";
+import { apiClient } from "@/services/apiClient";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const res = await apiClient(`product?page=1&limit=1000`);
+      if (res?.success) {
+        setProducts(res.data.products || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch products", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
-    <main className="bg-white">
-      <HeroSection />
-      <OfferBanner />
-      <OfferBannerSecond />
-      <TopCategory />
-    </main>
+    <>
+      <main className="min-h-screen bg-white">
+        <HeroSection />
+        <OfferBanner />
+        <OfferBannerSecond />
+      </main>
+    </>
   );
 }
 

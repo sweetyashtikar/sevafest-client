@@ -24,6 +24,7 @@ export function middleware(request) {
     "/designer-portal": ["web designer", "webdesigner"],
     "/worker": ["worker"],
     "/courier": ["courier"],
+    "/delivery-boy": ["delivery_boy"],
   };
 
   for (const route in protectedRoutes) {

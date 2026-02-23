@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Menu, Dot, MoreVertical } from "lucide-react";
 
 export function OrderTable({
   data = [],
@@ -11,6 +11,7 @@ export function OrderTable({
   onView,
   onEdit,
   onDelete,
+  onAssign
 }) {
   return (
     <div className="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -33,6 +34,9 @@ export function OrderTable({
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
                 Price
+              </th>
+               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+               Delivery boy
               </th>
               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
                 Status
@@ -76,15 +80,19 @@ export function OrderTable({
                   ₹ {row.sub_total}
                 </td>
 
+                  <td className="px-6 py-4 text-sm text-black">
+                  {row.order_id.delivery_info.boy_id?.user_id?.username || '-'}
+                </td>
+
                 <td className="px-6 py-4 text-sm">
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      row.active_status === "processed"
+                      row.status === "processed"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
-                    {row.active_status}
+                    {row.status}
                   </span>
                 </td>
 
@@ -97,14 +105,14 @@ export function OrderTable({
                       <Eye size={16} />
                     </button>
 
-                    {/* <button
-                      onClick={() => onEdit(row)}
+                    <button
+                      onClick={() => onAssign(row)}
                       className="p-2 rounded-lg text-orange-600 hover:bg-orange-50"
                     >
-                      <Edit size={16} />
+                      <MoreVertical size={16} />
                     </button>
 
-                    <button
+                    {/* <button
                       onClick={() => onDelete(row)}
                       className="p-2 rounded-lg text-red-600 hover:bg-red-50"
                     >

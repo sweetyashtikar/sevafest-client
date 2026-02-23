@@ -14,13 +14,6 @@ import {
   ChevronRight,
   Check,
   Info,
-  Minus,
-  Plus,
-  Package,
-  Award,
-  Clock,
-  AlertCircle,
-  Zap,
 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 
@@ -348,14 +341,6 @@ export default function ProductDetailPage() {
     }
   }, [id]);
 
-  const handleAddToCart = () => {
-    console.log("Adding to cart:", { product, quantity });
-  };
-
-  const handleBuyNow = () => {
-    console.log("Buy now:", { product, quantity });
-  };
-
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -365,46 +350,80 @@ export default function ProductDetailPage() {
   }
 
   const allImages = [product.mainImage, ...(product.otherImages || [])];
-  const breadcrumbItems = [
-    "Home",
-    product.categoryId?.name || "Category",
-    product.name,
-  ];
+  const discount = product.simpleProduct?.sp_price - product.effectivePrice;
+  const savingsPercent = product.discountPercentage;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
-      {/* Breadcrumb */}
-      <Breadcrumb items={breadcrumbItems} />
+    <div className="min-h-screen bg-white">
+      <div className="max-w-7xl mx-auto">
+        {/* Breadcrumb */}
+        <div className="px-4 py-3 text-sm flex items-center gap-2 text-gray-600 border-b">
+          <span className="hover:text-orange-600 cursor-pointer">Home</span>
+          <ChevronRight size={14} />
+          <span className="hover:text-orange-600 cursor-pointer">
+            {product.categoryId?.name}
+          </span>
+          <ChevronRight size={14} />
+          <span className="text-gray-900">{product.name}</span>
+        </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 p-6">
           {/* LEFT: Image Gallery - 5 columns */}
-          <div className="lg:col-span-5 space-y-6">
-            <ImageGallery
-              images={allImages}
-              selectedImage={selectedImage}
-              onSelectImage={setSelectedImage}
-              discount={product.discountPercentage}
-            />
+          <div className="lg:col-span-5">
+            <div className="sticky top-4">
+              {/* Main Image */}
+              <div className="border rounded-lg p-4 mb-4 bg-white relative">
+                <img
+                  src={selectedImage}
+                  alt={product.name}
+                  className="w-full h-[500px] object-contain"
+                />
+                {savingsPercent > 0 && (
+                  <div className="absolute top-6 left-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                    -{savingsPercent}%
+                  </div>
+                )}
+                <div className="absolute top-6 right-6 flex gap-2">
+                  <button className="p-2 bg-white border rounded-full hover:bg-gray-50 shadow">
+                    <Share2 size={18} className="text-gray-700" />
+                  </button>
+                  <button className="p-2 bg-white border rounded-full hover:bg-gray-50 shadow">
+                    <Heart size={18} className="text-gray-700" />
+                  </button>
+                </div>
+              </div>
 
-            {/* Action Buttons - Desktop */}
-            <div className="space-y-4 lg:block hidden">
-              <button
-                onClick={handleAddToCart}
-                disabled={!product.inStock}
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-500 hover:from-yellow-500 hover:to-yellow-600 text-gray-900 py-4 rounded-xl font-bold text-lg disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-3"
-              >
-                <ShoppingCart size={24} />
-                Add to Cart
-              </button>
-              <button
-                onClick={handleBuyNow}
-                disabled={!product.inStock}
-                className="w-full bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 text-white py-4 rounded-xl font-bold text-lg disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:-translate-y-1"
-              >
-                Buy Now
-              </button>
+              {/* Thumbnails */}
+              <div className="flex gap-2 overflow-x-auto">
+                {allImages.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-16 h-16 object-cover border rounded cursor-pointer flex-shrink-0 ${
+                      selectedImage === img
+                        ? "border-orange-500 border-2"
+                        : "border-gray-300"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="mt-6 space-y-3">
+                <button
+                  disabled={!product.inStock}
+                  className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Add to Cart
+                </button>
+                <button
+                  disabled={!product.inStock}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
+                >
+                  Buy Now
+                </button>
+              </div>
             </div>
           </div>
 
@@ -451,7 +470,27 @@ export default function ProductDetailPage() {
             )}
 
             {/* Price Section */}
-            <PriceSection product={product} />
+            <div className="mb-4">
+              <div className="flex items-baseline gap-3">
+                <span className="text-sm text-gray-700">
+                  -{savingsPercent}%
+                </span>
+                <span className="text-3xl text-gray-900">
+                  ₹{product.effectivePrice}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm text-gray-600">M.R.P.:</span>
+                <span className="text-sm text-gray-600 line-through">
+                  ₹{product.simpleProduct?.sp_price}
+                </span>
+              </div>
+              {!product.isPricesInclusiveTax && (
+                <p className="text-xs text-gray-600 mt-1">
+                  Inclusive of all taxes
+                </p>
+              )}
+            </div>
 
             {/* EMI Option */}
             <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-5 shadow-lg">
@@ -495,116 +534,152 @@ export default function ProductDetailPage() {
 
             <hr className="my-8 border-2 border-gray-200" />
 
-            {/* Product Highlights */}
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-xl">
-              <h2 className="font-black text-2xl text-gray-900 mb-5 flex items-center gap-2">
-                <Package className="text-blue-600" size={28} />
-                Product Highlights
-              </h2>
-              <div className="bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-xl p-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <DetailRow label="Brand" value={product.brand} />
-                  <DetailRow label="Color" value={product.attributeValues?.[0]?.value} />
-                  <DetailRow label="Material" value="100% Cotton" />
-                  <DetailRow label="Weight" value={`${product.dimensions?.weight || 0} kg`} />
-                  <DetailRow label="HSN Code" value={product.hsnCode} />
-                  <DetailRow label="Made In" value={product.madeIn} />
+            {/* Product Details Table */}
+            <div className="space-y-2 mb-6">
+              <DetailRow label="Brand" value={product.brand} />
+              <DetailRow
+                label="Colour"
+                value={product.attributeValues?.[0]?.value}
+              />
+              <DetailRow label="Material" value="100% Cotton" />
+              <DetailRow
+                label="Item Weight"
+                value={`${product.dimensions?.weight} kg`}
+              />
+              <DetailRow label="HSN Code" value={product.hsnCode} />
+              <DetailRow label="Made In" value={product.madeIn} />
+            </div>
+
+            <hr className="my-8 border-2 border-gray-200" />
+
+            {/* About this item */}
+            <div className="mb-6">
+              <h2 className="font-bold text-lg mb-3">About this item</h2>
+              <ul className="space-y-2">
+                <li className="flex gap-2 text-sm">
+                  <span className="text-gray-400 mt-1">•</span>
+                  <span>{product.shortDescription}</span>
+                </li>
+                {product.extraDescription && (
+                  <li className="flex gap-2 text-sm">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span>{product.extraDescription}</span>
+                  </li>
+                )}
+                {product.codAllowed && (
+                  <li className="flex gap-2 text-sm">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span>Cash on Delivery available</span>
+                  </li>
+                )}
+                {product.warrantyPeriod && (
+                  <li className="flex gap-2 text-sm">
+                    <span className="text-gray-400 mt-1">•</span>
+                    <span>Warranty: {product.warrantyPeriod}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+
+            <hr className="my-4" />
+
+            {/* Delivery & Returns */}
+            <div className="space-y-4">
+              {/* Delivery */}
+              <div className="flex gap-3">
+                <MapPin className="text-gray-600 flex-shrink-0" size={20} />
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium">Deliver to</span>
+                    <span className="text-sm text-gray-600">
+                      Chennai 600001
+                    </span>
+                    <button className="text-xs text-blue-600 hover:text-orange-600 hover:underline">
+                      Change
+                    </button>
+                  </div>
+                  {product.inStock ? (
+                    <p className="text-green-700 font-medium text-sm">
+                      In stock
+                    </p>
+                  ) : (
+                    <p className="text-red-700 font-medium text-sm">
+                      Currently unavailable
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Free Delivery */}
+              {product.inStock && (
+                <div className="flex gap-3 items-start">
+                  <Truck className="text-blue-600 flex-shrink-0" size={20} />
+                  <div>
+                    <p className="text-sm">
+                      <span className="text-blue-600 font-medium">
+                        FREE delivery
+                      </span>{" "}
+                      <span className="font-medium">
+                        Tomorrow, 8 AM - 12 PM
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-600 mt-0.5">
+                      Order within 4 hrs 23 mins.{" "}
+                      <a
+                        href="#"
+                        className="text-blue-600 hover:text-orange-600 hover:underline"
+                      >
+                        Details
+                      </a>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Returns */}
+              {product.isReturnable && (
+                <div className="flex gap-3 items-start">
+                  <RotateCcw
+                    className="text-gray-600 flex-shrink-0"
+                    size={20}
+                  />
+                  <div>
+                    <p className="text-sm">
+                      <span className="font-medium">Free Returns</span>
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      Return this item for free within 30 days of delivery
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Warranty */}
+              {product.warrantyPeriod && (
+                <div className="flex gap-3 items-start">
+                  <Shield className="text-gray-600 flex-shrink-0" size={20} />
+                  <div>
+                    <p className="text-sm">
+                      <span className="font-medium">Warranty:</span>{" "}
+                      {product.warrantyPeriod}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Secure Transaction */}
+              <div className="flex gap-3 items-start">
+                <Shield className="text-gray-600 flex-shrink-0" size={20} />
+                <div>
+                  <p className="text-sm text-blue-600 hover:text-orange-600 cursor-pointer hover:underline">
+                    Secure transaction
+                  </p>
                 </div>
               </div>
             </div>
 
             <hr className="my-8 border-2 border-gray-200" />
 
-            {/* About This Item */}
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-xl">
-              <h2 className="font-black text-2xl text-gray-900 mb-5 flex items-center gap-2">
-                <Info className="text-blue-600" size={28} />
-                About This Item
-              </h2>
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-6">
-                <ul className="space-y-4">
-                  <li className="flex gap-3 text-sm text-gray-900 font-medium">
-                    <span className="text-blue-600 mt-1 flex-shrink-0">
-                      <Check size={18} className="font-bold" />
-                    </span>
-                    <span>{product.shortDescription}</span>
-                  </li>
-                  {product.extraDescription && (
-                    <li className="flex gap-3 text-sm text-gray-900 font-medium">
-                      <span className="text-blue-600 mt-1 flex-shrink-0">
-                        <Check size={18} />
-                      </span>
-                      <span>{product.extraDescription}</span>
-                    </li>
-                  )}
-                  {product.codAllowed && (
-                    <li className="flex gap-3 text-sm text-gray-900 font-medium">
-                      <span className="text-green-600 mt-1 flex-shrink-0">
-                        <Check size={18} />
-                      </span>
-                      <span>Cash on Delivery available</span>
-                    </li>
-                  )}
-                  {product.warrantyPeriod && (
-                    <li className="flex gap-3 text-sm text-gray-900 font-medium">
-                      <span className="text-purple-600 mt-1 flex-shrink-0">
-                        <Shield size={18} />
-                      </span>
-                      <span className="font-bold">Warranty: {product.warrantyPeriod}</span>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            </div>
-
-            <hr className="my-8 border-2 border-gray-200" />
-
-            {/* Delivery & Services */}
-            <div>
-              <h2 className="font-black text-2xl text-gray-900 mb-5 flex items-center gap-2">
-                <Truck className="text-blue-600" size={28} />
-                Delivery & Services
-              </h2>
-              <div className="space-y-4">
-                <InfoCard
-                  icon={MapPin}
-                  title={`Deliver to ${DELIVERY_CITY} ${DELIVERY_PINCODE}`}
-                  description="Change your delivery location for accurate estimates"
-                  color="blue"
-                />
-
-                {product.inStock && (
-                  <InfoCard
-                    icon={Truck}
-                    title="FREE Delivery Tomorrow, 8 AM - 12 PM"
-                    description="Order within 4 hrs 23 mins for delivery by tomorrow"
-                    color="green"
-                  />
-                )}
-
-                {product.isReturnable && (
-                  <InfoCard
-                    icon={RotateCcw}
-                    title="Free Returns within 30 Days"
-                    description="Return this item for free within 30 days of delivery"
-                    color="orange"
-                  />
-                )}
-
-                {product.warrantyPeriod && (
-                  <InfoCard
-                    icon={Shield}
-                    title={`Warranty: ${product.warrantyPeriod}`}
-                    description="Manufacturer warranty included with purchase"
-                    color="purple"
-                  />
-                )}
-              </div>
-            </div>
-
-            <hr className="my-8 border-2 border-gray-200" />
-
-            {/* Color Selection */}
             {product.attributeValues?.length > 0 && (
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-xl">
                 <h3 className="text-lg font-black text-gray-900 mb-4">
@@ -641,25 +716,20 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            <hr className="my-8 border-2 border-gray-200" />
-
-            {/* Sold By */}
-            <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-2 border-purple-200 rounded-2xl p-6 shadow-xl">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-700 font-bold">Ships from:</span>
-                  <span className="text-sm font-black text-gray-900 bg-white px-3 py-1 rounded-lg">
-                    Amazon
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-700 font-bold">Sold by:</span>
-                  <a
-                    href="#"
-                    className="text-sm font-black text-blue-600 hover:text-orange-600 hover:underline transition-colors bg-white px-3 py-1 rounded-lg"
-                  >
-                    {product.vendorId?.username || "Official Store"}
-                  </a>
+            {/* Sold by */}
+            <div className="bg-gray-50 border rounded p-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-sm">
+                    <span className="text-gray-600">Ships from</span>{" "}
+                    <span className="font-medium">Amazon</span>
+                  </p>
+                  <p className="text-sm mt-1">
+                    <span className="text-gray-600">Sold by</span>{" "}
+                    <span className="text-blue-600 hover:text-orange-600 cursor-pointer hover:underline">
+                      {product.vendorId?.username}
+                    </span>
+                  </p>
                 </div>
               </div>
             </div>
@@ -685,72 +755,54 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Description */}
+        {/* Product Description Section */}
         {product.description && (
-          <div className="mt-12 animate-fadeIn">
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-2xl">
-              <h2 className="text-3xl font-black text-gray-900 mb-6 flex items-center gap-3">
-                <Package className="text-blue-600" size={32} />
-                Product Description
-              </h2>
-              <div className="prose prose-gray max-w-none bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-gray-200 rounded-xl p-6">
-                <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap font-medium">
-                  {product.description}
-                </p>
-              </div>
+          <div className="px-6 pb-8">
+            <div className="border-t pt-6">
+              <h2 className="text-2xl font-bold mb-4">Product Description</h2>
+              <p className="text-sm text-gray-700 leading-relaxed">
+                {product.description}
+              </p>
             </div>
           </div>
         )}
 
-        {/* Technical Specifications */}
-        <div className="mt-8 animate-fadeIn">
-          <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 shadow-2xl">
-            <h2 className="text-3xl font-black text-gray-900 mb-6 flex items-center gap-3">
-              <Award className="text-blue-600" size={32} />
-              Technical Specifications
-            </h2>
-            <div className="bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-gray-200 rounded-xl p-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
-                <div className="space-y-2">
-                  <DetailRow
-                    label="Product Dimensions"
-                    value={`${product.dimensions?.length || 0} × ${product.dimensions?.breadth || 0} × ${product.dimensions?.height || 0} cm`}
-                  />
-                  <DetailRow
-                    label="Item Weight"
-                    value={`${product.dimensions?.weight || 0} kg`}
-                  />
-                  <DetailRow label="Manufacturer" value={product.brand} />
-                </div>
-                <div className="space-y-2">
-                  <DetailRow
-                    label="Model Number"
-                    value={product.simpleProduct?.sp_sku}
-                  />
-                  <DetailRow label="Country of Origin" value={product.madeIn} />
-                  <DetailRow label="HSN Code" value={product.hsnCode} />
-                </div>
-              </div>
+        {/* Product Details Section */}
+        <div className="px-6 pb-8">
+          <div className="border-t pt-6">
+            <h2 className="text-2xl font-bold mb-4">Product details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-3">
+              <DetailRow
+                label="Product Dimensions"
+                value={`${product.dimensions?.length} x ${product.dimensions?.breadth} x ${product.dimensions?.height} cm; ${product.dimensions?.weight} Kilograms`}
+              />
+              <DetailRow
+                label="Item Weight"
+                value={`${product.dimensions?.weight} kg`}
+              />
+              <DetailRow label="Manufacturer" value={product.brand} />
+              <DetailRow
+                label="Item model number"
+                value={product.simpleProduct?.sp_sku}
+              />
+              <DetailRow label="Country of Origin" value={product.madeIn} />
+              <DetailRow label="HSN Code" value={product.hsnCode} />
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.6s ease-out;
-        }
-      `}</style>
+/* ================= HELPER COMPONENT ================= */
+function DetailRow({ label, value }) {
+  return (
+    <div className="flex py-2">
+      <span className="text-sm font-medium text-gray-700 w-40 flex-shrink-0">
+        {label}
+      </span>
+      <span className="text-sm text-gray-900">{value || "-"}</span>
     </div>
   );
 }

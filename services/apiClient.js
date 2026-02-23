@@ -46,7 +46,7 @@ api.interceptors.request.use(
     console.log("➡️ Method:", config.method?.toUpperCase());
 
     if (token) {
-      console.log("🔑 [AUTH] Token found in store");
+      console.log("🔑 [AUTH] Token found in store", token);
 
       if (isTokenExpired(token)) {
         console.log("⛔ [AUTH] Token expired → logout");
