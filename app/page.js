@@ -1,14 +1,18 @@
 "use client";
 import Image from "next/image";
 import { ArrowRight, Facebook, Twitter, Linkedin, Youtube } from "lucide-react";
-import Grocery from "@/assets/images/SEVAFASTSLIDING1.jpg";
-import TopTrendingProducts from "@/ui/TopTrendingProducts";
 import { apiClient } from "@/services/apiClient";
 import { useEffect, useState } from "react";
+
+import Grocery from "@/assets/images/SEVAFASTSLIDING1.jpg";
+import TopTrendingProducts from "@/ui/TopTrendingProducts";
+import HomeBannerSlider from "@/ui/HomeBannerSlider";
+import Swiper from "@/ui/Swiper";
 
 export default function Page() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [banners, setBanners] = useState([]);
 
   const fetchProducts = async () => {
     try {
@@ -24,13 +28,27 @@ export default function Page() {
     }
   };
 
+  const fetchBanners = async () => {
+    try {
+      const res = await apiClient(`banners?page=1&limit=1000`);
+      if (res?.success) {
+        setBanners(res.data || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch banners", err);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchBanners();
   }, []);
-
   return (
     <>
       <main className="min-h-screen bg-white">
+        <div className="py-5  " />
+        <HomeBannerSlider banners={banners} />
+        <Swiper/>
         <HeroSection />
         <OfferBanner />
         <OfferBannerSecond />
