@@ -34,8 +34,9 @@ export const menuItems = [
       { label: "Products", path: "/admin/product", icon: Package },
       { label: "Categories", path: "/admin/category", icon: Layers },
       { label: "Attributes", path: "/admin/attributes", icon: Tags },
-      { label: "Coupons", path: "/admin/coupons", icon: Percent },
+      { label: "Coupons", path: "/admin/coupon", icon: Percent },
       { label: "Brands", path: "/admin/brands", icon: Store },
+         { label: "Banner", path: "/admin/banner", icon: Store },
     ],
   },
   {
