@@ -86,7 +86,7 @@ export default function AdminSidebar() {
 
   // ✅ RETURN WAS MISSING
   return (
-   <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200">
+   <aside className="fixed left-0 top-0 w-64 h-screen bg-white overflow-y-auto border-r border-gray-200">
       {/* LOGO */}
       <div className="px-6 py-5 text-lg font-semibold text-gray-800">
         Admin Panel
