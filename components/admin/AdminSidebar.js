@@ -3,21 +3,44 @@
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
-  ShoppingBag,
   Package,
   Layers,
   Tags,
-  Percent,
   Store,
-  Users,
   ClipboardList,
+  Users,
   UserCog,
+  UserPlus,
+  User,
+  Bell,
+  HelpCircle,
+  ShoppingCart,
   Truck,
-  MessageCircle,
+  CheckCircle,
+  XCircle,
+  RotateCcw,
+  BarChart3,
+  Megaphone,
+  Image,
+  Home,
+  Settings,
+  CreditCard,
+  ShieldCheck,
   FileText,
-  Globe,
+  Percent,
   ChevronDown,
-  ChevronRight, // ✅ FIXED
+  ChevronRight,
+  Upload,
+  RefreshCcw,
+  Warehouse,
+  Building2,
+  MapPin,
+  Map,
+  Clock,
+  Banknote,
+  Wallet,
+  List,
+  Landmark,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -28,136 +51,328 @@ export const menuItems = [
     path: "/admin",
   },
   {
-    label: "Catalog",
-    icon: ShoppingBag,
+    label: "Products",
+    icon: Package,
     children: [
-      { label: "Attributes", path: "/admin/attributes", icon: Tags },
-      { label: "Coupons", path: "/admin/coupon", icon: Percent },
-      { label: "Brands", path: "/admin/brands", icon: Store },
-         { label: "Banner", path: "/admin/banner", icon: Store },
-           { label: "Area", path: "/admin/areas", icon: Store },
-             { label: "City", path: "/admin/cities", icon: Store },
-           { label: "Zipcodes", path: "/admin/zipcodes", icon: Store },
+      { label: "Add Product", path: "/admin/product/add", icon: Package },
+      { label: "Product List", path: "/admin/product", icon: List },
+      { label: "Bulk Import", path: "/admin/product/bulkimport", icon: Upload },
+      {
+        label: "Bulk Update",
+        path: "/admin/product/bulkupdate",
+        icon: RefreshCcw,
+      },
     ],
   },
+  {
+    label: "Categories",
+    icon: Layers,
+    children: [
+      { label: "Add category", path: "/admin/category/create", icon: Layers },
+      { label: "List category", path: "/admin/category", icon: List },
+      { label: "Attribute", path: "/admin/attributes", icon: Tags },
+    ],
+  },
+
+  {
+    label: "Banner",
+    icon: Image,
+    children: [
+      { label: "Add banner", path: "/admin/banner/create", icon: Image },
+      { label: "List banner", path: "/admin/banner", icon: List },
+    ],
+  },
+
+  {
+    label: "Brand",
+    icon: Store,
+    children: [
+      { label: "Add brand", path: "/admin/brands/create", icon: Store },
+      { label: "List brand", path: "/admin/brands", icon: List },
+    ],
+  },
+
+  {
+    label: "Stock management",
+    icon: Warehouse,
+    path: "/admin/stock",
+  },
+
+  {
+    label: "Manger Vender",
+    icon: Building2,
+    children: [
+      { label: "Add vender", path: "/admin/vendors/create", icon: UserPlus },
+      { label: "Vender list", path: "/admin/vendors", icon: Users },
+      {
+        label: "Vendor transaction",
+        path: "/admin/vendors/transaction",
+        icon: Landmark,
+      },
+    ],
+  },
+
+  {
+    label: "Mange Location",
+    icon: MapPin,
+    children: [
+      { label: "Manage city", path: "/admin/zipcodes", icon: Building2 },
+      { label: "Deliverable area", path: "/admin/areas", icon: Map },
+      { label: "Deliverable area list", path: "/admin/cities", icon: List },
+    ],
+  },
+
+  {
+    label: "Coupon",
+    icon: Percent,
+    path: "/admin/coupon",
+  },
+
+  {
+    label: "Time slot",
+    icon: Clock,
+    path: "/admin/timesolt",
+  },
+
+  {
+    label: "Delivery boy",
+    icon: Truck,
+    children: [
+      { label: "Add delivery boy", path: "/admin/category", icon: UserPlus },
+      { label: "Manage delivery boy", path: "/admin/category", icon: Users },
+      { label: "Fund transfer", path: "/admin/category", icon: Banknote },
+      { label: "Cash collection", path: "/admin/category", icon: Wallet },
+    ],
+  },
+
+  {
+    label: "Orders",
+    icon: ShoppingCart,
+    path: "/admin/orders",
+  },
+
   {
     label: "Customers",
     icon: Users,
     path: "/admin/customers",
   },
+
   {
-    label: "Orders",
-    icon: ClipboardList,
-    path: "/admin/orders",
-  },
-  {
-    label: "OurStaff",
+    label: "Staff",
     icon: UserCog,
     path: "/admin/staff",
   },
+
   {
-    label: "Vendors",
-    icon: Truck,
-    path: "/admin/vendors",
+    label: "Users",
+    icon: Users,
+    path: "/admin/users",
   },
   {
-    label: "User Requests",
-    icon: MessageCircle,
-    path: "/admin/user-requests",
+    label: "Notification",
+    icon: Bell,
+    path: "/admin/notifications",
   },
   {
-    label: "Blogs",
-    icon: FileText,
-    path: "/admin/blogs",
+    label: "FAQ",
+    icon: HelpCircle,
+    path: "/admin/faq",
   },
+
+  // ===== Order Section =====
   {
-    label: "OnlineStore",
-    icon: Globe,
-    path: "/admin/online-store",
+    label: "Order Section",
+    icon: ShoppingCart,
+    children: [
+      { label: "All Order", path: "/admin/orders", icon: ClipboardList },
+      {
+        label: "Pending Order",
+        path: "/admin/orders/pending",
+        icon: ClipboardList,
+      },
+      {
+        label: "Received Order",
+        path: "/admin/orders/received",
+        icon: ClipboardList,
+      },
+      {
+        label: "Processed Order",
+        path: "/admin/orders/processed",
+        icon: ClipboardList,
+      },
+      { label: "Shipped Order", path: "/admin/orders/shipped", icon: Truck },
+      {
+        label: "Out for Delivery",
+        path: "/admin/orders/out-for-delivery",
+        icon: Truck,
+      },
+      {
+        label: "Delivered Order",
+        path: "/admin/orders/delivered",
+        icon: CheckCircle,
+      },
+      {
+        label: "Cancelled Order",
+        path: "/admin/orders/cancelled",
+        icon: XCircle,
+      },
+      { label: "Return", path: "/admin/orders/return", icon: RotateCcw },
+      {
+        label: "AI Insight Report",
+        path: "/admin/orders/ai-report",
+        icon: BarChart3,
+      },
+    ],
+  },
+
+  // ===== Promotion =====
+  {
+    label: "Promotion",
+    icon: Megaphone,
+    children: [
+      {
+        label: "Highlights",
+        path: "/admin/promotion/highlights",
+        icon: Megaphone,
+      },
+      { label: "Banner", path: "/admin/promotion/banner", icon: Image },
+      { label: "Home Section", path: "/admin/promotion/home", icon: Home },
+    ],
+  },
+
+  // ===== Setting =====
+  {
+    label: "Setting",
+    icon: Settings,
+    children: [
+      {
+        label: "Payment Setting",
+        path: "/admin/settings/payment",
+        icon: CreditCard,
+      },
+      {
+        label: "Manage Roles",
+        path: "/admin/settings/roles",
+        icon: ShieldCheck,
+      },
+      {
+        label: "Customer App Policy",
+        path: "/admin/settings/customer-policy",
+        icon: FileText,
+      },
+      {
+        label: "Delivery App Policy",
+        path: "/admin/settings/delivery-policy",
+        icon: FileText,
+      },
+      { label: "System User", path: "/admin/settings/system-user", icon: User },
+    ],
   },
 ];
 
 export default function AdminSidebar({ isOpen }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [openCatalog, setOpenCatalog] = useState(true);
 
-  // ✅ RETURN WAS MISSING
+  const [openMenus, setOpenMenus] = useState({
+    Products: true,
+    Catalog: false,
+    Categories: false,
+  });
+
+  const toggleMenu = (label) => {
+    setOpenMenus((prev) => ({
+      ...prev,
+      [label]: !prev[label],
+    }));
+  };
+
   return (
-   <aside className="fixed left-0 top-0 w-64 h-screen bg-white overflow-y-auto border-r border-gray-200">
+    <aside
+      className={`fixed left-0 top-0 h-screen bg-[#0F766E] text-white transition-all duration-300 z-50
+      ${isOpen ? "w-80" : "w-20"} overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
+    >
       {/* LOGO */}
-      <div className="px-6 py-5 text-lg font-semibold text-gray-800">
-        Admin Panel
+      <div className="h-16 flex items-center px-6 mb-2 border-b border-white/10 overflow-hidden">
+        <h1
+          className={`font-black tracking-tighter transition-all duration-300 ${
+            isOpen ? "text-2xl opacity-100" : "text-xs opacity-0"
+          }`}
+        >
+          ADMIN<span className="text-teal-400"> PANEL</span>
+        </h1>
+        {!isOpen && <span className="text-teal-400 font-bold ml-1">AP</span>}
       </div>
 
-      {/* MENU */}
-      <nav className="flex flex-col gap-1">
+      {/* NAVIGATION */}
+      <nav className="flex flex-col px-4 gap-2 pb-12">
         {menuItems.map((item) => {
           const isActive = item.path && pathname === item.path;
+          const hasChildren = !!item.children;
+          const menuOpen = openMenus[item.label];
 
-          /* ---------- CATALOG ---------- */
-          if (item.children) {
+          if (hasChildren) {
             return (
-              <div key={item.label} className="mt-3">
+              <div key={item.label} className="flex flex-col">
                 <button
-                  onClick={() => setOpenCatalog(!openCatalog)}
-                  className="w-full flex items-center justify-between px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 transition"
+                  onClick={() => toggleMenu(item.label)}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all
+                  ${menuOpen ? "bg-white/10" : "hover:bg-white/5"}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <item.icon size={20} />
-                    {item.label}
+                  <div className="flex items-center gap-4">
+                    <item.icon size={24} />
+                    <span className="text-lg font-extrabold tracking-wide">
+                      {item.label}
+                    </span>
                   </div>
-
-                  {openCatalog ? (
-                    <ChevronDown size={18} />
+                  {menuOpen ? (
+                    <ChevronDown size={20} />
                   ) : (
-                    <ChevronRight size={18} />
+                    <ChevronRight size={20} />
                   )}
                 </button>
 
-                {openCatalog && (
-                  <div className="ml-10 mt-1 flex flex-col gap-1">
+                {menuOpen && (
+                  <div className="ml-9 mt-2 flex flex-col gap-1 border-l-2 border-teal-500/30 pl-4">
                     {item.children.map((child) => {
-                      const childActive = pathname === child.path;
-
+                      const isChildActive = pathname === child.path;
                       return (
                         <button
-                          key={child.path}
+                          key={child.label}
                           onClick={() => router.push(child.path)}
-                          className={`flex items-center gap-3 px-3 py-2 text-sm rounded transition
-                            ${
-                              childActive
-                                ? "text-orange-500 font-medium"
-                                : "text-gray-500 hover:text-gray-800"
-                            }`}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[16px] font-bold transition-all
+                          ${
+                            isChildActive
+                              ? "bg-white/20 text-white"
+                              : "text-white/70 hover:text-white hover:bg-white/5"
+                          }`}
                         >
-                          <child.icon size={16} />
+                          <child.icon size={18} />
                           {child.label}
                         </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            }
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            );
+          }
 
-          /* ---------- NORMAL ITEM ---------- */
           return (
             <button
-              key={item.path}
+              key={item.label}
               onClick={() => router.push(item.path)}
-              className={`relative flex items-center gap-3 px-6 py-3 text-base transition
-                ${
-                  isActive
-                    ? "text-orange-500 font-medium"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300
+              ${
+                isActive
+                  ? "bg-white/20 text-white translate-x-1"
+                  : "text-white/80 hover:bg-white/10 hover:translate-x-1"
+              }`}
             >
-              {isActive && (
-                <span className="absolute left-0 top-0 h-full w-1 bg-orange-500 rounded-r" />
-              )}
-              <item.icon size={20} />
-              {item.label}
+              <item.icon size={24} />
+              <span className="text-lg font-extrabold tracking-wide">
+                {item.label}
+              </span>
             </button>
           );
         })}

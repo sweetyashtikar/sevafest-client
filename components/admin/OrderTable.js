@@ -14,14 +14,14 @@ export function OrderTable({
   onAssign
 }) {
   return (
-    <div className="bg-white rounded-2xl shadow-sm border">
+    <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
       <div className="px-6 py-4 border-b">
         <h2 className="text-lg font-bold text-black text-center">
           Order Table
         </h2>
       </div>      {/* ===== TABLE ===== */}
-      <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="w-full overflow-x-auto">
+      <table className="w-full min-w-[1000px] text-sm">
             <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
             <tr>
               <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
