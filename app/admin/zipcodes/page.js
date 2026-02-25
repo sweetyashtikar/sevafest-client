@@ -126,7 +126,7 @@ const Zipcodes = () => {
     {
       key: "city_id",
       label: "City",
-      render: (city) => city?.name || "N/A",
+      render: (city_id) => city_id?.name || "N/A",
     },
     {
       key: "is_deliverable",

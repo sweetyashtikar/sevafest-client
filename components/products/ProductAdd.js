@@ -122,10 +122,31 @@ export default function AddProductPage() {
       [field]: value,
     }));
   };
+// Update the next button logic to skip step 7 for VARIABLE products
+const handleNext = () => {
+  let nextStep = step + 1;
+  
+  // If current step is 6 and product is VARIABLE, skip to step 8
+  if (step === 6 && formData.productType === PRODUCT_TYPES.VARIABLE) {
+    nextStep = 8;
+  }
+  // If current step is 7 and product is DIGITAL, go to step 8
+  else if (step === 7 && formData.productType === PRODUCT_TYPES.DIGITAL) {
+    nextStep = 8;
+  }
+  
+  setStep(nextStep);
+};
 
-  const handleNext = () => {
-    setStep((prev) => prev + 1);
-  };
+// Update the progress bar to show correct steps
+const getTotalSteps = () => {
+  if (formData.productType === PRODUCT_TYPES.VARIABLE) {
+    return 8; // Skip Media step
+  } else if (formData.productType === PRODUCT_TYPES.DIGITAL) {
+    return 8; // All steps including Media and Digital
+  }
+  return 8; // Regular products: all steps except Digital
+};
 
   const handleBack = () => {
     setStep((prev) => prev - 1);
@@ -266,6 +287,60 @@ export default function AddProductPage() {
         }
       }
 
+        // ⭐ Handle variants WITHOUT images in the JSON
+      // First, create a copy of variants without File objects
+      const variantsWithoutImages = formData.variants.map(variant => {
+        // Create a clean copy without File objects and previews
+        const { 
+          variant_images, 
+          variant_images_previews, 
+          _id,
+          ...cleanVariant 
+        } = variant;
+        
+        return {
+          ...cleanVariant,
+          // Initialize empty array for images - will be populated by multer
+          variant_images: []
+        };
+      });
+
+       // Append the variants JSON (without images)
+      formDataToSend.append("variants", JSON.stringify(variantsWithoutImages));
+
+       // Create a mapping of images to variants
+  const imageMapping = [];
+
+      // ⭐ Now append variant images as separate fields with a naming convention
+      // This allows multer to map them to the correct variant
+     formData.variants.forEach((variant, variantIndex) => {
+    if (variant.variant_images && Array.isArray(variant.variant_images)) {
+      variant.variant_images.forEach((image, imageIndex) => {
+        if (image instanceof File) {
+          // Generate a unique ID for this image
+          const imageId = `variant_${variantIndex}_img_${imageIndex}_${Date.now()}`;
+          
+          // Append the image with a custom filename
+          const customFile = new File([image], imageId, { type: image.type });
+          formDataToSend.append('variant_images', customFile);
+          
+          // Store the mapping
+          imageMapping.push({
+            imageId,
+            variantIndex,
+            imageIndex
+          });
+        }
+      });
+    }
+  });
+
+    // Append the mapping as a separate field
+  if (imageMapping.length > 0) {
+    formDataToSend.append('variant_image_mapping', JSON.stringify(imageMapping));
+  }
+
+
       //Handle image files separately
       if (formData.mainImage && formData.mainImage instanceof File) {
         formDataToSend.append("mainImage", formData.mainImage);
@@ -282,6 +357,18 @@ export default function AddProductPage() {
       }
 
       console.log("Submitting form data:", formDataToSend);
+
+       // Log FormData contents for debugging
+    for (let pair of formDataToSend.entries()) {
+      if (pair[0] === 'variants') {
+        console.log('variants:', JSON.parse(pair[1]));
+      } else if (pair[0] === 'variant_images') {
+        console.log('variant_images:', pair[1].name);
+      } else {
+        console.log(pair[0], pair[1]);
+      }
+    }
+
       // Use the ProductApi
       const response = await ProductApi.create(formDataToSend);
       if (response.success === true) {
@@ -289,10 +376,24 @@ export default function AddProductPage() {
         console.log("Created product:", response);
       }
 
-      // Reset form or redirect
+      // Clean up preview URLs to prevent memory leaks
+      if (formData.mainImagePreview) {
+        URL.revokeObjectURL(formData.mainImagePreview);
+      }
+      if (formData.otherImagesPreviews) {
+        formData.otherImagesPreviews.forEach(url => URL.revokeObjectURL(url));
+      }
+      if (formData.variants) {
+        formData.variants.forEach(variant => {
+          if (variant.variant_images_previews) {
+            variant.variant_images_previews.forEach(url => URL.revokeObjectURL(url));
+          }
+        });
+      }
+// Reset form or redirect
       // setFormData(initialFormState);
       // router.push('/products');
-    } catch (err) {
+} catch (err) {
       console.error("Error:", err);
       setError(err.message || "Something went wrong");
     } finally {
@@ -346,9 +447,13 @@ export default function AddProductPage() {
           />
         );
       case 7:
-        return (
-          <ProductMedia formData={formData} updateFormData={updateFormData} />
-        );
+        // Skip Media step for VARIABLE products
+      if (formData.productType === PRODUCT_TYPES.VARIABLE) {
+        return null; // Skip this step
+      }
+      return (
+        <ProductMedia formData={formData} updateFormData={updateFormData} />
+      );
       case 8:
         return formData.productType === PRODUCT_TYPES.DIGITAL ? (
           <ProductDigital formData={formData} updateFormData={updateFormData} />
@@ -391,7 +496,9 @@ export default function AddProductPage() {
                 : "Shipping"}
             </span>
             <span>Policies</span>
+             {formData.productType !== PRODUCT_TYPES.VARIABLE && (
             <span>Media</span>
+          )}
             <span>
               {formData.productType === PRODUCT_TYPES.DIGITAL
                 ? "Digital"
@@ -426,7 +533,7 @@ export default function AddProductPage() {
               </button>
             )}
 
-            {step < 9 ? (
+            {step < getTotalSteps() ? (
               <button
                 type="button"
                 onClick={handleNext}
