@@ -18,6 +18,7 @@ import {
 import { apiClient } from "@/services/apiClient";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
 
+<<<<<<< HEAD
 // Constants
 const DELIVERY_PINCODE = "600001";
 const DELIVERY_CITY = "Chennai";
@@ -308,6 +309,10 @@ const Badge = ({ children, variant = "default" }) => {
 
 // Main Component
 export default function ProductDetailPage() {
+=======
+export default function Page() {
+  
+>>>>>>> b28891cf0727ae8db98affdfc1720a32b00d3328
   const { id } = useParams();
   const router = useRouter();
 

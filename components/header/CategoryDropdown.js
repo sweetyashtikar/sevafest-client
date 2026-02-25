@@ -38,7 +38,7 @@ export const CategoryDropdown = ({ isOpen, onClose }) => {
             <div
               key={cat._id}
               onClick={() => {
-                router.push(`/category/${cat.slug}`);
+                router.push(`/category/${cat._id}`);
                 onClose();
               }}
               className="flex flex-col items-center cursor-pointer group"

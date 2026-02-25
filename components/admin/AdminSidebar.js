@@ -37,7 +37,7 @@ export const menuItems = [
       { label: "Attributes", path: "/admin/attributes", icon: Tags },
       { label: "Coupons", path: "/admin/coupon", icon: Percent },
       { label: "Brands", path: "/admin/brands", icon: Store },
-      { label: "Banner", path: "/admin/banner", icon: Store },
+         { label: "Banner", path: "/admin/banner", icon: Store },
     ],
   },
   {
@@ -100,7 +100,7 @@ export default function AdminSidebar() {
   const [openCatalog, setOpenCatalog] = useState(true);
 
   return (
-    <aside className="fixed left-0 top-0 w-64 h-screen bg-[#90EE90] border-r border-gray-200">
+   <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200">
       {/* LOGO */}
       <div className="px-6 py-5 text-lg font-bold text-black">
         Admin Panel

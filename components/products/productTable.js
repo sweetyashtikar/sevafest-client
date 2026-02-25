@@ -19,6 +19,7 @@ import { EditProductModal } from "@/components/admin/EditProductModal";
 import { ProductViewModal } from "@/components/admin/ProductViewModal";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
+import { apiClient } from "@/services/apiClient";
 
 const ProductTable = ({ path, editPath }) => {
   const router = useRouter();
