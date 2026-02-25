@@ -125,7 +125,7 @@ export default function Page() {
             router.push("/vendor");
             break;
           case "delivery_boy":
-            router.push("/delivery-boy");
+            router.push("/delivery");
             break;
           case "manager":
             router.push("/manager");

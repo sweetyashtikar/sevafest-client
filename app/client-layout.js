@@ -18,16 +18,10 @@ export default function ClientLayout({ children }) {
   // ===== ADMIN & VENDOR (THEIR OWN LAYOUTS) =====
   const isAdminPage = pathname.startsWith("/admin");
   const isVendorPage = pathname.startsWith("/vendor");
-<<<<<<< HEAD
-  const isDeliveryBoyPage = pathname.startsWith("/delivery-boy");
-
-  if (isAdminPage || isVendorPage || isDeliveryBoyPage) {
-=======
   const isDeliveryBoyPage = pathname.startsWith("/delivery");
   const isDesigner = pathname.startsWith("/designer");
 
   if (isAdminPage || isVendorPage || isDeliveryBoyPage || isDesigner) {
->>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
     return <>{children}</>;
   }
 

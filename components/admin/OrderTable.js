@@ -84,11 +84,7 @@ export function OrderTable({
                 </td>
 
                   <td className="px-6 py-4 text-sm text-black">
-<<<<<<< HEAD
-                  {row.order_id.delivery_info.boy_id?.user_id?.username || '-'}
-=======
               {row.order_details?.delivery_info?.boy_name || '-'}
->>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
                 </td>
 
                 <td className="px-6 py-4 text-sm">

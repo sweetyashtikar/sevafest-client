@@ -1,20 +1,22 @@
 "use client";
 
-import { useState } from 'react';
-import ProductBasicInfo from '@/components/products/ProductBasicInfo';
-import ProductCategorization from '@/components/products/ProductCategorization';
-import ProductPricing from '@/components/products/ProductPricing';
-import ProductInventory from '@/components/products/ProductInventory';
-import ProductShipping from '@/components/products/ProductShipping';
-import ProductPolicies from '@/components/products/ProductPolicies';
-import ProductMedia from '@/components/products/ProductMedia';
-import ProductDigital from '@/components/products/ProductDigital';
-import ProductSEO from '@/components/products/ProductSEO';
-import ProductVariants from '@/components/products/ProductVariants';
-import { PRODUCT_TYPES, VARIANT_STOCK_LEVEL_TYPES } from '@/components/products/productTypes';
-import { apiClient } from '@/services/apiClient';
-import {  ProductApi } from '@/components/attributes/api';
-
+import { useState } from "react";
+import ProductBasicInfo from "@/components/products/ProductBasicInfo";
+import ProductCategorization from "@/components/products/ProductCategorization";
+import ProductPricing from "@/components/products/ProductPricing";
+import ProductInventory from "@/components/products/ProductInventory";
+import ProductShipping from "@/components/products/ProductShipping";
+import ProductPolicies from "@/components/products/ProductPolicies";
+import ProductMedia from "@/components/products/ProductMedia";
+import ProductDigital from "@/components/products/ProductDigital";
+import ProductSEO from "@/components/products/ProductSEO";
+import ProductVariants from "@/components/products/ProductVariants";
+import {
+  PRODUCT_TYPES,
+  VARIANT_STOCK_LEVEL_TYPES,
+} from "@/components/products/productTypes";
+import { apiClient } from "@/services/apiClient";
+import { ProductApi } from "@/API/api";
 
 export default function AddProductPage() {
   const [step, setStep] = useState(1);

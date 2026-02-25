@@ -20,10 +20,12 @@ import { ProductViewModal } from "@/components/admin/ProductViewModal";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 
-const ProductTable = ({ path }) => {
-  
+const ProductTable = ({ path, editPath }) => {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
+
+  console.log("user", user);
+
   const isAdmin = user?.role?.role === "admin";
 
   console.log("Role", isAdmin);
@@ -83,7 +85,23 @@ const ProductTable = ({ path }) => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await ProductApi.getAllProducts();
+
+      // Build query params
+      const params = new URLSearchParams();
+
+      // Add all non-empty filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== "" && value !== null && value !== undefined) {
+          params.append(key, value);
+          console.log("params", params);
+        }
+      });
+
+      const role = user?.role?.role;
+
+      console.log("Sending params:", params); // Debug log
+      const response = await ProductApi.getProductsByRole(role, params);
+      console.log("products fetched", response);
 
       let productsData = [];
       let paginationData = null;
@@ -107,6 +125,13 @@ const ProductTable = ({ path }) => {
       ) {
         productsData = response.data.data;
       }
+
+      //     if (response.data && response.data.data) {
+      //   productsData = response.data.data.products || [];
+      //   paginationData = response.data.data.pagination;
+      // } else if (Array.isArray(response.data)) {
+      //   productsData = response.data;
+      // }
 
       setProducts(productsData);
 
@@ -656,16 +681,344 @@ const ProductTable = ({ path }) => {
     );
   }
 
-  if (!Array.isArray(products) || products.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">No products found</p>
-        <p className="text-gray-400 text-sm mt-2">
-          Products data is not in expected format
-        </p>
+  return (
+    <div className="p-6">
+      <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
+        {/* Search Bar */}
+        <div className="relative w-full md:w-96">
+          <input
+            type="text"
+            placeholder="Search products by name, brand, category..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange("search", e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && applyFilters()}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <svg
+            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
+
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center gap-2"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+              />
+            </svg>
+            {showFilters ? "Hide Filters" : "Show Filters"}
+          </button>
+
+          <button
+            onClick={applyFilters}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Apply Filters
+          </button>
+
+          <button
+            onClick={resetFilters}
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+          >
+            Reset
+          </button>
+        </div>
       </div>
-    );
-  }
+
+      {/* Filter Panel */}
+      {showFilters && (
+        <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+          <h3 className="text-lg font-medium text-gray-900 mb-4">Filters</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {/* Category Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => handleFilterChange("category", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Vendor Filter (Admin only) */}
+            {isAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
+                <select
+                  value={filters.vendor}
+                  onChange={(e) => handleFilterChange("vendor", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Vendors</option>
+                  {vendors.map((ven) => (
+                    <option key={ven._id} value={ven._id}>
+                      {ven.username || ven.company}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Brand Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Brand
+              </label>
+              <select
+                value={filters.brand}
+                onChange={(e) => handleFilterChange("brand", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Brands</option>
+                {brands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Product Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Product Type
+              </label>
+              <select
+                value={filters.productType}
+                onChange={(e) =>
+                  handleFilterChange("productType", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Types</option>
+                <option value="simple">Simple</option>
+                <option value="variable">Variable</option>
+                <option value="digital">Digital</option>
+                <option value="service">Service</option>
+              </select>
+            </div>
+
+            {/* Price Range */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Min Price
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange("minPrice", e.target.value)}
+                placeholder="Min"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Max Price
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+                placeholder="Max"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Indicator (Veg/Non-Veg) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Indicator
+              </label>
+              <select
+                value={filters.indicator}
+                onChange={(e) =>
+                  handleFilterChange("indicator", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="0">None</option>
+                <option value="1">Veg</option>
+                <option value="2">Non-Veg</option>
+              </select>
+            </div>
+
+            {/* Stock Status */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Stock Status
+              </label>
+              <select
+                value={filters.inStock}
+                onChange={(e) => handleFilterChange("inStock", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="true">In Stock</option>
+                <option value="false">Out of Stock</option>
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
+
+            {/* Approval Status (Admin only) */}
+            {isAdmin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Approval Status
+                </label>
+                <select
+                  value={filters.isApproved}
+                  onChange={(e) =>
+                    handleFilterChange("isApproved", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All</option>
+                  <option value="true">Approved</option>
+                  <option value="false">Pending</option>
+                </select>
+              </div>
+            )}
+
+            {/* Sort By */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sort By
+              </label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="createdAt">Created Date</option>
+                <option value="name">Name</option>
+                <option value="row_order">Display Order</option>
+                <option value="clicks">Popularity</option>
+              </select>
+            </div>
+
+            {/* Sort Order */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sort Order
+              </label>
+              <select
+                value={filters.sortOrder}
+                onChange={(e) =>
+                  handleFilterChange("sortOrder", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
+
+            {/* Items Per Page */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Items Per Page
+              </label>
+              <select
+                value={filters.limit}
+                onChange={(e) => handleFilterChange("limit", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Active Filters Summary */}
+          <div className="mt-4 pt-3 border-t border-gray-200">
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="text-sm text-gray-600">Active Filters:</span>
+              {Object.entries(filters).map(([key, value]) => {
+                if (
+                  value &&
+                  key !== "page" &&
+                  key !== "limit" &&
+                  key !== "sortBy" &&
+                  key !== "sortOrder"
+                ) {
+                  let displayValue = value;
+
+                  // Format display values
+                  if (key === "category") {
+                    const cat = categories.find((c) => c._id === value);
+                    displayValue = cat?.name || value;
+                  } else if (key === "vendor") {
+                    const ven = vendors.find((v) => v._id === value);
+                    displayValue = ven?.username || ven?.company || value;
+                  } else if (key === "indicator") {
+                    const indicators = { 0: "None", 1: "Veg", 2: "Non-Veg" };
+                    displayValue = indicators[value] || value;
+                  } else if (
+                    key === "status" ||
+                    key === "isApproved" ||
+                    key === "inStock"
+                  ) {
+                    displayValue =
+                      value === "true"
+                        ? "Yes"
+                        : value === "false"
+                          ? "No"
+                          : value;
+                  }
 
                   return (
                     <span

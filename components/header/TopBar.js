@@ -21,6 +21,10 @@ import { apiClient } from "@/services/apiClient";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
+import { fetchCart } from "@/redux/slices/cartSlice";
+import { SupportModal } from "@/ui/SupportModal";
+import { AddressModal } from "@/ui/AddressModal";
+import {CategoryDropdown} from "@/components/header/CategoryDropdown"
 
 export default function TopBar() {
   const dispatch = useDispatch();
@@ -33,6 +37,13 @@ export default function TopBar() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isPagesOpen, setIsPagesOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isAddressOpen, setIsAddressOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   return (
     <>

@@ -17,9 +17,10 @@ import {
   FileText,
   Globe,
   ChevronDown,
-  ChevronRight, // ✅ FIXED
+  ChevronRight,
 } from "lucide-react";
 import { useState } from "react";
+import path from "path";
 
 export const menuItems = [
   {
@@ -36,8 +37,13 @@ export const menuItems = [
       { label: "Attributes", path: "/admin/attributes", icon: Tags },
       { label: "Coupons", path: "/admin/coupon", icon: Percent },
       { label: "Brands", path: "/admin/brands", icon: Store },
-         { label: "Banner", path: "/admin/banner", icon: Store },
+      { label: "Banner", path: "/admin/banner", icon: Store },
     ],
+  },
+  {
+    label: "Stock Mangement",
+    icon: Package,
+    path: "/admin/stock",
   },
   {
     label: "Customers",
@@ -53,6 +59,18 @@ export const menuItems = [
     label: "OurStaff",
     icon: UserCog,
     path: "/admin/staff",
+  },
+
+  {
+    label: "Vendors",
+    icon: Truck,
+    children: [
+      { label: "Vendor Add", path: "/admin/-add", icon: Truck },
+      { label: "Vendor List", path: "/admin/vendors", icon: MessageCircle },
+      {
+        label: "Vedor Transactions", path: "/admin/vendor-transactions", icon: FileText
+      }
+    ],
   },
   {
     label: "Vendors",
@@ -81,11 +99,10 @@ export default function AdminSidebar() {
   const router = useRouter();
   const [openCatalog, setOpenCatalog] = useState(true);
 
-  // ✅ RETURN WAS MISSING
   return (
-   <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200">
+    <aside className="fixed left-0 top-0 w-64 h-screen bg-[#90EE90] border-r border-gray-200">
       {/* LOGO */}
-      <div className="px-6 py-5 text-lg font-semibold text-gray-800">
+      <div className="px-6 py-5 text-lg font-bold text-black">
         Admin Panel
       </div>
 
@@ -100,7 +117,7 @@ export default function AdminSidebar() {
               <div key={item.label} className="mt-3">
                 <button
                   onClick={() => setOpenCatalog(!openCatalog)}
-                  className="w-full flex items-center justify-between px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 transition"
+                  className="w-full flex items-center justify-between px-6 py-3 text-base font-bold text-black hover:bg-gray-50 transition"
                 >
                   <div className="flex items-center gap-3">
                     <item.icon size={20} />
@@ -123,11 +140,10 @@ export default function AdminSidebar() {
                         <button
                           key={child.path}
                           onClick={() => router.push(child.path)}
-                          className={`flex items-center gap-3 px-3 py-2 text-sm rounded transition
-                            ${
-                              childActive
-                                ? "text-orange-500 font-medium"
-                                : "text-gray-500 hover:text-gray-800"
+                          className={`flex items-center gap-3 px-3 py-2 text-sm font-bold rounded transition
+                            ${childActive
+                              ? "text-orange-500"
+                              : "text-black hover:text-gray-700"
                             }`}
                         >
                           <child.icon size={16} />
@@ -146,11 +162,10 @@ export default function AdminSidebar() {
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
-              className={`relative flex items-center gap-3 px-6 py-3 text-base transition
-                ${
-                  isActive
-                    ? "text-orange-500 font-medium"
-                    : "text-gray-600 hover:text-gray-900"
+              className={`relative flex items-center gap-3 px-6 py-3 text-base font-bold transition
+                ${isActive
+                  ? "text-orange-500"
+                  : "text-black hover:text-gray-700"
                 }`}
             >
               {isActive && (
