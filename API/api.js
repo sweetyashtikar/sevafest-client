@@ -136,7 +136,6 @@ export const attributeValueApi = {
     apiClient(`/attributeValue/${id}`, {
       method: "DELETE",
     }),
-
     getStatusTrue: (id) =>
     apiClient(`/attributeValue/status-true`, {
       method: "GET",
@@ -312,17 +311,4 @@ export const ProductApi = {
       body: data,
     });
   },
-  getProductsByRole: (role,params = new URLSearchParams()) => {
-    const queryString = params.toString() ? `?${params.toString()}` : '';
-    if (role === "admin") {
-      return apiClient(`/product/getAllProducts${queryString}`, { method: "GET" });
-    } else {
-      return apiClient(`/product/vendor/my-products${queryString}`, { method: "GET" });
-    }
-  },
-
-  delete: (id) => apiClient(`/product/${id}`, { method: "DELETE" }),
-  getStatusTrue: () => apiClient("/product/status-true", { method: "GET" }),
-
-  getVendorProducts :(params = {}) => apiClient('/product/vendor/my-products',{ method: "GET", params })
 };
