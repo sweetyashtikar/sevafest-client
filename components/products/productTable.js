@@ -355,34 +355,34 @@ const ProductTable = ({ path, editPath }) => {
       ...(product.tags && product.tags.length > 0 && { tags: product.tags }),
       ...(product.attributeValues &&
         product.attributeValues.length > 0 && {
-        attributeValues: product.attributeValues,
-      }),
+          attributeValues: product.attributeValues,
+        }),
       ...(product.variants &&
         product.variants.length > 0 && {
-        variants: product.variants,
-      }),
+          variants: product.variants,
+        }),
       ...(product.deliverableZipcodes &&
         product.deliverableZipcodes.length > 0 && {
-        deliverableZipcodes: product.deliverableZipcodes,
-      }),
+          deliverableZipcodes: product.deliverableZipcodes,
+        }),
 
       // Objects - only if they have properties
       ...(product.dimensions &&
         Object.keys(product.dimensions).length > 0 && {
-        dimensions: product.dimensions,
-      }),
+          dimensions: product.dimensions,
+        }),
       ...(product.video &&
         Object.keys(product.video).length > 0 && {
-        video: product.video,
-      }),
+          video: product.video,
+        }),
       ...(product.productLevelStock &&
         Object.keys(product.productLevelStock).length > 0 && {
-        productLevelStock: product.productLevelStock,
-      }),
+          productLevelStock: product.productLevelStock,
+        }),
       ...(product.simpleProduct &&
         Object.keys(product.simpleProduct).length > 0 && {
-        simpleProduct: product.simpleProduct,
-      }),
+          simpleProduct: product.simpleProduct,
+        }),
 
       // Handle existing images
       ...(product.mainImage && {
@@ -390,11 +390,11 @@ const ProductTable = ({ path, editPath }) => {
       }),
       ...(product.otherImages &&
         product.otherImages.length > 0 && {
-        otherImages: product.otherImages.map((url) => ({
-          url,
-          type: "existing",
-        })),
-      }),
+          otherImages: product.otherImages.map((url) => ({
+            url,
+            type: "existing",
+          })),
+        }),
     };
 
     setEditFormData(formData);
@@ -547,7 +547,7 @@ const ProductTable = ({ path, editPath }) => {
         // Add productLevelStock if using product-level stock
         if (
           editFormData.variantStockLevelType ===
-          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           editFormData.productLevelStock
         ) {
           formDataToSend.append(
@@ -687,31 +687,28 @@ const ProductTable = ({ path, editPath }) => {
       <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         {/* Search Bar */}
         <div className="relative w-full md:w-96">
-  <input
-    type="text"
-    placeholder="Search products by name, brand, category..."
-    value={filters.search}
-    onChange={(e) => handleFilterChange("search", e.target.value)}
-    onKeyPress={(e) => e.key === "Enter" && applyFilters()}
-    className="w-full pl-10 pr-4 py-2 border border-gray-500 rounded-lg 
-    text-black 
-    placeholder:text-black placeholder:opacity-100 
-    focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-  <svg
-    className="absolute left-3 top-2.5 h-5 w-5 text-black"
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-    />
-  </svg>
-</div>
+          <input
+            type="text"
+            placeholder="Search products by name, brand, category..."
+            value={filters.search}
+            onChange={(e) => handleFilterChange("search", e.target.value)}
+            onKeyPress={(e) => e.key === "Enter" && applyFilters()}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <svg
+            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
+          </svg>
+        </div>
 
         <div className="flex gap-3">
           <button
@@ -743,7 +740,7 @@ const ProductTable = ({ path, editPath }) => {
 
           <button
             onClick={resetFilters}
-            className="px-4 py-2 border border-gray-700 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
           >
             Reset
           </button>
@@ -758,210 +755,162 @@ const ProductTable = ({ path, editPath }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {/* Category Filter */}
             <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Category
-  </label>
-
-  <select
-    value={filters.category}
-    onChange={(e) => handleFilterChange("category", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      Select Category
-    </option>
-
-    {categories.map((cat) => (
-      <option key={cat._id} value={cat._id} className="text-gray-700">
-        {cat.name}
-      </option>
-    ))}
-  </select>
-</div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Category
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => handleFilterChange("category", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {/* Vendor Filter (Admin only) */}
             {isAdmin && (
-             <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Vendor
-  </label>
-
-  <select
-    value={filters.vendor}
-    onChange={(e) => handleFilterChange("vendor", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      All Vendors
-    </option>
-
-    {vendors.map((ven) => (
-      <option key={ven._id} value={ven._id} className="text-gray-700">
-        {ven.username || ven.company}
-      </option>
-    ))}
-  </select>
-</div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Vendor
+                </label>
+                <select
+                  value={filters.vendor}
+                  onChange={(e) => handleFilterChange("vendor", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">All Vendors</option>
+                  {vendors.map((ven) => (
+                    <option key={ven._id} value={ven._id}>
+                      {ven.username || ven.company}
+                    </option>
+                  ))}
+                </select>
+              </div>
             )}
 
             {/* Brand Filter */}
-        <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Brand
-  </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Brand
+              </label>
+              <select
+                value={filters.brand}
+                onChange={(e) => handleFilterChange("brand", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Brands</option>
+                {brands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-  <select
-    value={filters.brand}
-    onChange={(e) => handleFilterChange("brand", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      All Brands
-    </option>
-
-    {brands.map((brand) => (
-      <option key={brand} value={brand} className="text-gray-700">
-        {brand}
-      </option>
-    ))}
-  </select>
-</div>
             {/* Product Type Filter */}
             <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Product Type
-  </label>
-
-  <select
-    value={filters.productType}
-    onChange={(e) =>
-      handleFilterChange("productType", e.target.value)
-    }
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      All Types
-    </option>
-
-    <option value="simple" className="text-gray-700">
-      Simple
-    </option>
-    <option value="variable" className="text-gray-700">
-      Variable
-    </option>
-    <option value="digital" className="text-gray-700">
-      Digital
-    </option>
-    <option value="service" className="text-gray-700">
-      Service
-    </option>
-  </select>
-</div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Product Type
+              </label>
+              <select
+                value={filters.productType}
+                onChange={(e) =>
+                  handleFilterChange("productType", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Types</option>
+                <option value="simple">Simple</option>
+                <option value="variable">Variable</option>
+                <option value="digital">Digital</option>
+                <option value="service">Service</option>
+              </select>
+            </div>
 
             {/* Price Range */}
-           <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Min Price
-  </label>
-  <input
-    type="number"
-    min="0"
-    value={filters.minPrice}
-    onChange={(e) => handleFilterChange("minPrice", e.target.value)}
-    placeholder="Min"
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Min Price
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={filters.minPrice}
+                onChange={(e) => handleFilterChange("minPrice", e.target.value)}
+                placeholder="Min"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-<div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Max Price
-  </label>
-  <input
-    type="number"
-    min="0"
-    value={filters.maxPrice}
-    onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
-    placeholder="Max"
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Max Price
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={filters.maxPrice}
+                onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
+                placeholder="Max"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
             {/* Indicator (Veg/Non-Veg) */}
-      <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Indicator
-  </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Indicator
+              </label>
+              <select
+                value={filters.indicator}
+                onChange={(e) =>
+                  handleFilterChange("indicator", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="0">None</option>
+                <option value="1">Veg</option>
+                <option value="2">Non-Veg</option>
+              </select>
+            </div>
 
-  <select
-    value={filters.indicator}
-    onChange={(e) =>
-      handleFilterChange("indicator", e.target.value)
-    }
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      All
-    </option>
-
-    <option value="0" className="text-gray-700">
-      None
-    </option>
-    <option value="1" className="text-gray-700">
-      Veg
-    </option>
-    <option value="2" className="text-gray-700">
-      Non-Veg
-    </option>
-  </select>
-</div>
             {/* Stock Status */}
-        <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Stock Status
-  </label>
-
-  <select
-    value={filters.inStock}
-    onChange={(e) => handleFilterChange("inStock", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      All
-    </option>
-
-    <option value="true" className="text-gray-700">
-      In Stock
-    </option>
-    <option value="false" className="text-gray-700">
-      Out of Stock
-    </option>
-  </select>
-</div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Stock Status
+              </label>
+              <select
+                value={filters.inStock}
+                onChange={(e) => handleFilterChange("inStock", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="true">In Stock</option>
+                <option value="false">Out of Stock</option>
+              </select>
+            </div>
 
             {/* Status Filter */}
             <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Status
-  </label>
-
-  <select
-    value={filters.status}
-    onChange={(e) => handleFilterChange("status", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="" className="text-gray-500">
-      All
-    </option>
-
-    <option value="true" className="text-gray-700">
-      Active
-    </option>
-    <option value="false" className="text-gray-700">
-      Inactive
-    </option>
-  </select>
-</div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                value={filters.status}
+                onChange={(e) => handleFilterChange("status", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All</option>
+                <option value="true">Active</option>
+                <option value="false">Inactive</option>
+              </select>
+            </div>
 
             {/* Approval Status (Admin only) */}
             {isAdmin && (
@@ -985,77 +934,54 @@ const ProductTable = ({ path, editPath }) => {
 
             {/* Sort By */}
             <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Sort By
-  </label>
-
-  <select
-    value={filters.sortBy}
-    onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="createdAt" className="text-gray-700">
-      Created Date
-    </option>
-    <option value="name" className="text-gray-700">
-      Name
-    </option>
-    <option value="row_order" className="text-gray-700">
-      Display Order
-    </option>
-    <option value="clicks" className="text-gray-700">
-      Popularity
-    </option>
-  </select>
-</div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sort By
+              </label>
+              <select
+                value={filters.sortBy}
+                onChange={(e) => handleFilterChange("sortBy", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="createdAt">Created Date</option>
+                <option value="name">Name</option>
+                <option value="row_order">Display Order</option>
+                <option value="clicks">Popularity</option>
+              </select>
+            </div>
 
             {/* Sort Order */}
-           <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Sort Order
-  </label>
-
-  <select
-    value={filters.sortOrder}
-    onChange={(e) =>
-      handleFilterChange("sortOrder", e.target.value)
-    }
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="desc" className="text-gray-700">
-      Descending
-    </option>
-    <option value="asc" className="text-gray-700">
-      Ascending
-    </option>
-  </select>
-</div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Sort Order
+              </label>
+              <select
+                value={filters.sortOrder}
+                onChange={(e) =>
+                  handleFilterChange("sortOrder", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="desc">Descending</option>
+                <option value="asc">Ascending</option>
+              </select>
+            </div>
 
             {/* Items Per Page */}
             <div>
-  <label className="block text-sm font-medium text-black mb-1">
-    Items Per Page
-  </label>
-
-  <select
-    value={filters.limit}
-    onChange={(e) => handleFilterChange("limit", e.target.value)}
-    className="w-full px-3 py-2 border border-gray-500 rounded-md text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-  >
-    <option value="10" className="text-gray-700">
-      10
-    </option>
-    <option value="20" className="text-gray-700">
-      20
-    </option>
-    <option value="50" className="text-gray-700">
-      50
-    </option>
-    <option value="100" className="text-gray-700">
-      100
-    </option>
-  </select>
-</div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Items Per Page
+              </label>
+              <select
+                value={filters.limit}
+                onChange={(e) => handleFilterChange("limit", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </select>
+            </div>
           </div>
 
           {/* Active Filters Summary */}
@@ -1126,40 +1052,42 @@ const ProductTable = ({ path, editPath }) => {
         </div>
 
         {/* RIGHT: SEARCH + ADD */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64 pl-10 pr-4 py-2 border rounded-md text-sm 
-    text-black 
-    placeholder:text-black placeholder:opacity-100
-    focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-          <FiSearch className="absolute left-3 top-2.5 text-black" />
+        <div className="flex items-center gap-3">
+          {/* SEARCH */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search product, brand, category..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64 pl-10 pr-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            />
+            <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
+          </div>
+
+          {/* ADD PRODUCT */}
+          <button
+            onClick={() => router.push(path)}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-md hover:bg-blue-700 transition flex items-center gap-2"
+          >
+            <FiPlus /> Add Product
+          </button>
         </div>
       </div>
 
-
-
-      <div className="bg-white rounded-2xl shadow-sm border">
-        <div className="px-6 py-4 border-b">
-          <h2 className="text-lg font-bold text-black text-center">
-            Product Table
-          </h2>
-        </div>
-
+      <div
+        className="bg-white round
+      FiSearch, FiPlused-lg shadow-md overflow-hidden"
+      >
         <div className="overflow-x-auto">
-
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Serial No
                 </th>
                 <th
-                  className="px-6 py-3 text-left"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort("categoryId.name")}
                 >
                   <div className="flex items-center">
@@ -1173,7 +1101,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort("productName")}
                 >
                   <div className="flex items-center">
@@ -1187,7 +1115,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort("price")}
                 >
                   <div className="flex items-center">
@@ -1201,7 +1129,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                   onClick={() => handleSort("productType")}
                 >
                   <div className="flex items-center">
@@ -1215,7 +1143,8 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort("status")}
                 >
                   <div className="flex items-center">
                     Status
@@ -1228,169 +1157,254 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 {isAdmin && (
-                  <th className="px-6 py-3 text-left">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Approved
                   </th>
                 )}
 
-                <th className="px-6 py-3 text-left">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-          <tbody className="bg-white divide-y divide-gray-200 text-black">
-  {filteredProducts.map((product) => (
-    <React.Fragment key={product._id || product.id}>
-      <tr className="hover:bg-gray-50 transition-colors duration-150">
-        
-        <td className="px-6 py-4 whitespace-nowrap">
-          <span className="font-mono text-sm font-medium text-black">
-            {product.serialNo ||
-              `P${(product._id || "").slice(-6).toUpperCase()}`}
-          </span>
-        </td>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredProducts.map((product) => (
+                <React.Fragment key={product._id || product.id}>
+                  <tr className="hover:bg-gray-50 transition-colors duration-150">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="font-mono text-sm font-medium text-gray-900">
+                        {product.serialNo ||
+                          `P${(product._id || "").slice(-6).toUpperCase()}`}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {product.categoryId?.name || product.category || "N/A"}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {product.name || "Unnamed Product"}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {product.brand || "No brand"}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-semibold text-gray-900">
+                        ₹{(product.effectivePrice || 0).toFixed(2)}
+                      </div>
+                      {product.taxId && (
+                        <div className="text-xs text-gray-500">
+                          +{product.taxId.percentage || 0}% tax
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.productType === "Physical"
+                            ? "bg-green-100 text-green-800"
+                            : product.productType === "Digital"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {product.productType || "Unknown"}
+                      </span>
+                    </td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.status === "Active"
+                            ? "bg-green-100 text-green-800"
+                            : product.status === "Out of Stock"
+                              ? "bg-red-100 text-red-800"
+                              : product.status === "Draft"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {product.status || "Unknown"}
+                      </span>
+                    </td> */}
 
-        <td className="px-6 py-4 whitespace-nowrap">
-          <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-black">
-            {product.categoryId?.name || product.category || "N/A"}
-          </span>
-        </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          product.status === true
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {product.status === true ? "Active" : "Inactive"}
+                      </span>
+                    </td>
 
-        <td className="px-6 py-4">
-          <div className="text-sm font-medium text-black">
-            {product.name || "Unnamed Product"}
-          </div>
-          <div className="text-xs text-black">
-            {product.brand || "No brand"}
-          </div>
-        </td>
+                    {/* {isAdmin && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={product.isApproved === true}
+                            onChange={() => handleApproveToggle(product)}
+                            className="sr-only peer"
+                          />
+                          <div
+                            className="
+          relative w-11 h-6 bg-gray-300 rounded-full
+          peer-checked:bg-green-500
+          transition-colors
+          after:content-['']
+          after:absolute after:top-[2px] after:left-[2px]
+          after:bg-white after:rounded-full
+          after:h-5 after:w-5
+          after:transition-transform
+          peer-checked:after:translate-x-5
+        "
+                          />
+                        </label>
+                      </td>
+                    )} */}
 
-        <td className="px-6 py-4 whitespace-nowrap">
-          <div className="text-sm font-semibold text-black">
-            ₹{(product.effectivePrice || 0).toFixed(2)}
-          </div>
-          {product.taxId && (
-            <div className="text-xs text-black">
-              +{product.taxId.percentage || 0}% tax
-            </div>
-          )}
-        </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {isAdmin ? (
+                        /* --- ADMIN VIEW: Interactive Toggle --- */
+                        <label className="inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={product.isApproved === true}
+                            onChange={() => handleApproveToggle(product)}
+                            className="sr-only peer"
+                          />
+                          <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
+                        </label>
+                      ) : (
+                        /* --- NON-ADMIN VIEW: Static Status Badge --- */
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            product.isApproved
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {product.isApproved ? "Approved" : "Pending"}
+                        </span>
+                      )}
+                    </td>
 
-        <td className="px-6 py-4 whitespace-nowrap">
-          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-black">
-            {product.productType || "Unknown"}
-          </span>
-        </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => handleView(product)}
+                          className="text-blue-600 hover:text-blue-900 transition-colors"
+                          title="View Details"
+                        >
+                          <FiEye size={18} />
+                        </button>
+                        <button
+                          onClick={() =>
+                            router.push(`${editPath}/${product._id}`)
+                          }
+                          className="text-yellow-600 hover:text-yellow-900 transition-colors"
+                          title="Edit"
+                        >
+                          <FiEdit size={18} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(product)}
+                          className="text-red-600 hover:text-red-900 transition-colors"
+                          title="Delete"
+                        >
+                          <FiTrash2 size={18} />
+                        </button>
+                        <button
+                          onClick={() =>
+                            toggleRowExpansion(product._id || product.id)
+                          }
+                          className="text-gray-600 hover:text-gray-900 transition-colors"
+                          title="Expand/Collapse"
+                        >
+                          {expandedRows.includes(product._id || product.id) ? (
+                            <FiChevronUp size={18} />
+                          ) : (
+                            <FiChevronDown size={18} />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
 
-        <td className="px-6 py-4 whitespace-nowrap">
-          <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-black">
-            {product.status === true ? "Active" : "Inactive"}
-          </span>
-        </td>
-
-        <td className="px-6 py-4 whitespace-nowrap">
-          {isAdmin ? (
-            <label className="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={product.isApproved === true}
-                onChange={() => handleApproveToggle(product)}
-                className="sr-only peer"
-              />
-              <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-black transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
-            </label>
-          ) : (
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-black">
-              {product.isApproved ? "Approved" : "Pending"}
-            </span>
-          )}
-        </td>
-
-        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
-          <div className="flex items-center space-x-3">
-            <button
-              onClick={() => handleView(product)}
-              className="text-black"
-            >
-              <FiEye size={18} />
-            </button>
-
-            <button
-              onClick={() =>
-                router.push(`${editPath}/${product._id}`)
-              }
-              className="text-black"
-            >
-              <FiEdit size={18} />
-            </button>
-
-            <button
-              onClick={() => handleDelete(product)}
-              className="text-black"
-            >
-              <FiTrash2 size={18} />
-            </button>
-
-            <button
-              onClick={() =>
-                toggleRowExpansion(product._id || product.id)
-              }
-              className="text-black"
-            >
-              {expandedRows.includes(product._id || product.id) ? (
-                <FiChevronUp size={18} />
-              ) : (
-                <FiChevronDown size={18} />
-              )}
-            </button>
-          </div>
-        </td>
-      </tr>
-
-      {expandedRows.includes(product._id || product.id) && (
-        <tr className="bg-gray-50 text-black">
-          <td colSpan="7" className="px-6 py-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-black">
-              
-              <div>
-                <p className="font-medium text-black">Description</p>
-                <p className="text-black">
-                  {product.description || "No description"}
-                </p>
-              </div>
-
-              <div>
-                <p className="font-medium text-black">Vendor</p>
-                <p className="text-black">
-                  {product.vendorId?.username ||
-                    product.vendorId?.company ||
-                    "N/A"}
-                </p>
-              </div>
-
-              <div>
-                <p className="font-medium text-black">Stock</p>
-                <p className="font-semibold text-black">
-                  {product.stock || 0} units
-                </p>
-              </div>
-
-              <div>
-                <p className="font-medium text-black">Created</p>
-                <p className="text-black">
-                  {product.createdAt
-                    ? new Date(product.createdAt).toLocaleDateString()
-                    : "N/A"}
-                </p>
-              </div>
-
-            </div>
-          </td>
-        </tr>
-      )}
-    </React.Fragment>
-  ))}
-</tbody>
+                  {expandedRows.includes(product._id || product.id) && (
+                    <tr className="bg-gray-50">
+                      <td colSpan="7" className="px-6 py-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <p className="font-medium text-gray-500">
+                              Description
+                            </p>
+                            <p className="text-gray-900">
+                              {product.description || "No description"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-500">Vendor</p>
+                            <p className="text-gray-900">
+                              {product.vendorId?.username ||
+                                product.vendorId?.company ||
+                                "N/A"}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-500">Stock</p>
+                            <p
+                              className={`font-semibold ${
+                                (product.stock || 0) > 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
+                            >
+                              {product.stock || 0} units
+                            </p>
+                          </div>
+                          <div>
+                            <p className="font-medium text-gray-500">Created</p>
+                            <p className="text-gray-900">
+                              {product.createdAt
+                                ? new Date(
+                                    product.createdAt,
+                                  ).toLocaleDateString()
+                                : "N/A"}
+                            </p>
+                          </div>
+                          {product.attributeValues &&
+                            product.attributeValues.length > 0 && (
+                              <div className="md:col-span-2">
+                                <p className="font-medium text-gray-500 mb-1">
+                                  Attributes
+                                </p>
+                                <div className="flex flex-wrap gap-2">
+                                  {product.attributeValues.map(
+                                    (attr, index) => (
+                                      <span
+                                        key={index}
+                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                                      >
+                                        {attr.attribute_id?.name || "Attribute"}
+                                        : {attr.value || "N/A"}
+                                      </span>
+                                    ),
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              ))}
+            </tbody>
           </table>
 
           {/* Pagination */}
@@ -1408,10 +1422,11 @@ const ProductTable = ({ path, editPath }) => {
                 <button
                   key={i}
                   onClick={() => handlePageChange(i + 1)}
-                  className={`px-4 py-2 border rounded-md ${filters.page === i + 1
+                  className={`px-4 py-2 border rounded-md ${
+                    filters.page === i + 1
                       ? "bg-blue-600 text-white border-blue-600"
                       : "border-gray-300 hover:bg-gray-50"
-                    }`}
+                  }`}
                 >
                   {i + 1}
                 </button>

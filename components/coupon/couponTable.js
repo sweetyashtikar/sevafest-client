@@ -2,10 +2,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Pencil, 
-  Trash2, 
-  Eye, 
+import {
+  Pencil,
+  Trash2,
+  Eye,
   EyeOff,
   ChevronLeft,
   ChevronRight,
@@ -18,17 +18,17 @@ import {
   Percent,
   Copy,
   CheckCircle,
-  XCircle
+  XCircle,
 } from "lucide-react";
 import { couponService } from "@/API/couponAPI";
 import AddCouponModal from "./AddCouponModal";
-import { 
-  COUPON_TYPE_COLORS, 
+import {
+  COUPON_TYPE_COLORS,
   DISCOUNT_TYPE_COLORS,
   USER_TYPE_COLORS,
   COUPON_TYPE_OPTIONS,
   DISCOUNT_TYPE_OPTIONS,
-  USER_TYPE_OPTIONS 
+  USER_TYPE_OPTIONS,
 } from "@/components/coupon/couponConstants";
 
 export default function CouponTable() {
@@ -37,23 +37,23 @@ export default function CouponTable() {
   const [showModal, setShowModal] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
   const [stats, setStats] = useState(null);
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  
+
   // Filters
   const [filters, setFilters] = useState({
-    status: '',
-    couponType: '',
-    discountType: '',
-    userType: '',
-    search: ''
+    status: "",
+    couponType: "",
+    discountType: "",
+    userType: "",
+    search: "",
   });
   const [showFilters, setShowFilters] = useState(false);
-  
+
   // Selected coupons for bulk actions
   const [selectedCoupons, setSelectedCoupons] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -72,19 +72,19 @@ export default function CouponTable() {
       const params = {
         page: currentPage,
         limit: itemsPerPage,
-        ...(filters.status && { status: filters.status === 'active' }),
+        ...(filters.status && { status: filters.status === "active" }),
         ...(filters.couponType && { couponType: filters.couponType }),
         ...(filters.discountType && { discountType: filters.discountType }),
         ...(filters.userType && { userType: filters.userType }),
-        ...(filters.search && { search: filters.search })
+        ...(filters.search && { search: filters.search }),
       };
-      
+
       const response = await couponService.getCoupons(params);
       setCoupons(response.data || []);
       setTotalPages(response.pagination?.total_pages || 1);
       setTotalItems(response.pagination?.total_items || 0);
     } catch (error) {
-      console.error('Error fetching coupons:', error);
+      console.error("Error fetching coupons:", error);
     } finally {
       setLoading(false);
     }
@@ -95,7 +95,7 @@ export default function CouponTable() {
       const response = await couponService.getCouponStats();
       setStats(response.data || null);
     } catch (error) {
-      console.error('Error fetching stats:', error);
+      console.error("Error fetching stats:", error);
     }
   };
 
@@ -105,18 +105,18 @@ export default function CouponTable() {
       fetchCoupons();
       fetchStats();
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this coupon?')) {
+    if (window.confirm("Are you sure you want to delete this coupon?")) {
       try {
         await couponService.deleteCoupon(id);
         fetchCoupons();
         fetchStats();
       } catch (error) {
-        console.error('Error deleting coupon:', error);
+        console.error("Error deleting coupon:", error);
       }
     }
   };
@@ -129,8 +129,12 @@ export default function CouponTable() {
 
   const handleBulkDelete = async () => {
     if (selectedCoupons.length === 0) return;
-    
-    if (window.confirm(`Are you sure you want to delete ${selectedCoupons.length} coupons?`)) {
+
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedCoupons.length} coupons?`,
+      )
+    ) {
       try {
         await couponService.bulkDeleteCoupons(selectedCoupons);
         setSelectedCoupons([]);
@@ -138,14 +142,14 @@ export default function CouponTable() {
         fetchCoupons();
         fetchStats();
       } catch (error) {
-        console.error('Error bulk deleting coupons:', error);
+        console.error("Error bulk deleting coupons:", error);
       }
     }
   };
 
   const handleBulkStatusUpdate = async (status) => {
     if (selectedCoupons.length === 0) return;
-    
+
     try {
       await couponService.bulkUpdateStatus(selectedCoupons, status);
       setSelectedCoupons([]);
@@ -153,7 +157,7 @@ export default function CouponTable() {
       fetchCoupons();
       fetchStats();
     } catch (error) {
-      console.error('Error bulk updating status:', error);
+      console.error("Error bulk updating status:", error);
     }
   };
 
@@ -161,14 +165,14 @@ export default function CouponTable() {
     if (selectAll) {
       setSelectedCoupons([]);
     } else {
-      setSelectedCoupons(coupons.map(c => c._id));
+      setSelectedCoupons(coupons.map((c) => c._id));
     }
     setSelectAll(!selectAll);
   };
 
   const handleSelectCoupon = (id) => {
     if (selectedCoupons.includes(id)) {
-      setSelectedCoupons(selectedCoupons.filter(cId => cId !== id));
+      setSelectedCoupons(selectedCoupons.filter((cId) => cId !== id));
       setSelectAll(false);
     } else {
       setSelectedCoupons([...selectedCoupons, id]);
@@ -177,17 +181,17 @@ export default function CouponTable() {
 
   const resetFilters = () => {
     setFilters({
-      status: '',
-      couponType: '',
-      discountType: '',
-      userType: '',
-      search: ''
+      status: "",
+      couponType: "",
+      discountType: "",
+      userType: "",
+      search: "",
     });
     setCurrentPage(1);
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden w-full">
       {/* Header with Stats */}
       <div className="p-6 border-b border-slate-100">
         <div className="flex items-center justify-between mb-6">
@@ -213,24 +217,44 @@ export default function CouponTable() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-              <p className="text-xs text-blue-600 font-medium uppercase">Total Coupons</p>
-              <p className="text-2xl font-bold text-blue-700 mt-1">{stats.overall?.[0]?.totalCoupons || 0}</p>
+              <p className="text-xs text-blue-600 font-medium uppercase">
+                Total Coupons
+              </p>
+              <p className="text-2xl font-bold text-blue-700 mt-1">
+                {stats.overall?.[0]?.totalCoupons || 0}
+              </p>
             </div>
             <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-              <p className="text-xs text-green-600 font-medium uppercase">Active</p>
-              <p className="text-2xl font-bold text-green-700 mt-1">{stats.overall?.[0]?.activeCoupons || 0}</p>
+              <p className="text-xs text-green-600 font-medium uppercase">
+                Active
+              </p>
+              <p className="text-2xl font-bold text-green-700 mt-1">
+                {stats.overall?.[0]?.activeCoupons || 0}
+              </p>
             </div>
             <div className="bg-red-50 rounded-xl p-4 border border-red-100">
-              <p className="text-xs text-red-600 font-medium uppercase">Inactive</p>
-              <p className="text-2xl font-bold text-red-700 mt-1">{stats.overall?.[0]?.inactiveCoupons || 0}</p>
+              <p className="text-xs text-red-600 font-medium uppercase">
+                Inactive
+              </p>
+              <p className="text-2xl font-bold text-red-700 mt-1">
+                {stats.overall?.[0]?.inactiveCoupons || 0}
+              </p>
             </div>
             <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
-              <p className="text-xs text-orange-600 font-medium uppercase">Total Used</p>
-              <p className="text-2xl font-bold text-orange-700 mt-1">{stats.overall?.[0]?.totalUsedCount || 0}</p>
+              <p className="text-xs text-orange-600 font-medium uppercase">
+                Total Used
+              </p>
+              <p className="text-2xl font-bold text-orange-700 mt-1">
+                {stats.overall?.[0]?.totalUsedCount || 0}
+              </p>
             </div>
             <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-              <p className="text-xs text-purple-600 font-medium uppercase">Expiring Soon</p>
-              <p className="text-2xl font-bold text-purple-700 mt-1">{stats.expiringSoon?.[0]?.count || 0}</p>
+              <p className="text-xs text-purple-600 font-medium uppercase">
+                Expiring Soon
+              </p>
+              <p className="text-2xl font-bold text-purple-700 mt-1">
+                {stats.expiringSoon?.[0]?.count || 0}
+              </p>
             </div>
           </div>
         )}
@@ -238,26 +262,38 @@ export default function CouponTable() {
         {/* Search and Filters */}
         <div className="flex items-center gap-3">
           <div className="flex-1 relative">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" />
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30"
+            />
             <input
               type="text"
               placeholder="Search coupons by code, title or description..."
               value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value, currentPage: 1 })}
+              onChange={(e) =>
+                setFilters({
+                  ...filters,
+                  search: e.target.value,
+                  currentPage: 1,
+                })
+              }
               className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-black placeholder:text-black/20 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
             />
           </div>
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={`p-2.5 rounded-xl border transition-all ${
-              showFilters 
-                ? 'bg-blue-50 border-blue-200 text-blue-600' 
-                : 'border-slate-200 text-black/40 hover:bg-slate-50'
+              showFilters
+                ? "bg-blue-50 border-blue-200 text-blue-600"
+                : "border-slate-200 text-black/40 hover:bg-slate-50"
             }`}
           >
             <Filter size={18} />
           </button>
-          {(filters.status || filters.couponType || filters.discountType || filters.userType) && (
+          {(filters.status ||
+            filters.couponType ||
+            filters.discountType ||
+            filters.userType) && (
             <button
               onClick={resetFilters}
               className="px-3 py-2 text-sm text-red-600 hover:text-red-700 font-medium"
@@ -276,7 +312,13 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value, currentPage: 1 })}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    status: e.target.value,
+                    currentPage: 1,
+                  })
+                }
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Status</option>
@@ -290,12 +332,20 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.couponType}
-                onChange={(e) => setFilters({ ...filters, couponType: e.target.value, currentPage: 1 })}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    couponType: e.target.value,
+                    currentPage: 1,
+                  })
+                }
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Types</option>
-                {COUPON_TYPE_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                {COUPON_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -305,12 +355,20 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.discountType}
-                onChange={(e) => setFilters({ ...filters, discountType: e.target.value, currentPage: 1 })}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    discountType: e.target.value,
+                    currentPage: 1,
+                  })
+                }
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Discounts</option>
-                {DISCOUNT_TYPE_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                {DISCOUNT_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -320,12 +378,20 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.userType}
-                onChange={(e) => setFilters({ ...filters, userType: e.target.value, currentPage: 1 })}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    userType: e.target.value,
+                    currentPage: 1,
+                  })
+                }
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Users</option>
-                {USER_TYPE_OPTIONS.map(option => (
-                  <option key={option.value} value={option.value}>{option.label}</option>
+                {USER_TYPE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
                 ))}
               </select>
             </div>
@@ -364,7 +430,7 @@ export default function CouponTable() {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="min-w-full table-auto">
           <thead className="bg-slate-50 border-y border-slate-100">
             <tr>
               <th className="px-6 py-4 text-left">
@@ -419,8 +485,12 @@ export default function CouponTable() {
                 <td colSpan="10" className="px-6 py-12 text-center">
                   <div className="flex flex-col items-center justify-center">
                     <Tag size={48} className="text-black/20 mb-3" />
-                    <p className="text-black/60 font-medium">No coupons found</p>
-                    <p className="text-sm text-black/40 mt-1">Create your first coupon to get started</p>
+                    <p className="text-black/60 font-medium">
+                      No coupons found
+                    </p>
+                    <p className="text-sm text-black/40 mt-1">
+                      Create your first coupon to get started
+                    </p>
                     <button
                       onClick={() => setShowModal(true)}
                       className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
@@ -432,7 +502,10 @@ export default function CouponTable() {
               </tr>
             ) : (
               coupons.map((coupon) => (
-                <tr key={coupon._id} className="hover:bg-slate-50 transition-colors">
+                <tr
+                  key={coupon._id}
+                  className="hover:bg-slate-50 transition-colors"
+                >
                   <td className="px-6 py-4">
                     <input
                       type="checkbox"
@@ -468,26 +541,35 @@ export default function CouponTable() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${DISCOUNT_TYPE_COLORS[coupon.discountType]}`}>
-                      {coupon.discountType === 'percentage' ? (
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${DISCOUNT_TYPE_COLORS[coupon.discountType]}`}
+                    >
+                      {coupon.discountType === "percentage" ? (
                         <>{coupon.couponValue}%</>
                       ) : (
                         <>₹{coupon.couponValue}</>
                       )}
-                      {coupon.maxDiscountAmount && coupon.discountType === 'percentage' && (
-                        <span className="ml-1 text-xs opacity-75">
-                          (upto ₹{coupon.maxDiscountAmount})
-                        </span>
-                      )}
+                      {coupon.maxDiscountAmount &&
+                        coupon.discountType === "percentage" && (
+                          <span className="ml-1 text-xs opacity-75">
+                            (upto ₹{coupon.maxDiscountAmount})
+                          </span>
+                        )}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${COUPON_TYPE_COLORS[coupon.couponType]}`}>
-                      {coupon.couponType === 'single time valid' ? 'Single' : 'Multiple'}
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${COUPON_TYPE_COLORS[coupon.couponType]}`}
+                    >
+                      {coupon.couponType === "single time valid"
+                        ? "Single"
+                        : "Multiple"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${USER_TYPE_COLORS[coupon.userType]}`}>
+                    <span
+                      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${USER_TYPE_COLORS[coupon.userType]}`}
+                    >
                       <Users size={12} className="mr-1" />
                       {coupon.userType}
                     </span>
@@ -495,7 +577,8 @@ export default function CouponTable() {
                   <td className="px-6 py-4">
                     <div className="text-sm">
                       <p className="text-black">
-                        {coupon.totalUsedCount} / {coupon.totalUsageLimit || '∞'}
+                        {coupon.totalUsedCount} /{" "}
+                        {coupon.totalUsageLimit || "∞"}
                       </p>
                       <p className="text-xs text-black/40">
                         {coupon.perUserUsageLimit} per user
@@ -505,18 +588,24 @@ export default function CouponTable() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-1 text-sm">
                       <Calendar size={14} className="text-black/40" />
-                      <span className={coupon.isExpired ? 'text-red-600' : 'text-black/60'}>
+                      <span
+                        className={
+                          coupon.isExpired ? "text-red-600" : "text-black/60"
+                        }
+                      >
                         {new Date(coupon.expiryDate).toLocaleDateString()}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => handleStatusToggle(coupon._id, coupon.status)}
+                      onClick={() =>
+                        handleStatusToggle(coupon._id, coupon.status)
+                      }
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                         coupon.status
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          ? "bg-green-100 text-green-700 hover:bg-green-200"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                     >
                       {coupon.status ? (
@@ -571,7 +660,9 @@ export default function CouponTable() {
         <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm text-black/40">
-              Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} coupons
+              Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
+              {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{" "}
+              coupons
             </span>
             <select
               value={itemsPerPage}
@@ -587,10 +678,10 @@ export default function CouponTable() {
               <option value={100}>100 per page</option>
             </select>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
               className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
@@ -600,7 +691,9 @@ export default function CouponTable() {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
               disabled={currentPage === totalPages}
               className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
