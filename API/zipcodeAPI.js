@@ -11,7 +11,8 @@ export const zipcodeService = {
 
   // Create single zipcode
   createZipcode: (zipcodeData) =>
-    apiClient("/zipcode", {
+
+    apiClient("/zipCode", {
       method: "POST",
       body: zipcodeData,
     }),
