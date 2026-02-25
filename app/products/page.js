@@ -42,17 +42,11 @@ export default function Page() {
   const dispatch = useDispatch();
   const [view, setView] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
-  const [searchQuery, setSearchQuery] = useState("");
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [filters, setFilters] = useState({
-    priceRanges: [],
-    brands: [],
-    ratings: [],
-  });
 
   const [search, setSearch] = useState("");
   const [price, setPrice] = useState(null);
@@ -91,7 +85,6 @@ export default function Page() {
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
-      // You can add toast notification here
     } finally {
       setLoading(false);
     }
@@ -100,78 +93,6 @@ export default function Page() {
   useEffect(() => {
     fetchProducts();
   }, []);
-<<<<<<< HEAD
-
-  useEffect(() => {
-    if (products.length > 0) {
-      const recommended = products
-        .filter((p) => p.rating?.average >= 0)
-        .slice(0, 10);
-
-      console.log("Recommended:", recommended);
-      dispatch(setRecommended(recommended));
-    }
-  }, [products]);
-
-  const toggleBrand = (brand) => {
-    setBrands((prev) =>
-      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand],
-    );
-  };
-
-  const toggleRating = (rating) => {
-    setRatings((prev) =>
-      prev.includes(rating)
-        ? prev.filter((r) => r !== rating)
-        : [...prev, rating],
-    );
-  };
-
-  const toggleCategory = (categoryId) => {
-    setCategories((prev) =>
-      prev.includes(categoryId)
-        ? prev.filter((c) => c !== categoryId)
-        : [...prev, categoryId],
-    );
-  };
-
-  const getProductPrice = (product) => {
-    if (product?.effectivePrice != null) return product.effectivePrice;
-    if (product?.simpleProduct?.sp_specialPrice != null)
-      return product.simpleProduct.sp_specialPrice;
-    if (product?.simpleProduct?.sp_price != null)
-      return product.simpleProduct.sp_price;
-    return null;
-  };
-
-  const brandList = useMemo(() => {
-    const set = new Set();
-
-    products.forEach((p) => {
-      if (p.brand) {
-        set.add(p.brand);
-      }
-    });
-
-    return Array.from(set);
-  }, [products]);
-
-  const priceRanges = useMemo(() => {
-    const prices = products
-      .map((p) => getProductPrice(p))
-      .filter((p) => typeof p === "number");
-
-    if (prices.length === 0) return [];
-
-    const maxPrice = Math.max(...prices);
-
-    const ranges = [{ label: "Under ₹500", value: "0-500" }];
-
-    if (maxPrice > 500) {
-      ranges.push({ label: "₹500 - ₹1000", value: "500-1000" });
-    }
-=======
->>>>>>> 83ee919e76c7a582c04ebc4e7accb2b6b62fe26d
 
   useEffect(() => {
     if (products.length > 0) {

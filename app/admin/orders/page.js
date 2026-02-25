@@ -78,7 +78,7 @@ export default function Page() {
             className="
               w-full
               pl-10 pr-4 py-2.5
-              border border-gray-300
+              border border-gray-500
               rounded-lg
               text-sm
               text-black
