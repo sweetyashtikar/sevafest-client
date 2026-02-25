@@ -1,51 +1,79 @@
 "use client";
+
 import Image from "next/image";
-import { ArrowRight, Facebook, Twitter, Linkedin, Youtube } from "lucide-react";
-import { apiClient } from "@/services/apiClient";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { apiClient } from "@/services/apiClient";
+import { fetchActiveCategories } from "@/redux/slices/categorySlice";
+import { Loader } from "@/ui/Loader";
+import { ArrowRight } from "lucide-react";
 
 import Grocery from "@/assets/images/SEVAFASTSLIDING1.jpg";
-import TopTrendingProducts from "@/ui/TopTrendingProducts";
-import HomeBannerSlider from "@/ui/HomeBannerSlider";
-import Swiper from "@/ui/Swiper";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchActiveCategories } from "@/redux/slices/categorySlice";
+
+const HomeBannerSlider = dynamic(() => import("@/ui/HomeBannerSlider"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-96 animate-puls rounded-xl" />
+  ),
+});
+
+const TopTrendingProducts = dynamic(() => import("@/ui/TopTrendingProducts"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-96 animate-pulse rounded-xl" />
+  ),
+});
+
+const Swiper = dynamic(() => import("@/ui/Swiper"), {
+  ssr: false,  
+  loading: () => (
+    <div className="h-96 animate-pulse rounded-xl" />
+  ),
+});
 
 export default function Page() {
   const dispatch = useDispatch();
-  const { categories, loading } = useSelector((state) => state.category);
   const [products, setProducts] = useState([]);
   const [banners, setBanners] = useState([]);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
-  const fetchProducts = async () => {
-    try {
-      const res = await apiClient(`product?page=1&limit=1000`);
-      if (res?.success) {
-        setProducts(res.data.products || []);
-      }
-    } catch (err) {
-      console.error("Failed to fetch products", err);
-    }
-  };
+  const [isPageLoading, setIsPageLoading] = useState(true);
 
-  const fetchBanners = async () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const fetchData = async () => {
+    setIsDataLoading(true);
     try {
-      const res = await apiClient(`banners?page=1&limit=1000`);
-      if (res?.success) {
-        setBanners(res.data || []);
-      }
+      const [prodRes, bannerRes] = await Promise.all([
+        apiClient(`product?page=1&limit=1000`),
+        apiClient(`banners?page=1&limit=1000`),
+      ]);
+
+      if (prodRes?.success) setProducts(prodRes.data.products || []);
+      if (bannerRes?.success) setBanners(bannerRes.data || []);
     } catch (err) {
-      console.error("Failed to fetch banners", err);
+      console.error("Failed to fetch data", err);
+    } finally {
+      setIsDataLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
-    fetchBanners();
+    fetchData();
     dispatch(fetchActiveCategories());
-  }, []);
+  }, [dispatch]);
+
   return (
     <>
+      {isPageLoading && <Loader fullScreen={true} />}
+
       <main className="min-h-screen bg-white">
         <div className="py-5  " />
         <HomeBannerSlider banners={banners} />
@@ -53,7 +81,7 @@ export default function Page() {
         <HeroSection />
         <OfferBanner />
         <OfferBannerSecond />
-        <TopTrendingProducts products={products} loading={loading} />
+        <TopTrendingProducts products={products} loading={isDataLoading} />
       </main>
     </>
   );

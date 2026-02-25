@@ -1,17 +1,39 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { apiClient } from "@/services/apiClient";
-import ProductCard from "@/ui/ProductCard";
-import Pagination from "@/ui/Pagination";
-import FilterAnim from "@/ui/FilterAnim";
-import FilterSidebar from "@/ui/FilterSidebar";
-import { useRouter } from "next/navigation";
-import RecommendedProducts from "@/ui/RecommendedProducts";
 import { useDispatch } from "react-redux";
 import { setRecommended } from "@/redux/slices/recommendationSlice";
 import { fetchCart } from "@/redux/slices/cartSlice";
+import { useRouter } from "next/navigation";
+import { Loader } from "@/ui/Loader";
+
+const ProductCard = dynamic(() => import("@/ui/ProductCard"), {
+  ssr: false,
+  loading: () => <div className="h-96 animate-puls rounded-xl" />,
+});
+
+const Pagination = dynamic(() => import("@/ui/Pagination"), {
+  ssr: false,
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
+});
+
+const FilterAnim = dynamic(() => import("@/ui/FilterAnim"), {
+  ssr: false,
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
+});
+
+const FilterSidebar = dynamic(() => import("@/ui/FilterSidebar"), {
+  ssr: false,
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
+});
+
+const RecommendedProducts = dynamic(() => import("@/ui/RecommendedProducts"), {
+  ssr: false,
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
+});
 
 const PER_PAGE = 20;
 
@@ -21,7 +43,7 @@ export default function Page() {
   const [view, setView] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -57,7 +79,6 @@ export default function Page() {
   // ================= API =================
   const fetchProducts = async () => {
     try {
-      setLoading(true);
       const res = await apiClient(`product?page=1&limit=1000`);
       if (res?.success) {
         setProducts(res.data.products || []);
@@ -252,120 +273,119 @@ export default function Page() {
     setCurrentPage(1);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-300 border-t-blue-600" />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Breadcrumb */}
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="mb-6 text-sm text-gray-500 font-medium"
-        >
-          Home / Womens Fashion / <span className="text-black">T-Shirts</span>
-        </motion.div>
-
-        <div className="flex flex-col lg:flex-row gap-14">
-          {/* Sidebar */}
-          <motion.aside
-            initial={{ opacity: 0, x: -20 }}
+    <>
+      {loading && <Loader fullScreen={true} />}
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Breadcrumb */}
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="lg:w-64"
+            className="mb-6 text-sm text-gray-500 font-medium"
           >
-            <FilterSidebar
-              priceRanges={priceRanges}
-              selectedPrice={price}
-              onPriceChange={setPrice}
-              brands={brandList}
-              selectedBrands={brands}
-              onBrandChange={toggleBrand}
-              ratings={[4, 3, 2]}
-              selectedRatings={ratings}
-              onRatingChange={toggleRating}
-              onClearFilters={clearFilters}
-              categories={categoryList}
-              selectedCategories={categories}
-              onCategoryChange={toggleCategory}
-            />
-          </motion.aside>
+            Home / Womens Fashion / <span className="text-black">T-Shirts</span>
+          </motion.div>
 
-          <main className="flex-1">
-            <FilterAnim
-              search={search}
-              onSearchChange={setSearch}
-              view={view}
-              onViewChange={setView}
-            />
-
-            {paginatedProducts.length === 0 && (
-              <p className="text-center text-gray-500 py-10">
-                No products found
-              </p>
-            )}
-
-            <motion.div
-              layout
-              className={
-                view === "grid"
-                  ? "grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-8"
-                  : "space-y-6"
-              }
+          <div className="flex flex-col lg:flex-row gap-14">
+            {/* Sidebar */}
+            <motion.aside
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="lg:w-64"
             >
-              <AnimatePresence mode="popLayout">
-                {paginatedProducts.map((product, index) => (
-                  <motion.div
-                    key={product._id}
-                    layout
-                    initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{
-                      duration: 0.4,
-                      delay: index * 0.05,
-                      ease: [0.23, 1, 0.32, 1],
-                    }}
-                  >
-                    <ProductCard
-                      image={product?.mainImage}
-                      name={product?.name}
-                      category={product?.categoryId?.name ?? "Uncategorized"}
-                      shortDescription={product?.shortDescription}
-                      price={getProductPrice(product)}
-                      originalPrice={
-                        product?.simpleProduct?.sp_price ||
-                        (product?.variants?.length > 0 ? product.variants[0].variant_price : null)
-                      }
-                      discount={product?.discountPercentage}
-                      rating={Math.round(product.rating?.average || 0)}
-                      reviews={product.rating?.count || 0}
-                      onNavigate={() => router.push(`/products/${product._id}`)}
-                      onAddToCart={() => addToCart(product._id)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
+              <FilterSidebar
+                priceRanges={priceRanges}
+                selectedPrice={price}
+                onPriceChange={setPrice}
+                brands={brandList}
+                selectedBrands={brands}
+                onBrandChange={toggleBrand}
+                ratings={[4, 3, 2]}
+                selectedRatings={ratings}
+                onRatingChange={toggleRating}
+                onClearFilters={clearFilters}
+                categories={categoryList}
+                selectedCategories={categories}
+                onCategoryChange={toggleCategory}
+              />
+            </motion.aside>
 
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          </main>
+            <main className="flex-1">
+              <FilterAnim
+                search={search}
+                onSearchChange={setSearch}
+                view={view}
+                onViewChange={setView}
+              />
+
+              {paginatedProducts.length === 0 && (
+                <p className="text-center text-gray-500 py-10">
+                  No products found
+                </p>
+              )}
+
+              <motion.div
+                layout
+                className={
+                  view === "grid"
+                    ? "grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-8"
+                    : "space-y-6"
+                }
+              >
+                <AnimatePresence mode="popLayout">
+                  {paginatedProducts.map((product, index) => (
+                    <motion.div
+                      key={product._id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{
+                        duration: 0.4,
+                        delay: index * 0.05,
+                        ease: [0.23, 1, 0.32, 1],
+                      }}
+                    >
+                      <ProductCard
+                        image={product?.mainImage}
+                        name={product?.name}
+                        category={product?.categoryId?.name ?? "Uncategorized"}
+                        shortDescription={product?.shortDescription}
+                        price={getProductPrice(product)}
+                        originalPrice={
+                          product?.simpleProduct?.sp_price ||
+                          (product?.variants?.length > 0
+                            ? product.variants[0].variant_price
+                            : null)
+                        }
+                        discount={product?.discountPercentage}
+                        rating={Math.round(product.rating?.average || 0)}
+                        reviews={product.rating?.count || 0}
+                        onNavigate={() =>
+                          router.push(`/products/${product._id}`)
+                        }
+                        onAddToCart={() => addToCart(product._id)}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </motion.div>
+
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={setCurrentPage}
+              />
+            </main>
+          </div>
+        </div>
+
+        <div className="p-8">
+          <RecommendedProducts />
         </div>
       </div>
-
-      <div className="p-8">
-        <RecommendedProducts />
-      </div>
-    </div>
+    </>
   );
 }
