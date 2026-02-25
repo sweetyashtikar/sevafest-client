@@ -1,20 +1,21 @@
-'use client';
-import React from 'react';
+import React from "react";
 
 export default function StatCard({ title, count, value, icon: Icon, bgColor, iconBg }) {
   return (
-    <div className={`${bgColor} rounded-lg p-6 shadow`}>
-      <div className="flex items-start justify-between">
-        <div>
-          <h3 className="text-sm font-medium text-gray-700 mb-1">
-            {title} {count}
-          </h3>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-        </div>
+    <div className={`p-6 rounded-lg shadow flex flex-col items-center text-center ${bgColor}`}>
+      {/* Icon at top */}
+      <div className={`p-4 rounded-full mb-4 ${iconBg}`}>
+        <Icon className="w-8 h-8 text-white" />
+      </div>
 
-        <div className={`${iconBg} p-3 rounded-lg`}>
-          <Icon className="w-6 h-6 text-white" />
-        </div>
+      {/* Title + count */}
+      <div className="text-gray-700 font-medium text-lg">
+        {title} <span className="text-gray-500">{count}</span>
+      </div>
+
+      {/* Value */}
+      <div className="mt-2 text-2xl font-bold text-black">
+        {value}
       </div>
     </div>
   );
