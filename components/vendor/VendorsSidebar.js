@@ -10,126 +10,40 @@ import {
   IndianRupee,
   Settings,
 } from "lucide-react";
-import { useState } from "react";
 
 export const menuItems = [
-  {
-    label: "Dashboard",
-    icon: LayoutDashboard,
-    path: "/vendor",
-  },
-  {
-    label: "Delivery Staff",
-    icon: Users,
-    path: "/vendor/delivery-staff",
-  },
-  {
-    label: "Products",
-    icon: Package,
-    path: "/vendor/products",
-  },
-  {
-    label: "User Requests",
-    icon: UserCheck,
-    path: "/vendor/user-requests",
-  },
-  {
-    label: "Orders",
-    icon: ShoppingCart,
-    path: "/vendor/orders",
-  },
-  {
-    label: "Earnings",
-    icon: IndianRupee,
-    path: "/vendor/earnings",
-  },
-  {
-    label: "Settings",
-    icon: Settings,
-    path: "/vendor/settings",
-  },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/vendor" },
+  { label: "Delivery Staff", icon: Users, path: "/vendor/delivery-staff" },
+  { label: "Products", icon: Package, path: "/vendor/products" },
+  { label: "User Requests", icon: UserCheck, path: "/vendor/user-requests" },
+  { label: "Orders", icon: ShoppingCart, path: "/vendor/orders" },
+  { label: "Earnings", icon: IndianRupee, path: "/vendor/earnings" },
+  { label: "Settings", icon: Settings, path: "/vendor/settings" },
 ];
 
 export default function VendorsSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [openCatalog, setOpenCatalog] = useState(true);
 
-  // ✅ RETURN WAS MISSING
   return (
-    <aside className="fixed left-0 top-0 w-64 h-screen bg-white border-r border-gray-200">
+    <aside className="fixed left-0 top-0 w-64 h-screen bg-[#0F766E] border-r border-white/10">
       {/* LOGO */}
-      <div className="px-6 py-5 text-lg font-semibold text-gray-800">
+      <div className="px-6 py-5 text-lg font-bold text-white border-b border-white/10">
         Vendor Panel
       </div>
 
       {/* MENU */}
-      <nav className="flex flex-col gap-1">
+      <nav className="flex flex-col mt-3 px-2">
         {menuItems.map((item) => {
-          const isActive = item.path && pathname === item.path;
+          const isActive = pathname === item.path;
 
-          /* ---------- CATALOG ---------- */
-          if (item.children) {
-            return (
-              <div key={item.label} className="mt-3">
-                <button
-                  onClick={() => setOpenCatalog(!openCatalog)}
-                  className="w-full flex items-center justify-between px-6 py-3 text-base font-medium text-gray-700 hover:bg-gray-50 transition"
-                >
-                  <div className="flex items-center gap-3">
-                    <item.icon size={20} />
-                    {item.label}
-                  </div>
-
-                  {openCatalog ? (
-                    <ChevronDown size={18} />
-                  ) : (
-                    <ChevronRight size={18} />
-                  )}
-                </button>
-
-                {openCatalog && (
-                  <div className="ml-10 mt-1 flex flex-col gap-1">
-                    {item.children.map((child) => {
-                      const childActive = pathname === child.path;
-
-                      return (
-                        <button
-                          key={child.path}
-                          onClick={() => router.push(child.path)}
-                          className={`flex items-center gap-3 px-3 py-2 text-sm rounded transition
-                            ${
-                              childActive
-                                ? "text-orange-500 font-medium"
-                                : "text-gray-500 hover:text-gray-800"
-                            }`}
-                        >
-                          <child.icon size={16} />
-                          {child.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          }
-
-          /* ---------- NORMAL ITEM ---------- */
           return (
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
-              className={`relative flex items-center gap-3 px-6 py-3 text-base transition
-                ${
-                  isActive
-                    ? "text-orange-500 font-medium"
-                    : "text-gray-600 hover:text-gray-900"
-                }`}
+              className={`flex items-center gap-3 px-4 py-3 text-base text-white font-bold rounded-md
+                ${isActive ? "bg-white/20" : ""}`}
             >
-              {isActive && (
-                <span className="absolute left-0 top-0 h-full w-1 bg-orange-500 rounded-r" />
-              )}
               <item.icon size={20} />
               {item.label}
             </button>

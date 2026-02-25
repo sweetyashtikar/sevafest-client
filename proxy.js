@@ -24,7 +24,6 @@ export function proxy(request) {
     "/designer": ["webdesigner"],
     "/worker": ["worker"],
     "/courier": ["courier"],
-    "/delivery": ["delivery_boy"],
   };
 
   for (const route in protectedRoutes) {

@@ -410,7 +410,7 @@ export default function CategoriesPage() {
               <div className="px-6 py-4 border-t border-gray-200">
                 <div className="flex flex-col md:flex-row md:items-center justify-between">
                   <div className="mb-4 md:mb-0">
-                    <p className="text-sm text-gray-700">
+                    <p className="text-sm font-bold text-gray-700">
                       Showing{" "}
                       <span className="font-medium">{categories.length}</span>{" "}
                       of <span className="font-medium">{pagination.total}</span>{" "}

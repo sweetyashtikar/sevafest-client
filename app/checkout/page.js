@@ -611,4 +611,3 @@ const OrderPlace = React.memo(({ summary, orderId , selectedAddress,
 });
 
 
-

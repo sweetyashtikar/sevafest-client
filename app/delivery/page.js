@@ -40,48 +40,32 @@ export default function Page() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 
         {/* Total Deliveries */}
-        <div className="bg-white p-5 rounded-xl shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Deliveries</p>
-              <h2 className="text-2xl font-bold text-gray-900">128</h2>
-            </div>
-            <Truck className="w-8 h-8 text-blue-600" />
-          </div>
-        </div>
+       <div className="bg-white p-5 rounded-xl shadow flex flex-col items-center text-center">
+  <Truck className="w-10 h-10 text-blue-600 mb-4" />
+  <p className="text-sm text-gray-500">Total Deliveries</p>
+  <h2 className="text-2xl font-bold text-gray-900">128</h2>
+</div>
 
         {/* Completed Orders */}
-        <div className="bg-white p-5 rounded-xl shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Completed Orders</p>
-              <h2 className="text-2xl font-bold text-green-600">112</h2>
-            </div>
-            <CheckCircle className="w-8 h-8 text-green-600" />
-          </div>
-        </div>
+       <div className="bg-white p-5 rounded-xl shadow flex flex-col items-center text-center">
+  <CheckCircle className="w-10 h-10 text-green-600 mb-4" />
+  <p className="text-sm text-gray-500">Completed Orders</p>
+  <h2 className="text-2xl font-bold text-gray-900">112</h2>
+</div>
 
         {/* Pending Orders */}
-        <div className="bg-white p-5 rounded-xl shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Pending Orders</p>
-              <h2 className="text-2xl font-bold text-orange-500">16</h2>
-            </div>
-            <Package className="w-8 h-8 text-orange-500" />
-          </div>
-        </div>
+       <div className="bg-white p-5 rounded-xl shadow flex flex-col items-center text-center">
+  <Package className="w-10 h-10 text-orange-500 mb-4" />
+  <p className="text-sm text-gray-500">Pending Orders</p>
+  <h2 className="text-2xl font-bold text-gray-900">16</h2>
+</div>
 
         {/* Total Earnings */}
-        <div className="bg-white p-5 rounded-xl shadow">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-gray-500">Total Earnings</p>
-              <h2 className="text-2xl font-bold text-purple-600">₹18,450</h2>
-            </div>
-            <IndianRupee className="w-8 h-8 text-purple-600" />
-          </div>
-        </div>
+       <div className="bg-white p-5 rounded-xl shadow flex flex-col items-center text-center">
+  <IndianRupee className="w-10 h-10 text-purple-600 mb-4" />
+  <p className="text-sm text-gray-500">Total Earnings</p>
+  <h2 className="text-2xl font-bold text-gray-900">₹18,450</h2>
+</div>
 
       </div>
 

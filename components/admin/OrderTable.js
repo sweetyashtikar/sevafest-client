@@ -14,37 +14,41 @@ export function OrderTable({
   onAssign
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-      {/* ===== TABLE ===== */}
+    <div className="bg-white rounded-2xl shadow-sm border">
+      <div className="px-6 py-4 border-b">
+        <h2 className="text-lg font-bold text-black text-center">
+          Order Table
+        </h2>
+      </div>      {/* ===== TABLE ===== */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Order No
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Customer
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Product
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Qty
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Price
               </th>
-               <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
-               Delivery boy
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                Delivery boy
               </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Status
               </th>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Payment Status
               </th>
-              <th className="px-6 py-3 text-center text-xs font-semibold text-black uppercase">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Action
               </th>
             </tr>
@@ -83,24 +87,23 @@ export function OrderTable({
                   ₹ {row.sub_total}
                 </td>
 
-                  <td className="px-6 py-4 text-sm text-black">
-              {row.order_details?.delivery_info?.boy_name || '-'}
+                <td className="px-6 py-4 text-sm text-black">
+                  {row.order_details?.delivery_info?.boy_name || '-'}
                 </td>
 
                 <td className="px-6 py-4 text-sm">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      row.status === "processed"
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${row.status === "processed"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
-                    }`}
+                      }`}
                   >
                     {row.status}
                   </span>
                 </td>
 
-                 <td className="px-6 py-4 text-sm text-black">
-                 {`${row.order_id.payment?.method} / ${row.order_id.payment?.status}`}
+                <td className="px-6 py-4 text-sm text-black">
+                  {`${row.order_id.payment?.method} / ${row.order_id.payment?.status}`}
                 </td>
 
                 <td className="px-6 py-4 text-center">
@@ -181,5 +184,6 @@ export function OrderTable({
         </div>
       </div>
     </div>
+
   );
 }
