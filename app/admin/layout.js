@@ -1,21 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import AdminTopBar from "@/components/admin/AdminTopBar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 export default function AdminLayout({ children }) {
+  const [isOpen, setIsOpen] = useState(true); 
+
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <AdminSidebar />
+    <div className="min-h-screen bg-gray-50 flex">
 
-      {/* TopBar */}
-      <AdminTopBar />
+      <AdminSidebar isOpen={isOpen} setIsOpen={setIsOpen} />
 
-      {/* Main Content */}
-      <main className="ml-64 pt-16 p-6">
-        {children}
-      </main>
+      <div className="flex-1 flex flex-col transition-all duration-300">
+
+        <AdminTopBar isOpen={isOpen} setIsOpen={setIsOpen} />
+
+        <main className={`pt-16 p-6 transition-all duration-300 ${isOpen ? "ml-80" : "ml-20"}`}>
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
