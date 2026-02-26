@@ -57,7 +57,7 @@ const [loading, setLoading] = useState(false);
             name="taxId"
             value={formData.taxId}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
             <option value="">Select Tax Rate</option>
             {taxes.map(tax => (
@@ -76,7 +76,7 @@ const [loading, setLoading] = useState(false);
             name="isPricesInclusiveTax"
             checked={formData.isPricesInclusiveTax}
             onChange={handleChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
           />
           <label htmlFor="isPricesInclusiveTax" className="ml-2 block text-sm text-gray-700">
             Prices are inclusive of tax
@@ -92,17 +92,18 @@ const [loading, setLoading] = useState(false);
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-2 text-gray-500">₹</span>
-                <input
-                  type="number"
-                  name="sp_price"
-                  value={formData.simpleProduct?.sp_price || ''}
-                  onChange={handleSimpleProductChange}
-                  min="0"
-                  step="0.01"
-                  required
-                  className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0.00"
-                />
+              <input
+  type="number"
+  name="sp_price"
+  value={formData.simpleProduct?.sp_price || ''}
+  onChange={handleSimpleProductChange}
+  step="0.01"
+  required
+  className="w-full pl-8 pr-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  placeholder:text-gray-700 text-gray-700"
+  placeholder="0.00"
+/>
               </div>
             </div>
 
@@ -113,15 +114,17 @@ const [loading, setLoading] = useState(false);
               <div className="relative">
                 <span className="absolute left-3 top-2 text-gray-500">₹</span>
                 <input
-                  type="number"
-                  name="sp_specialPrice"
-                  value={formData.simpleProduct?.sp_specialPrice || ''}
-                  onChange={handleSimpleProductChange}
-                  min="0"
-                  step="0.01"
-                  className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="0.00"
-                />
+  type="number"
+  name="sp_specialPrice"
+  value={formData.simpleProduct?.sp_specialPrice || ''}
+  onChange={handleSimpleProductChange}
+  min="0"
+  step="0.01"
+  className="w-full pl-8 pr-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  placeholder:text-gray-700 text-gray-700"
+  placeholder="0.00"
+/>
               </div>
               {formData.simpleProduct.sp_specialPrice >= formData.simpleProduct.sp_price && (
                 <p className="text-sm text-red-600 mt-1">Special price must be less than regular price</p>
@@ -132,14 +135,16 @@ const [loading, setLoading] = useState(false);
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 SKU(Stock Keeping Unit)
               </label>
-              <input
-                type="text"
-                name="sp_sku"
-                value={formData.simpleProduct?.sp_sku || ''}
-                onChange={handleSimpleProductChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
-                placeholder="Product SKU"
-              />
+             <input
+  type="text"
+  name="sp_sku"
+  value={formData.simpleProduct?.sp_sku || ''}
+  onChange={handleSimpleProductChange}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  uppercase text-gray-700 placeholder:text-gray-700"
+  placeholder="Product SKU"
+/>
             </div>
           </>
         )}

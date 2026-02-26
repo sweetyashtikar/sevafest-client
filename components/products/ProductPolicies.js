@@ -27,7 +27,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                   name="codAllowed"
                   checked={formData.codAllowed}
                   onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                 />
                 <label htmlFor="codAllowed" className="ml-3 block text-sm font-medium text-gray-700">
                   Cash on Delivery (COD)
@@ -52,7 +52,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                     id="payOnline"
                     checked
                     disabled
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                   />
                   <label htmlFor="payOnline" className="ml-3 block text-sm font-medium text-gray-700">
                     Credit/Debit Cards
@@ -65,7 +65,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                     type="checkbox"
                     id="upiEnabled"
                     checked
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                   />
                   <label htmlFor="upiEnabled" className="ml-3 block text-sm font-medium text-gray-700">
                     UPI Payments
@@ -77,7 +77,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                     type="checkbox"
                     id="walletEnabled"
                     checked
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                   />
                   <label htmlFor="walletEnabled" className="ml-3 block text-sm font-medium text-gray-700">
                     Digital Wallets (Paytm, PhonePe, etc.)
@@ -89,7 +89,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                     type="checkbox"
                     id="netBankingEnabled"
                     checked
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                   />
                   <label htmlFor="netBankingEnabled" className="ml-3 block text-sm font-medium text-gray-700">
                     Net Banking
@@ -114,7 +114,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                   name="isReturnable"
                   checked={formData.isReturnable}
                   onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                 />
                 <label htmlFor="isReturnable" className="ml-3 block text-sm font-medium text-gray-700">
                   Allow Returns
@@ -180,7 +180,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                           type="checkbox"
                           id="originalPackaging"
                           checked
-                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-700 rounded"
                         />
                         <label htmlFor="originalPackaging" className="ml-2 text-sm text-green-700">
                           Must be in original packaging
@@ -191,7 +191,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                           type="checkbox"
                           id="unused"
                           checked
-                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-700 rounded"
                         />
                         <label htmlFor="unused" className="ml-2 text-sm text-green-700">
                           Must be unused and unworn
@@ -202,7 +202,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                           type="checkbox"
                           id="tagsAttached"
                           checked
-                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-700 rounded"
                         />
                         <label htmlFor="tagsAttached" className="ml-2 text-sm text-green-700">
                           All tags must be attached
@@ -213,7 +213,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                           type="checkbox"
                           id="noDamage"
                           checked
-                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-700 rounded"
                         />
                         <label htmlFor="noDamage" className="ml-2 text-sm text-green-700">
                           No signs of damage or wear
@@ -311,7 +311,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                   name="isCancelable"
                   checked={formData.isCancelable}
                   onChange={handleChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                 />
                 <label htmlFor="isCancelable" className="ml-3 block text-sm font-medium text-gray-700">
                   Allow Order Cancellation
@@ -342,7 +342,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                         className={`p-4 border rounded-lg text-center transition-colors ${
                           formData.cancelableTill === value
                             ? 'border-blue-500 bg-blue-100'
-                            : 'border-gray-300 hover:bg-gray-50'
+                            : 'border-gray-700 hover:bg-gray-50'
                         }`}
                       >
                         <div className={`w-4 h-4 rounded-full border mx-auto mb-2 ${
@@ -415,7 +415,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
           </div>
         </div>
 
-        Warranty & Guarantee
+        
         <div className="p-6 border border-gray-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Warranty & Guarantee</h3>
           
@@ -424,14 +424,16 @@ export default function ProductPolicies({ formData, updateFormData }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Warranty Period
               </label>
-              <input
-                type="text"
-                name="warrantyPeriod"
-                value={formData.warrantyPeriod}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g., 1 year, 6 months, Lifetime"
-              />
+             <input
+  type="text"
+  name="warrantyPeriod"
+  value={formData.warrantyPeriod}
+  onChange={handleChange}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  text-gray-700 placeholder:text-gray-700"
+  placeholder="e.g., 1 year, 6 months, Lifetime"
+/>
               <p className="text-xs text-gray-500 mt-1">
                 Manufacturer&quot;s warranty period
               </p>
@@ -441,14 +443,16 @@ export default function ProductPolicies({ formData, updateFormData }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Guarantee Period
               </label>
-              <input
-                type="text"
-                name="guaranteePeriod"
-                value={formData.guaranteePeriod}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="e.g., 30 days, 100% satisfaction"
-              />
+             <input
+  type="text"
+  name="guaranteePeriod"
+  value={formData.guaranteePeriod}
+  onChange={handleChange}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  text-gray-700 placeholder:text-gray-700"
+  placeholder="e.g., 30 days, 100% satisfaction"
+/>
               <p className="text-xs text-gray-500 mt-1">
                 Seller/satisfaction guarantee
               </p>
@@ -461,7 +465,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
               <textarea
                 rows="4"
                 name="warrantyTerms"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Detailed warranty terms and conditions..."
                 defaultValue="This warranty covers manufacturing defects and does not cover damage from misuse, accidents, or normal wear and tear. Warranty claims must be accompanied by proof of purchase. For warranty service, contact our customer support team."
               />
@@ -474,7 +478,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
               Warranty Type
             </label> */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* <div className="flex items-center p-3 border border-gray-300 rounded-lg">
+              {/* <div className="flex items-center p-3 border border-gray-700 rounded-lg">
                 <input
                   type="radio"
                   id="manufacturerWarranty"
@@ -487,7 +491,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                 </label>
               </div> */}
               
-              {/* <div className="flex items-center p-3 border border-gray-300 rounded-lg">
+              {/* <div className="flex items-center p-3 border border-gray-700 rounded-lg">
                 <input
                   type="radio"
                   id="sellerWarranty"
@@ -500,7 +504,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
                 </label>
               </div> */}
               
-              {/* <div className="flex items-center p-3 border border-gray-300 rounded-lg">
+              {/* <div className="flex items-center p-3 border border-gray-700 rounded-lg">
                 <input
                   type="radio"
                   id="extendedWarranty"
@@ -521,7 +525,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
           <h3 className="text-lg font-medium text-gray-700 mb-4">Policy Summary</h3>
           
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-white border border-gray-300 rounded-md">
+            <div className="flex justify-between items-center p-3 bg-white border border-gray-700 rounded-md">
               <span className="text-sm font-medium text-gray-700">Cash on Delivery (COD)</span>
               <span className={`px-3 py-1 rounded-full text-sm ${
                 formData.codAllowed ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -530,7 +534,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
               </span>
             </div>
             
-            <div className="flex justify-between items-center p-3 bg-white border border-gray-300 rounded-md">
+            <div className="flex justify-between items-center p-3 bg-white border border-gray-700 rounded-md">
               <span className="text-sm font-medium text-gray-700">Returns</span>
               <span className={`px-3 py-1 rounded-full text-sm ${
                 formData.isReturnable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -539,7 +543,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
               </span>
             </div>
             
-            <div className="flex justify-between items-center p-3 bg-white border border-gray-300 rounded-md">
+            <div className="flex justify-between items-center p-3 bg-white border border-gray-700 rounded-md">
               <span className="text-sm font-medium text-gray-700">Cancellations</span>
               <span className={`px-3 py-1 rounded-full text-sm ${
                 formData.isCancelable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -548,7 +552,7 @@ export default function ProductPolicies({ formData, updateFormData }) {
               </span>
             </div>
             
-            <div className="flex justify-between items-center p-3 bg-white border border-gray-300 rounded-md">
+            <div className="flex justify-between items-center p-3 bg-white border border-gray-700 rounded-md">
               <span className="text-sm font-medium text-gray-700">Warranty</span>
               <span className="px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
                 {formData.warrantyPeriod || 'Not specified'}

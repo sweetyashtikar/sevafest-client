@@ -37,13 +37,15 @@ export default function ProductInventory({ formData, updateFormData }) {
             Total Allowed Quantity
           </label>
           <input
-            type="number"
-            name="totalAllowedQuantity"
-            value={formData.totalAllowedQuantity}
-            onChange={handleChange}
-            min="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+  type="number"
+  name="totalAllowedQuantity"
+  value={formData.totalAllowedQuantity}
+  onChange={handleChange}
+  min="1"
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  text-gray-700"
+/>
           <p className="text-sm text-gray-500 mt-1">Maximum quantity a customer can purchase</p>
         </div>
 
@@ -52,14 +54,16 @@ export default function ProductInventory({ formData, updateFormData }) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Minimum Order Quantity
           </label>
-          <input
-            type="number"
-            name="minimumOrderQuantity"
-            value={formData.minimumOrderQuantity}
-            onChange={handleChange}
-            min="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+         <input
+  type="number"
+  name="minimumOrderQuantity"
+  value={formData.minimumOrderQuantity}
+  onChange={handleChange}
+  min="1"
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  text-gray-700"
+/>
         </div>
 
         {/* Quantity Step Size */}
@@ -68,13 +72,15 @@ export default function ProductInventory({ formData, updateFormData }) {
             Quantity Step Size
           </label>
           <input
-            type="number"
-            name="quantityStepSize"
-            value={formData.quantityStepSize}
-            onChange={handleChange}
-            min="1"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+  type="number"
+  name="quantityStepSize"
+  value={formData.quantityStepSize}
+  onChange={handleChange}
+  min="1"
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  text-gray-700"
+/>
           <p className="text-sm text-gray-500 mt-1">Increment amount for quantity selector</p>
         </div>
 
@@ -89,7 +95,7 @@ export default function ProductInventory({ formData, updateFormData }) {
               value={formData.variantStockLevelType}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select Stock Level Type</option>
               <option value={VARIANT_STOCK_LEVEL_TYPES.VARIABLE_LEVEL}>Variable Level (Per Variant)</option>
@@ -105,14 +111,16 @@ export default function ProductInventory({ formData, updateFormData }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Total Stock
               </label>
-              <input
-                type="number"
-                name="simpleProduct.sp_totalStock"
-                value={formData.simpleProduct.sp_totalStock}
-                onChange={handleSimpleProductChange}
-                min="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+             <input
+  type="number"
+  name="simpleProduct.sp_totalStock"
+  value={formData.simpleProduct.sp_totalStock}
+  onChange={handleSimpleProductChange}
+  min="0"
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 
+  text-gray-700"
+/>
             </div>
 
             <div>
@@ -120,15 +128,20 @@ export default function ProductInventory({ formData, updateFormData }) {
                 Stock Status
               </label>
               <select
-                name="simpleProduct.sp_stockStatus"
-                value={formData.simpleProduct.sp_stockStatus}
-                onChange={handleSimpleProductChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Status</option>
-                <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>
-                <option value={STOCK_STATUS.OUT_OF_STOCK}>Out of Stock</option>
-              </select>
+  name="simpleProduct.sp_stockStatus"
+  value={formData.simpleProduct.sp_stockStatus}
+  onChange={handleSimpleProductChange}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+>
+  {/* placeholder */}
+  <option value="" className="text-gray-700">
+    Select Status
+  </option>
+
+  <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>
+  <option value={STOCK_STATUS.OUT_OF_STOCK}>Out of Stock</option>
+</select>
             </div>
           </>
         )}
@@ -145,7 +158,7 @@ export default function ProductInventory({ formData, updateFormData }) {
                 name="productLevelStock.pls_sku"
                 value={formData.productLevelStock.pls_sku}
                 onChange={handleProductLevelStockChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
                 placeholder="Master SKU"
               />
             </div>
@@ -160,7 +173,7 @@ export default function ProductInventory({ formData, updateFormData }) {
                 value={formData.productLevelStock.pls_totalStock}
                 onChange={handleProductLevelStockChange}
                 min="0"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -172,7 +185,7 @@ export default function ProductInventory({ formData, updateFormData }) {
                 name="productLevelStock.pls_stockStatus"
                 value={formData.productLevelStock.pls_stockStatus}
                 onChange={handleProductLevelStockChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Select Status</option>
                 <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>

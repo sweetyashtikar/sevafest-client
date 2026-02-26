@@ -12,7 +12,7 @@ export default function DashboardOverview() {
 
   console.log("user", user);
   console.log("token", token);
-  
+
   const weeklyData = [
     { date: "2026-01-10", sales: 0 },
     { date: "2026-01-11", sales: 0 },
@@ -65,8 +65,7 @@ export default function DashboardOverview() {
 
   return (
     <div className="p-6 space-y-8">
-      <h1 className="text-2xl font-bold text-black">Dashboard Overview</h1>
-
+<h1 className="text-2xl font-bold text-black text-center">Dashboard Overview</h1>
       {/* STATS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((item, index) => (

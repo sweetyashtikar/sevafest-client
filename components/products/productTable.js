@@ -355,34 +355,34 @@ const ProductTable = ({ path, editPath }) => {
       ...(product.tags && product.tags.length > 0 && { tags: product.tags }),
       ...(product.attributeValues &&
         product.attributeValues.length > 0 && {
-          attributeValues: product.attributeValues,
-        }),
+        attributeValues: product.attributeValues,
+      }),
       ...(product.variants &&
         product.variants.length > 0 && {
-          variants: product.variants,
-        }),
+        variants: product.variants,
+      }),
       ...(product.deliverableZipcodes &&
         product.deliverableZipcodes.length > 0 && {
-          deliverableZipcodes: product.deliverableZipcodes,
-        }),
+        deliverableZipcodes: product.deliverableZipcodes,
+      }),
 
       // Objects - only if they have properties
       ...(product.dimensions &&
         Object.keys(product.dimensions).length > 0 && {
-          dimensions: product.dimensions,
-        }),
+        dimensions: product.dimensions,
+      }),
       ...(product.video &&
         Object.keys(product.video).length > 0 && {
-          video: product.video,
-        }),
+        video: product.video,
+      }),
       ...(product.productLevelStock &&
         Object.keys(product.productLevelStock).length > 0 && {
-          productLevelStock: product.productLevelStock,
-        }),
+        productLevelStock: product.productLevelStock,
+      }),
       ...(product.simpleProduct &&
         Object.keys(product.simpleProduct).length > 0 && {
-          simpleProduct: product.simpleProduct,
-        }),
+        simpleProduct: product.simpleProduct,
+      }),
 
       // Handle existing images
       ...(product.mainImage && {
@@ -390,11 +390,11 @@ const ProductTable = ({ path, editPath }) => {
       }),
       ...(product.otherImages &&
         product.otherImages.length > 0 && {
-          otherImages: product.otherImages.map((url) => ({
-            url,
-            type: "existing",
-          })),
-        }),
+        otherImages: product.otherImages.map((url) => ({
+          url,
+          type: "existing",
+        })),
+      }),
     };
 
     setEditFormData(formData);
@@ -547,7 +547,7 @@ const ProductTable = ({ path, editPath }) => {
         // Add productLevelStock if using product-level stock
         if (
           editFormData.variantStockLevelType ===
-            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           editFormData.productLevelStock
         ) {
           formDataToSend.append(
@@ -693,7 +693,9 @@ const ProductTable = ({ path, editPath }) => {
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && applyFilters()}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-700 rounded-lg 
+      focus:outline-none 
+      placeholder:text-black text-black"
           />
           <svg
             className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -733,14 +735,14 @@ const ProductTable = ({ path, editPath }) => {
 
           <button
             onClick={applyFilters}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white border rounded-lg hover:bg-blue-700"
           >
             Apply Filters
           </button>
 
           <button
             onClick={resetFilters}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-700 text-gray-700 border border-black rounded-lg rounded-lg hover:bg-gray-50"
           >
             Reset
           </button>
@@ -761,9 +763,14 @@ const ProductTable = ({ path, editPath }) => {
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange("category", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All Categories</option>
+                {/* placeholder option */}
+                <option value="" className="text-gray-700">
+                  All Categories
+                </option>
+
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat._id}>
                     {cat.name}
@@ -778,12 +785,18 @@ const ProductTable = ({ path, editPath }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Vendor
                 </label>
+
                 <select
                   value={filters.vendor}
                   onChange={(e) => handleFilterChange("vendor", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 >
-                  <option value="">All Vendors</option>
+                  {/* placeholder */}
+                  <option value="" className="text-gray-700">
+                    All Vendors
+                  </option>
+
                   {vendors.map((ven) => (
                     <option key={ven._id} value={ven._id}>
                       {ven.username || ven.company}
@@ -798,12 +811,18 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Brand
               </label>
+
               <select
                 value={filters.brand}
                 onChange={(e) => handleFilterChange("brand", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All Brands</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All Brands
+                </option>
+
                 {brands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand}
@@ -817,14 +836,20 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Product Type
               </label>
+
               <select
                 value={filters.productType}
                 onChange={(e) =>
                   handleFilterChange("productType", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All Types</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All Types
+                </option>
+
                 <option value="simple">Simple</option>
                 <option value="variable">Variable</option>
                 <option value="digital">Digital</option>
@@ -843,7 +868,9 @@ const ProductTable = ({ path, editPath }) => {
                 value={filters.minPrice}
                 onChange={(e) => handleFilterChange("minPrice", e.target.value)}
                 placeholder="Min"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    text-gray-700 placeholder:text-gray-700"
               />
             </div>
 
@@ -857,40 +884,52 @@ const ProductTable = ({ path, editPath }) => {
                 value={filters.maxPrice}
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
                 placeholder="Max"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    text-gray-700 placeholder:text-gray-700"
               />
             </div>
-
             {/* Indicator (Veg/Non-Veg) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Indicator
               </label>
+
               <select
                 value={filters.indicator}
                 onChange={(e) =>
                   handleFilterChange("indicator", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All
+                </option>
+
                 <option value="0">None</option>
                 <option value="1">Veg</option>
                 <option value="2">Non-Veg</option>
               </select>
             </div>
-
             {/* Stock Status */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Stock Status
               </label>
+
               <select
                 value={filters.inStock}
                 onChange={(e) => handleFilterChange("inStock", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All
+                </option>
+
                 <option value="true">In Stock</option>
                 <option value="false">Out of Stock</option>
               </select>
@@ -901,12 +940,18 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Status
               </label>
+
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange("status", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All
+                </option>
+
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
               </select>
@@ -918,14 +963,20 @@ const ProductTable = ({ path, editPath }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Approval Status
                 </label>
+
                 <select
                   value={filters.isApproved}
                   onChange={(e) =>
                     handleFilterChange("isApproved", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 >
-                  <option value="">All</option>
+                  {/* placeholder */}
+                  <option value="" className="text-gray-700">
+                    All
+                  </option>
+
                   <option value="true">Approved</option>
                   <option value="false">Pending</option>
                 </select>
@@ -937,10 +988,12 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sort By
               </label>
+
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
                 <option value="createdAt">Created Date</option>
                 <option value="name">Name</option>
@@ -954,12 +1007,14 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sort Order
               </label>
+
               <select
                 value={filters.sortOrder}
                 onChange={(e) =>
                   handleFilterChange("sortOrder", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
                 <option value="desc">Descending</option>
                 <option value="asc">Ascending</option>
@@ -971,10 +1026,12 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Items Per Page
               </label>
+
               <select
                 value={filters.limit}
                 onChange={(e) => handleFilterChange("limit", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -1054,16 +1111,19 @@ const ProductTable = ({ path, editPath }) => {
         {/* RIGHT: SEARCH + ADD */}
         <div className="flex items-center gap-3">
           {/* SEARCH */}
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search product, brand, category..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64 pl-10 pr-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-            <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
-          </div>
+       <div className="relative">
+  <input
+    type="text"
+    placeholder="Search product, brand, category..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="w-64 pl-10 pr-4 py-2 border border-gray-700 rounded-md text-sm 
+    text-gray-700 placeholder:text-gray-700 
+    focus:ring-2 focus:ring-blue-500 focus:outline-none"
+  />
+
+  <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
+</div>
 
           {/* ADD PRODUCT */}
           <button
@@ -1075,19 +1135,24 @@ const ProductTable = ({ path, editPath }) => {
         </div>
       </div>
 
-      <div
-        className="bg-white round
-      FiSearch, FiPlused-lg shadow-md overflow-hidden"
-      >
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+
+
+ <div className="bg-white rounded-2xl shadow-sm border">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-lg font-bold text-black text-center">
+            Product Table List
+          </h2>
+        </div>
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Serial No
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
                   onClick={() => handleSort("categoryId.name")}
                 >
                   <div className="flex items-center">
@@ -1101,7 +1166,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
                   onClick={() => handleSort("productName")}
                 >
                   <div className="flex items-center">
@@ -1115,7 +1180,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                 className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
                   onClick={() => handleSort("price")}
                 >
                   <div className="flex items-center">
@@ -1129,7 +1194,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
                   onClick={() => handleSort("productType")}
                 >
                   <div className="flex items-center">
@@ -1143,7 +1208,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
                   onClick={() => handleSort("status")}
                 >
                   <div className="flex items-center">
@@ -1157,12 +1222,12 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 {isAdmin && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Approved
                   </th>
                 )}
 
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -1202,13 +1267,12 @@ const ProductTable = ({ path, editPath }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.productType === "Physical"
-                            ? "bg-green-100 text-green-800"
-                            : product.productType === "Digital"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-gray-100 text-gray-800"
-                        }`}
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.productType === "Physical"
+                          ? "bg-green-100 text-green-800"
+                          : product.productType === "Digital"
+                            ? "bg-purple-100 text-purple-800"
+                            : "bg-gray-100 text-gray-800"
+                          }`}
                       >
                         {product.productType || "Unknown"}
                       </span>
@@ -1231,11 +1295,10 @@ const ProductTable = ({ path, editPath }) => {
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.status === true
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === true
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                          }`}
                       >
                         {product.status === true ? "Active" : "Inactive"}
                       </span>
@@ -1282,11 +1345,10 @@ const ProductTable = ({ path, editPath }) => {
                       ) : (
                         /* --- NON-ADMIN VIEW: Static Status Badge --- */
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            product.isApproved
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${product.isApproved
+                            ? "bg-green-100 text-green-700"
+                            : "bg-yellow-100 text-yellow-700"
+                            }`}
                         >
                           {product.isApproved ? "Approved" : "Pending"}
                         </span>
@@ -1358,11 +1420,10 @@ const ProductTable = ({ path, editPath }) => {
                           <div>
                             <p className="font-medium text-gray-500">Stock</p>
                             <p
-                              className={`font-semibold ${
-                                (product.stock || 0) > 0
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
+                              className={`font-semibold ${(product.stock || 0) > 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                                }`}
                             >
                               {product.stock || 0} units
                             </p>
@@ -1372,8 +1433,8 @@ const ProductTable = ({ path, editPath }) => {
                             <p className="text-gray-900">
                               {product.createdAt
                                 ? new Date(
-                                    product.createdAt,
-                                  ).toLocaleDateString()
+                                  product.createdAt,
+                                ).toLocaleDateString()
                                 : "N/A"}
                             </p>
                           </div>
@@ -1422,11 +1483,10 @@ const ProductTable = ({ path, editPath }) => {
                 <button
                   key={i}
                   onClick={() => handlePageChange(i + 1)}
-                  className={`px-4 py-2 border rounded-md ${
-                    filters.page === i + 1
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "border-gray-300 hover:bg-gray-50"
-                  }`}
+                  className={`px-4 py-2 border rounded-md ${filters.page === i + 1
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "border-gray-300 hover:bg-gray-50"
+                    }`}
                 >
                   {i + 1}
                 </button>
@@ -1470,6 +1530,7 @@ const ProductTable = ({ path, editPath }) => {
           onNestedChange={handleNestedChange}
         />
       </div>
+    </div>
     </div>
   );
 };

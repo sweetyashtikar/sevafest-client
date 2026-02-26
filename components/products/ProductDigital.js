@@ -114,7 +114,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                     className={`p-4 border rounded-lg text-left transition-colors ${
                       formData.downloadLinkType === DOWNLOAD_LINK_TYPES.SELF_HOSTED
                         ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:bg-gray-50'
+                        : 'border-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center">
@@ -136,7 +136,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                     className={`p-4 border rounded-lg text-left transition-colors ${
                       formData.downloadLinkType === DOWNLOAD_LINK_TYPES.ADD_LINK
                         ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:bg-gray-50'
+                        : 'border-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center">
@@ -172,7 +172,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                       <p className="text-sm text-gray-600">Uploading... {uploadProgress}%</p>
                     </div>
                   ) : formData.downloadFile ? (
-                    <div className="flex items-center justify-between p-3 bg-white border border-gray-300 rounded-md">
+                    <div className="flex items-center justify-between p-3 bg-white border border-gray-700 rounded-md">
                       <div className="flex items-center">
                         <div className="p-2 bg-green-100 rounded-md mr-3">
                           <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,7 +193,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                       </button>
                     </div>
                   ) : (
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <div className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center">
                       <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                         <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
@@ -208,7 +208,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                       />
                       <label
                         htmlFor="file-upload"
-                        className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                        className="mt-4 inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                       >
                         Choose File
                       </label>
@@ -233,7 +233,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                     value={formData.downloadLink}
                     onChange={handleChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="https://example.com/download/file.zip"
                   />
                   <p className="text-sm text-gray-500 mt-2">
@@ -254,7 +254,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                       type="number"
                       name="downloadExpiry"
                       min="0"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0 for unlimited"
                     />
                     <p className="text-xs text-gray-500 mt-1">Number of days download link is valid</p>
@@ -267,7 +267,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                       type="number"
                       name="downloadLimit"
                       min="0"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="0 for unlimited"
                     />
                     <p className="text-xs text-gray-500 mt-1">Maximum number of downloads per customer</p>
@@ -290,7 +290,7 @@ export default function ProductDigital({ formData, updateFormData }) {
               name="videoType"
               value={formData.video.videoType}
               onChange={handleVideoChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">No Video</option>
               <option value="youtube">YouTube</option>
@@ -309,7 +309,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                 name="url"
                 value={formData.video.url}
                 onChange={handleVideoChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder={`Enter ${formData.video.videoType} video URL`}
               />
               <p className="text-sm text-gray-500 mt-2">
@@ -322,7 +322,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                 Upload Video File
               </label>
               {formData.video.file ? (
-                <div className="flex items-center justify-between p-3 bg-white border border-gray-300 rounded-md">
+                <div className="flex items-center justify-between p-3 bg-white border border-gray-700 rounded-md">
                   <div className="flex items-center">
                     <div className="p-2 bg-blue-100 rounded-md mr-3">
                       <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,7 +356,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                   </div>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center">
                   <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -371,7 +371,7 @@ export default function ProductDigital({ formData, updateFormData }) {
                   />
                   <label
                     htmlFor="video-upload"
-                    className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                    className="mt-4 inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                   >
                     Choose Video
                   </label>
@@ -415,7 +415,7 @@ export default function ProductDigital({ formData, updateFormData }) {
               <input
                 type="checkbox"
                 id="enableDrm"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
               />
               <label htmlFor="enableDrm" className="ml-2 block text-sm text-gray-700">
                 Enable DRM Protection
@@ -426,7 +426,7 @@ export default function ProductDigital({ formData, updateFormData }) {
               <input
                 type="checkbox"
                 id="watermarkFiles"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
               />
               <label htmlFor="watermarkFiles" className="ml-2 block text-sm text-gray-700">
                 Add Watermark to Files
@@ -439,7 +439,7 @@ export default function ProductDigital({ formData, updateFormData }) {
               </label>
               <textarea
                 rows="4"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter license terms for your digital product..."
               />
               <p className="text-sm text-gray-500 mt-2">
