@@ -4,13 +4,9 @@ import { useState } from "react";
 
 function StatCard({ title, value }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 text-center">
-      <p className="text-sm text-gray-800 mb-2 font-medium">
-        {title}
-      </p>
-      <p className="text-xl font-semibold text-black">
-        {value ?? "..."}
-      </p>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
+      <p className="text-sm text-gray-800 mb-2 font-medium">{title}</p>
+      <p className="text-xl font-semibold text-black">{value ?? "..."}</p>
     </div>
   );
 }
@@ -24,9 +20,7 @@ export default function VendorEarnings() {
   return (
     <div className="space-y-8">
       {/* HEADER */}
-      <h1 className="text-2xl font-semibold text-black mt-10">
-        Earnings
-      </h1>
+      <h1 className="text-2xl font-semibold text-black mt-10">Earnings</h1>
 
       {/* DATE FILTER */}
       <div className="flex flex-wrap gap-6">
@@ -38,8 +32,8 @@ export default function VendorEarnings() {
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm text-black
-                       focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="border border-gray-700 rounded-lg px-4 py-2 text-sm text-black
+                       focus:outline-none focus:ring-2 focus:ring-black-400"
           />
         </div>
 
@@ -51,8 +45,8 @@ export default function VendorEarnings() {
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="border border-gray-300 rounded-lg px-4 py-2 text-sm text-black
-                       focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="border border-gray-700 rounded-lg px-4 py-2 text-sm text-black
+                       focus:outline-none focus:ring-2 focus:ring-black-400"
           />
         </div>
       </div>

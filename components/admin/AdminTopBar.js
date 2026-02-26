@@ -3,10 +3,16 @@
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/slices/authSlice";
-import { ShieldCheck, LogOut, UserCircle, ChevronDown } from "lucide-react";
+import {
+  ShieldCheck,
+  LogOut,
+  UserCircle,
+  ChevronDown,
+  Menu,
+} from "lucide-react";
 import { useState } from "react";
 
-export default function AdminTopBar() {
+export default function AdminTopBar({ isOpen, setIsOpen }) {
   const router = useRouter();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -26,9 +32,11 @@ export default function AdminTopBar() {
   const roleName = user?.role?.role;
 
   return (
-    <header className="fixed top-0 left-64 right-0 h-16 bg-white border-b border-gray-200 z-40">
+    <header
+      className={`fixed top-0 right-0 h-16 bg-white border-b border-gray-200 z-40 transition-all duration-300
+      ${isOpen ? "left-80" : "left-20"}`}
+    >
       <div className="px-6 h-full flex items-center justify-between">
-        {/* LEFT */}
         <div
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => router.push("/admin")}

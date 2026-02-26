@@ -18,17 +18,16 @@ export default function ClientLayout({ children }) {
   // ===== ADMIN & VENDOR (THEIR OWN LAYOUTS) =====
   const isAdminPage = pathname.startsWith("/admin");
   const isVendorPage = pathname.startsWith("/vendor");
+  const isDeliveryBoyPage = pathname.startsWith("/delivery");
+  const isDesigner = pathname.startsWith("/designer");
 
-  // 👉 Admin & Vendor layouts already handle UI
-  if (isAdminPage || isVendorPage) {
+  if (isAdminPage || isVendorPage || isDeliveryBoyPage || isDesigner) {
     return <>{children}</>;
   }
 
-  // ===== USER + AUTH =====
   return (
     <>
       {!isAuthPage && <TopBar />}
-     
 
       {children}
 

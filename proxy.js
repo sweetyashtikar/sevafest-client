@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   const token = request.cookies.get("token")?.value;
@@ -21,7 +21,7 @@ export function middleware(request) {
     "/manager": ["manager"],
     "/distributor": ["distributor"],
     "/sub_distributor": ["sub_distributor"],
-    "/designer-portal": ["web designer", "webdesigner"],
+    "/designer": ["webdesigner"],
     "/worker": ["worker"],
     "/courier": ["courier"],
   };
@@ -56,13 +56,14 @@ function redirectByRole(role, request) {
       return NextResponse.redirect(new URL("/distributor", request.url));
     case "sub_distributor":
       return NextResponse.redirect(new URL("/sub_distributor", request.url));
-    case "web designer":
     case "webdesigner":
-      return NextResponse.redirect(new URL("/designer-portal", request.url));
+      return NextResponse.redirect(new URL("/designer", request.url));
     case "worker":
       return NextResponse.redirect(new URL("/worker", request.url));
     case "courier":
       return NextResponse.redirect(new URL("/courier", request.url));
+    case "delivery_boy":
+      return NextResponse.redirect(new URL("/delivery", request.url));
     default:
       return NextResponse.redirect(new URL("/", request.url));
   }
@@ -76,8 +77,9 @@ export const config = {
     "/manager/:path*",
     "/distributor/:path*",
     "/sub_distributor/:path*",
-    "/designer-portal/:path*",
+    "/designer/:path*",
     "/worker/:path*",
     "/courier/:path*",
+    "/delivery/:path*",
   ],
 };

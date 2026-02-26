@@ -1,6 +1,5 @@
 "use client";
 
-
 import { OrderViewModal } from "@/components/admin/OrderViewModal";
 import { OrderTable } from "@/components/admin/OrderTable";
 import { apiClient } from "@/services/apiClient";
@@ -59,26 +58,27 @@ export default function Page() {
   });
 
   return (
-    <div className="p-6 space-y-6 ">
-      {/* ===== HEADING ===== */}
-      <h1 className="text-2xl font-bold text-black">Orders</h1>
+    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
+      <div className="p-6 space-y-6 flex-none">
+        {/* ===== HEADING ===== */}
+        <h1 className="text-2xl font-bold text-black">Orders</h1>
 
-      {/* ===== SEARCH + FILTER ===== */}
-      <div className="flex items-center justify-between gap-4">
-        {/* SEARCH */}
-        <div className="relative w-full max-w-md">
-          <Search
-            size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-black"
-          />
-          <input
-            placeholder="Search order / customer / product"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="
+        {/* ===== SEARCH + FILTER ===== */}
+        <div className="flex items-center justify-between gap-4">
+          {/* SEARCH */}
+          <div className="relative w-full max-w-md">
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-black"
+            />
+            <input
+              placeholder="Search order / customer / product"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="
               w-full
               pl-10 pr-4 py-2.5
-              border border-gray-300
+              border border-gray-500
               rounded-lg
               text-sm
               text-black
@@ -88,14 +88,14 @@ export default function Page() {
               focus:ring-blue-500
               focus:border-blue-500
             "
-          />
-        </div>
+            />
+          </div>
 
-        {/* FILTER */}
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="
+          {/* FILTER */}
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="
             w-48
             px-4 py-2.5
             border border-gray-300
@@ -108,52 +108,56 @@ export default function Page() {
             focus:ring-blue-500
             focus:border-blue-500
           "
-        >
-          <option value="all">All Status</option>
-          <option value="awaiting">Awaiting</option>
-          <option value="processed">Processed</option>
-        </select>
-      </div>
-
-      {/* ===== SUMMARY ===== */}
-      {summary && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <SummaryCard title="Total Orders" value={summary.total_items} />
-          <SummaryCard title="Total Quantity" value={summary.total_quantity} />
-          <SummaryCard
-            title="Total Revenue"
-            value={`₹ ${summary.total_revenue}`}
-          />
+          >
+            <option value="all">All Status</option>
+            <option value="awaiting">Awaiting</option>
+            <option value="processed">Processed</option>
+          </select>
         </div>
-      )}
 
-      {/* ===== TABLE ===== */}
-      <OrderTable
-        data={filteredOrders}
-        currentPage={pagination?.current_page ?? 1}
-        totalPages={pagination?.total_pages ?? 1}
-        onPageChange={(p) => setPage(p)}
-        onView={(row) => {
-          setSelectedOrder(row);
-          setOpen(true);
-        }}
-        onEdit={(row) => {
-          setEditOrder(row);
-          setEditOpen(true);
-        }}
-        onDelete={(row) => console.log("Delete:", row._id)}
-      />
+        {/* ===== SUMMARY ===== */}
+        {summary && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <SummaryCard title="Total Orders" value={summary.total_items} />
+            <SummaryCard
+              title="Total Quantity"
+              value={summary.total_quantity}
+            />
+            <SummaryCard
+              title="Total Revenue"
+              value={`₹ ${summary.total_revenue}`}
+            />
+          </div>
+        )}
 
-      {loading && <p className="text-sm text-black">Loading orders...</p>}
+        {/* ===== TABLE ===== */}
+        <OrderTable
+          data={filteredOrders}
+          currentPage={pagination?.current_page ?? 1}
+          totalPages={pagination?.total_pages ?? 1}
+          onPageChange={(p) => setPage(p)}
+          onView={(row) => {
+            setSelectedOrder(row);
+            setOpen(true);
+          }}
+          onEdit={(row) => {
+            setEditOrder(row);
+            setEditOpen(true);
+          }}
+          onDelete={(row) => console.log("Delete:", row._id)}
+        />
 
-      <OrderViewModal
-        open={open}
-        data={selectedOrder}
-        onClose={() => {
-          setOpen(false);
-          setSelectedOrder(null);
-        }}
-      />
+        {loading && <p className="text-sm text-black">Loading orders...</p>}
+
+        <OrderViewModal
+          open={open}
+          data={selectedOrder}
+          onClose={() => {
+            setOpen(false);
+            setSelectedOrder(null);
+          }}
+        />
+      </div>
     </div>
   );
 }

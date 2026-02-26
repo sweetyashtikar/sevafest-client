@@ -1,18 +1,26 @@
 "use client";
 
-
 export const StatCard = ({ title, value, icon: Icon, color }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 flex items-center gap-4">
-      <div
-        className={`w-10 h-10 flex items-center justify-center rounded-full ${color}`}
-      >
-        <Icon size={20} />
+    <div className="bg-white rounded-xl shadow-md border p-6 text-center hover:shadow-lg transition">
+
+      {/* Center Icon */}
+      <div className={`w-14 h-14 mx-auto flex items-center justify-center rounded-full ${color}`}>
+        <Icon className="w-6 h-6" />
       </div>
-      <div>
-        <p className="text-sm text-gray-500">{title}</p>
-        <p className="text-xl font-semibold text-gray-900">{value}</p>
-      </div>
+
+      {/* Number */}
+      <h2 className="text-3xl font-bold text-black mt-4">
+        {value}
+      </h2>
+
+      {/* Title */}
+      <p className="text-gray-700 font-semibold mt-1">
+        {title}
+      </p>
+
+     
+
     </div>
   );
 };

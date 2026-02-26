@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import Logo from "../../assets/images/logo.png";
-import { useState } from "react";
+import Logo from "../../assets/images/image.png";
+import { useEffect, useState } from "react";
 import {
   Mail,
   MapPin,
@@ -21,29 +21,58 @@ import { apiClient } from "@/services/apiClient";
 import { useDispatch } from "react-redux";
 import { logout } from "@/redux/slices/authSlice";
 import { useRouter } from "next/navigation";
+import { fetchCart } from "@/redux/slices/cartSlice";
+import { SupportModal } from "@/ui/SupportModal";
+import { AddressModal } from "@/ui/AddressModal";
+import {CategoryDropdown} from "@/components/header/CategoryDropdown"
 
 export default function TopBar() {
+  const dispatch = useDispatch();
+  const router = useRouter();
+
   const { user } = useSelector((state) => state.auth);
+  const { items } = useSelector((c) => c.cart);
+
+  const [searchQuery, setSearchQuery] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isPagesOpen, setIsPagesOpen] = useState(false);
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isAddressOpen, setIsAddressOpen] = useState(false);
+  const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   return (
     <>
       <TopStrick />
-      <div className="bg-white shadow-md sticky top-0 z-50 border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 py-3">
-          <div className="flex items-center justify-between">
+      <div className="bg-gradient-to-r from-green-500 to-green-600 shadow-lg sticky top-0 z-50">
+        <div className="absolute inset-0 shine-effect"></div>
 
-            {/* LEFT NAV */}
-            <nav className="hidden lg:flex items-center gap-8">
-              <img src={Logo} alt="" className="w-28 cursor-pointer" />
+        <div className="max-w-7xl mx-auto px-4 py-3 relative">
+          <div className="flex items-center justify-between gap-4">
+            <nav className="hidden lg:flex items-center gap-6 text-white font-medium">
+              <div className="relative">
+                <button
+                  onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                  onMouseEnter={() => setIsCategoryOpen(true)}
+                  className="group flex items-center gap-1 text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110"
+                >
+                  Browse Category
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      isCategoryOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
 
-              <button className="group flex items-center gap-1 text-gray-800 font-semibold hover:text-[#F7931E] transition">
-                Browse Category
-                <ChevronDown className="w-4 h-4 group-hover:rotate-180 transition" />
-              </button>
+                <CategoryDropdown
+                  isOpen={isCategoryOpen}
+                  onClose={() => setIsCategoryOpen(false)}
+                />
+              </div>
 
               {[
                 { name: "Home", href: "/" },
@@ -53,28 +82,32 @@ export default function TopBar() {
                 <a
                   key={item.name}
                   href={item.href}
-                  className="relative font-medium text-gray-700 hover:text-[#F7931E]
-            after:absolute after:left-0 after:-bottom-1 after:h-[2px]
-            after:w-0 after:bg-[#F7931E] after:transition-all hover:after:w-full"
+                  className="relative text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110
+                  after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 
+                   after:bg-white after:transition-all after:duration-500 hover:after:w-full"
                 >
                   {item.name}
                 </a>
               ))}
 
-              {/* Pages Dropdown */}
               <div className="relative">
                 <button
+                  onClick={() => setIsPagesOpen(!isPagesOpen)}
                   onMouseEnter={() => setIsPagesOpen(true)}
-                  className="group flex items-center gap-1 text-gray-700 font-medium hover:text-[#F7931E]"
+                  className="group flex items-center gap-1 text-white font-semibold text-base transition-all duration-300 hover:scale-110"
                 >
                   Pages
-                  <ChevronDown className={`w-4 h-4 transition ${isPagesOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      isPagesOpen ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
 
                 {isPagesOpen && (
                   <div
                     onMouseLeave={() => setIsPagesOpen(false)}
-                    className="absolute top-full mt-3 w-52 bg-white rounded-xl shadow-xl border overflow-hidden"
+                    className="absolute top-full mt-3 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50"
                   >
                     {[
                       { name: "About Us", href: "/about" },
@@ -85,7 +118,7 @@ export default function TopBar() {
                       <a
                         key={item.name}
                         href={item.href}
-                        className="block px-4 py-3 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition"
+                        className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 hover:text-green-600 transition"
                       >
                         {item.name}
                       </a>
@@ -95,49 +128,73 @@ export default function TopBar() {
               </div>
             </nav>
 
-            {/* RIGHT ACTIONS */}
-            <div className="flex items-center gap-3">
-
-              {/* Search */}
+            <div className="flex items-center gap-2 md:gap-4">
               <div
-                className={`transition-all duration-500 ${isSearchOpen ? "w-64 opacity-100" : "w-0 opacity-0"
-                  }`}
+                className={` overflow-hidden transition-all duration-500 ease-in-out ${
+                  isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0"
+                }`}
               >
                 <input
                   type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchQuery.trim()) {
+                      router.push(`/${encodeURIComponent(searchQuery.trim())}`);
+                      setIsSearchOpen(false);
+                    }
+                  }}
                   placeholder="Search products..."
-                  className="w-full px-4 py-2 rounded-full bg-gray-100 text-gray-800 outline-none focus:ring-2 focus:ring-[#F7931E]"
+                  className="w-full px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-black border-none outline-none focus:ring-2 focus:ring-yellow-400"
                 />
               </div>
 
               <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 rounded-full hover:bg-gray-100 transition"
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    router.push(`/${encodeURIComponent(searchQuery.trim())}`);
+                    setIsSearchOpen(false);
+                  } else {
+                    setIsSearchOpen((prev) => !prev);
+                  }
+                }}
+                className="text-white hover:bg-white/20 p-2 rounded-full transition-all active:scale-90"
               >
-                <Search className="w-5 h-5 text-gray-700" />
+                <Search className="w-5 h-5" />
               </button>
 
-              {/* Cart */}
-              <button className="relative p-2 rounded-full hover:bg-gray-100 transition">
-                <ShoppingCart className="w-5 h-5 text-gray-700" />
-                <span className="absolute -top-1 -right-1 bg-[#F7931E] text-white text-[10px]
-            w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                  0
-                </span>
+              <button
+                onClick={() => router.push("/cart")}
+                className="relative text-white hover:bg-white/20 p-2 rounded-full transition-all group"
+              >
+                <ShoppingCart className="w-5 h-5 group-hover:animate-bounce" />
+
+                {items?.length > 0 && (
+                  <span
+                    className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center 
+                    justify-center font-bold border-2 border-green-600"
+                  >
+                    {items.length}
+                  </span>
+                )}
               </button>
 
-              {/* Profile */}
               <div className="relative">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="p-2 rounded-full hover:bg-gray-100 transition"
+                  className="text-white hover:bg-white/20 p-2 rounded-full transition-all active:scale-95"
                 >
-                  <User className="w-5 h-5 text-gray-700" />
+                  <User className="w-5 h-5" />
                 </button>
 
                 {isProfileOpen &&
                   (user ? (
-                    <ProfileModel user={user} setIsProfileOpen={setIsProfileOpen} />
+                    <ProfileModel
+                      user={user}
+                      setIsProfileOpen={setIsProfileOpen}
+                      setIsSupportOpen={setIsSupportOpen}
+                      setIsAddressOpen={setIsAddressOpen}
+                    />
                   ) : (
                     <AuthDropdown setIsProfileOpen={setIsProfileOpen} />
                   ))}
@@ -147,6 +204,15 @@ export default function TopBar() {
         </div>
       </div>
 
+      <SupportModal
+        isOpen={isSupportOpen}
+        onClose={() => setIsSupportOpen(false)}
+      />
+
+      <AddressModal
+        isOpen={isAddressOpen}
+        onClose={() => setIsAddressOpen(false)}
+      />
 
       {isProfileOpen && (
         <div
@@ -202,9 +268,19 @@ const AuthDropdown = ({ setIsProfileOpen }) => {
   );
 };
 
-const ProfileModel = ({ user, setIsProfileOpen }) => {
+const ProfileModel = ({
+  user,
+  setIsProfileOpen,
+  setIsSupportOpen,
+  setIsAddressOpen,
+}) => {
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const handleSupportClick = () => {
+    setIsProfileOpen(false);
+    setIsSupportOpen(true);
+  };
 
   const handleLogout = async () => {
     try {
@@ -238,17 +314,29 @@ const ProfileModel = ({ user, setIsProfileOpen }) => {
       </div>
 
       <div className="grid grid-cols-2 gap-2 p-4">
-        <button className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+        <button
+          onClick={() => router.push("/order/my-order")}
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700"
+        >
           <ShoppingCart className="w-4 h-4 text-green-600" />
           My Orders
         </button>
 
-        <button className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+        <button
+          onClick={() => {
+            setIsProfileOpen(false);
+            setIsAddressOpen(true);
+          }}
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700"
+        >
           <MapPin className="w-4 h-4 text-green-600" />
           Addresses
         </button>
 
-        <button className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+        <button
+          onClick={handleSupportClick}
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700"
+        >
           <Mail className="w-4 h-4 text-green-600" />
           Support
         </button>
@@ -260,7 +348,10 @@ const ProfileModel = ({ user, setIsProfileOpen }) => {
       </div>
 
       <div className="border-t px-4 py-3 space-y-1">
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 text-sm text-gray-700">
+        <button
+          onClick={() => router.push("/profile")}
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 text-sm text-gray-700"
+        >
           My Account
           <span className="text-gray-400">›</span>
         </button>

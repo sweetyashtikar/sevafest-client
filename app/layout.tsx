@@ -37,6 +37,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+       <head>
+        {/* Add TezGateway Script Here */}
+        <script
+          src="https://tezgateway.com/pages/tezgateway_cdn.v1.js"
+          type="text/javascript"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

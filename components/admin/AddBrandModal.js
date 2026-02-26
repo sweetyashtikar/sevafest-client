@@ -13,7 +13,7 @@ export default function AddBrandModal({
 
   const [name, setName] = useState("");
   const [isPublic, setIsPublic] = useState(true);
-  const [image, setImage] = useState(null);
+  const [icon, setIcon] = useState(null);
   const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -21,34 +21,43 @@ export default function AddBrandModal({
     if (initialData) {
       setName(initialData.name || "");
       setIsPublic(initialData.status ?? true);
+
+      if (initialData.icon) {
+        setPreview(initialData.icon);
+      }
     }
   }, [initialData]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file);
+      setIcon(file);
       setPreview(URL.createObjectURL(file));
     }
   };
 
   const handleSubmit = async () => {
     try {
+      // Create FormData object
+      const formData = new FormData();
+      formData.append("name", name.trim());
+      formData.append("status", isPublic ? "true" : "false");
+
+      // Append the image if one was selected
+      if (icon) {
+        formData.append("icon", icon);
+      }
+      console.log("formData", formData);
+
       if (isEdit) {
         await apiClient(`/brands/${initialData._id}`, {
           method: "PATCH",
-          body: {
-            name: name.trim(),
-            status: isPublic,
-          },
+          body: formData,
         });
       } else {
         await apiClient("/brands", {
           method: "POST",
-          body: {
-            name: name.trim(),
-            status: isPublic,
-          },
+          body: formData,
         });
       }
 
@@ -108,7 +117,7 @@ export default function AddBrandModal({
                     <Upload size={24} />
                   </div>
                   <p className="text-sm font-medium text-black">
-                    Click to upload image
+                    Click to upload icon
                   </p>
                   <p className="text-xs text-black/40 mt-1">
                     PNG, JPG up to 5MB
