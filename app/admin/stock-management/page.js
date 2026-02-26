@@ -343,113 +343,129 @@ const StockManagement = () => {
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {/* Category Filter */}
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Filter By Category
-            </label>
-            <select
-              value={filters.category}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Category</option>
-              {categories.map(cat => (
-                <option key={cat._id} value={cat._id}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
+<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
 
-          {/* Seller Filter */}
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Filter By Seller
-            </label>
-            <select
-              value={filters.seller}
-              onChange={(e) => handleFilterChange('seller', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Sellers</option>
-              `{console.log("seller", sellers)}`
-              {sellers.map(seller => (
-                <option key={seller._id} value={seller._id}>{seller.name}</option>
-              ))}
-            </select>
-          </div>
+  {/* Category Filter */}
+  <div>
+    <label className="block text-xs font-medium text-gray-500 mb-1">
+      Filter By Category
+    </label>
 
-          {/* Status Filter */}
-          <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Status
-            </label>
-            <select
-              value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">All Status</option>
-              <option value="active">Active</option>
-              <option value="Inactive">Inactive</option>
-            </select>
-          </div>
+    <select
+      value={filters.category}
+      onChange={(e) => handleFilterChange('category', e.target.value)}
+      className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="" className="text-black">All Category</option>
 
-          {/* Search */}
-          <div className="md:col-span-2">
-            <label className="block text-xs font-medium text-gray-500 mb-1">
-              Search
-            </label>
-            <form onSubmit={handleSearch} className="flex">
-              <input
-                type="text"
-                name="search"
-                placeholder="Search by product name or SKU..."
-                defaultValue={filters.search}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-l-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                Search
-              </button>
-            </form>
-          </div>
-        </div>
+      {categories.map((cat) => (
+        <option key={cat._id} value={cat._id}>
+          {cat.name}
+        </option>
+      ))}
+    </select>
+  </div>
 
-        {/* Filter Actions */}
-        <div className="flex justify-between items-center mt-4">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">Show</span>
-            <select
-              value={filters.limit}
-              onChange={(e) => handleFilterChange('limit', parseInt(e.target.value))}
-              className="px-2 py-1 border border-gray-300 rounded-md text-sm"
-            >
-              <option value="50">50</option>
-              <option value="100">100</option>
-              <option value="250">250</option>
-            </select>
-            <span className="text-sm text-gray-500">entries</span>
-          </div>
+  {/* Seller Filter */}
+  <div>
+    <label className="block text-xs font-medium text-gray-500 mb-1">
+      Filter By Seller
+    </label>
 
-          <div className="flex space-x-2">
-            <button
-              onClick={() => handleExport('csv')}
-              className="px-3 py-1 border border-gray-300 rounded-md text-sm text-gray-600 hover:bg-gray-50"
-            >
-              Export CSV
-            </button>
-            <button
-              onClick={fetchStockData}
-              className="px-3 py-1 bg-gray-100 border border-gray-300 rounded-md text-sm text-gray-600 hover:bg-gray-200"
-            >
-              Refresh
-            </button>
-          </div>
-        </div>
-      </div>
+    <select
+      value={filters.seller}
+      onChange={(e) => handleFilterChange('seller', e.target.value)}
+      className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="" className="text-black">All Sellers</option>
+
+      {sellers.map((seller) => (
+        <option key={seller._id} value={seller._id}>
+          {seller.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  {/* Status Filter */}
+  <div>
+    <label className="block text-xs font-medium text-gray-500 mb-1">
+      Status
+    </label>
+
+    <select
+      value={filters.status}
+      onChange={(e) => handleFilterChange('status', e.target.value)}
+      className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="" className="text-black">All Status</option>
+      <option value="active">Active</option>
+      <option value="inactive">Inactive</option>
+    </select>
+  </div>
+
+  {/* Search */}
+  <div className="md:col-span-2">
+    <label className="block text-xs font-medium text-gray-500 mb-1">
+      Search
+    </label>
+
+    <form onSubmit={handleSearch} className="flex">
+      <input
+        type="text"
+        name="search"
+        placeholder="Search by product name or SKU..."
+        defaultValue={filters.search}
+        className="flex-1 px-3 py-2 border border-gray-700 rounded-l-md text-sm text-black bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+
+      <button
+        type="submit"
+        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        Search
+      </button>
+    </form>
+  </div>
+
+</div>
+  {/* Bottom Actions */}
+  <div className="flex justify-between items-center mt-4">
+    <div className="flex items-center space-x-2">
+      <span className="text-sm text-gray-500">Show</span>
+
+      <select
+        value={filters.limit}
+        onChange={(e) =>
+          handleFilterChange("limit", parseInt(e.target.value))
+        }
+        className="px-2 py-1 border border-gray-700 rounded-md text-sm text-gray-700 bg-white"
+      >
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="250">250</option>
+      </select>
+
+      <span className="text-sm text-gray-500">entries</span>
+    </div>
+
+    <div className="flex space-x-2">
+      <button
+        onClick={() => handleExport("csv")}
+        className="px-3 py-1 border border-gray-700 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+      >
+        Export CSV
+      </button>
+
+      <button
+        onClick={fetchStockData}
+        className="px-3 py-1 bg-gray-100 border border-gray-700 rounded-md text-sm text-gray-700 hover:bg-gray-200"
+      >
+        Refresh
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* Data Table */}
       <DataTable
