@@ -156,7 +156,16 @@ export const menuItems = [
     icon: Users,
     path: "/admin/customers",
   },
-
+    {
+    label: "Stock management",
+    icon: Users,
+    path: "/admin/stock-management",
+  },
+  {
+    label: "Orders",
+    icon: ClipboardList,
+    path: "/admin/orders",
+  },
   {
     label: "Staff",
     icon: UserCog,
