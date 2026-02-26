@@ -256,7 +256,7 @@ const Areas = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 -ml-20 pt-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Areas Management</h1>
         <div className="flex space-x-2">
@@ -281,36 +281,47 @@ const Areas = () => {
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <select
-          value={filters.city_id}
-          onChange={(e) => setFilters({ ...filters, city_id: e.target.value })}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Cities</option>
-          {cities.map((city) => (
-            <option key={city._id} value={city._id}>
-              {city.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filters.active}
-          onChange={(e) => setFilters({ ...filters, active: e.target.value })}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Status</option>
-          <option value="true">Active</option>
-          <option value="false">Inactive</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Filter by PIN Code"
-          value={filters.pincode}
-          onChange={(e) => setFilters({ ...filters, pincode: e.target.value })}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+  {/* City Filter */}
+  <select
+    value={filters.city_id}
+    onChange={(e) => setFilters({ ...filters, city_id: e.target.value })}
+    className="px-4 py-2 border border-gray-700 rounded-lg text-gray-700 bg-white
+    focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="" className="text-gray-700">All Cities</option>
+
+    {cities.map((city) => (
+      <option key={city._id} value={city._id}>
+        {city.name}
+      </option>
+    ))}
+  </select>
+
+  {/* Status Filter */}
+  <select
+    value={filters.active}
+    onChange={(e) => setFilters({ ...filters, active: e.target.value })}
+    className="px-4 py-2 border border-gray-700 rounded-lg text-gray-700 bg-white
+    focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="" className="text-gray-700">All Status</option>
+    <option value="true">Active</option>
+    <option value="false">Inactive</option>
+  </select>
+
+  {/* PIN Search */}
+  <input
+    type="text"
+    placeholder="Filter by PIN Code"
+    value={filters.pincode}
+    onChange={(e) => setFilters({ ...filters, pincode: e.target.value })}
+    className="px-4 py-2 border border-gray-700 rounded-lg text-gray-700
+    placeholder:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
+</div>
 
       {/* Data Table */}
       <DataTable

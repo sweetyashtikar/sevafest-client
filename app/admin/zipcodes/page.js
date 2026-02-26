@@ -180,7 +180,7 @@ const Zipcodes = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 -ml-12 pt-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">
           PIN Codes Management
@@ -207,31 +207,37 @@ const Zipcodes = () => {
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <select
-          value={filters.city_id}
-          onChange={(e) => setFilters({ ...filters, city_id: e.target.value })}
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Cities</option>
-          {cities.map((city) => (
-            <option key={city._id} value={city._id}>
-              {city.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={filters.is_deliverable}
-          onChange={(e) =>
-            setFilters({ ...filters, is_deliverable: e.target.value })
-          }
-          className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">All Status</option>
-          <option value="true">Deliverable</option>
-          <option value="false">Not Deliverable</option>
-        </select>
-      </div>
+     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+
+  {/* City Filter */}
+  <select
+    value={filters.city_id}
+    onChange={(e) => setFilters({ ...filters, city_id: e.target.value })}
+    className="px-4 py-2 border border-gray-700 rounded-lg text-gray-700 bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="" className="text-gray-700">All Cities</option>
+
+    {cities.map((city) => (
+      <option key={city._id} value={city._id}>
+        {city.name}
+      </option>
+    ))}
+  </select>
+
+  {/* Deliverable Filter */}
+  <select
+    value={filters.is_deliverable}
+    onChange={(e) =>
+      setFilters({ ...filters, is_deliverable: e.target.value })
+    }
+    className="px-4 py-2 border border-gray-700 rounded-lg text-gray-700 bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+  >
+    <option value="" className="text-gray-700">All Status</option>
+    <option value="true">Deliverable</option>
+    <option value="false">Not Deliverable</option>
+  </select>
+
+</div>
 
       {/* Data Table */}
       <DataTable
@@ -247,6 +253,7 @@ const Zipcodes = () => {
       />
 
       {/* Create/Edit Modal */}
+      
       <Modal
         isOpen={showModal}
         onClose={() => {
@@ -258,8 +265,9 @@ const Zipcodes = () => {
         <form onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-700 mb-2">PIN Code</label>
-              <input
+<label className="block text-gray-700 mb-2 font-bold">
+  PIN Code
+</label>              <input
                 type="text"
                 value={formData.zipcode}
                 onChange={(e) =>

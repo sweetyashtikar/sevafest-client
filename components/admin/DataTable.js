@@ -61,7 +61,7 @@ const DataTable = ({
                     type="checkbox"
                     checked={selectedRows.length === data.length && data.length > 0}
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-700 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
               )}
@@ -84,7 +84,7 @@ const DataTable = ({
                       type="checkbox"
                       checked={selectedRows.includes(row._id)}
                       onChange={() => handleSelectRow(row._id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      className="rounded border-gray-700 text-blue-600 focus:ring-blue-500"
                     />
                   </td>
                 )}
@@ -108,14 +108,14 @@ const DataTable = ({
             <button
               onClick={() => onPageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}
-              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="relative inline-flex items-center px-4 py-2 border border-gray-700 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
             </button>
             <button
               onClick={() => onPageChange(pagination.currentPage + 1)}
               disabled={!pagination.hasNextPage}
-              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-700 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
             </button>
@@ -132,7 +132,7 @@ const DataTable = ({
                 <button
                   onClick={() => onPageChange(pagination.currentPage - 1)}
                   disabled={pagination.currentPage === 1}
-                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-700 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {/* <ChevronLeftIcon className="h-5 w-5" /> */}
                 </button>
@@ -155,7 +155,7 @@ const DataTable = ({
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         pagination.currentPage === pageNum
                           ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                          : 'bg-white border-gray-700 text-gray-500 hover:bg-gray-50'
                       }`}
                     >
                       {pageNum}
@@ -165,7 +165,7 @@ const DataTable = ({
                 <button
                   onClick={() => onPageChange(pagination.currentPage + 1)}
                   disabled={!pagination.hasNextPage}
-                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-700 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {/* <ChevronRightIcon className="h-5 w-5" /> */}
                 </button>

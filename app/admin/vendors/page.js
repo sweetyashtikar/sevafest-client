@@ -91,7 +91,7 @@ export default function Page() {
   });
 
   return (
-    <div className="p-6 space-y-5 text-black">
+    <div className="p-6 space-y-5 text-black -ml-12">
       {/* HEADING */}
       <h1 className="text-2xl font-bold">Vendors</h1>
 
@@ -110,7 +110,7 @@ export default function Page() {
             onChange={(e) => setSearch(e.target.value)}
             className="
               w-full pl-10 pr-4 py-2.5
-              border border-gray-300 rounded-lg
+              border border-gray-700 rounded-lg
               text-sm text-black
               outline-none
             "
@@ -123,7 +123,7 @@ export default function Page() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="
             w-48 px-4 py-2.5
-            border border-gray-300 rounded-lg
+            border border-gray-700 rounded-lg
             text-sm text-black bg-white
           "
         >
