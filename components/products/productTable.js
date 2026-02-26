@@ -683,7 +683,7 @@ const ProductTable = ({ path, editPath }) => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 -ml-12">
       <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         {/* Search Bar */}
         <div className="relative w-full md:w-96">

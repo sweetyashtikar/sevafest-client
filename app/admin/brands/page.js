@@ -79,7 +79,7 @@ export default function Page() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 bg-white min-h-screen text-black">
+    <div className="p-8 max-w-7xl mx-auto space-y-8 bg-white min-h-screen text-black -ml-16">
       {/* Header Section */}
       <div className="flex items-center justify-between border-b pb-6 border-slate-100">
         <div>
@@ -100,17 +100,16 @@ export default function Page() {
         </button>
       </div>
 
-      <div className="w-full">
-        <input
-          type="text"
-          placeholder="Search brand..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-[60%] border border-slate-300 px-4 py-3 rounded-xl text-black placeholder:text-black/40 outline-none transition-all
-           focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
-        />
-      </div>
-
+     <div className="w-full">
+  <input
+    type="text"
+    placeholder="Search brand..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="w-[60%] border border-gray-700 px-4 py-3 rounded-xl text-black placeholder:text-black/40 outline-none transition-all
+    focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+  />
+</div>
       {/* Table Section */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <BrandTable

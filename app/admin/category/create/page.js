@@ -160,147 +160,225 @@ export default function CategoryFormPage() {
   };
 
   return (
-    <div className="p-6 bg-white min-h-screen">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          {id && id !== 'new' ? 'Edit Category' : 'Create New Category'}
-        </h2>
+<div className="p-6 bg-gray-100 min-h-screen -ml-12">
+
+  {/* CARD */}
+  <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-6">
+
+    {/* HEADER */}
+    <div className="flex justify-between items-center mb-6">
+      <h2 className="text-2xl font-bold text-gray-900">
+        {id && id !== 'new' ? 'Edit Category' : 'Create New Category'}
+      </h2>
+
+      <button
+        onClick={() => router.back()}
+        className="text-gray-400 hover:text-gray-500"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    {error && (
+      <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
+        <p className="text-red-600">{error}</p>
+      </div>
+    )}
+
+    {/* FORM */}
+    <form onSubmit={handleSubmit} className="space-y-6">
+
+      {/* ===== BASIC ===== */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        {/* NAME */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Category Name *
+          </label>
+
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
+            placeholder="e.g., Electronics, Fashion"
+          />
+        </div>
+
+        {/* SLUG */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            URL Slug
+          </label>
+
+          <div className="flex">
+            <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-700 bg-gray-50 text-gray-500 text-sm">
+              /categories/
+            </span>
+
+            <div className="flex-1 px-3 py-2 border border-gray-700 rounded-r-md bg-gray-50">
+              <span className="text-gray-700">{generateSlug()}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* ORDER */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Display Order
+          </label>
+
+          <input
+            type="number"
+            name="row_order"
+            value={formData.row_order}
+            onChange={handleChange}
+            min="0"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
+          />
+        </div>
+
+        {/* STATUS */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Status
+          </label>
+
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
+          >
+            <option value="true">Active</option>
+            <option value="false">Inactive</option>
+          </select>
+        </div>
+      </div>
+
+      {/* ===== SUB CATEGORY ===== */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium text-gray-700 mb-4">Sub-Categories</h3>
+
+        <div className="flex gap-2 mb-3">
+          <input
+            type="text"
+            value={newSubCategory}
+            onChange={(e) => setNewSubCategory(e.target.value)}
+            onKeyPress={(e) =>
+              e.key === 'Enter' && (e.preventDefault(), handleAddSubCategory())
+            }
+            className="flex-1 px-3 py-2 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 text-gray-900"
+            placeholder="Add a sub-category"
+          />
+
+          <button
+            type="button"
+            onClick={handleAddSubCategory}
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+          >
+            Add
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {formData.sub_category.map((subCat, index) => (
+            <span
+              key={index}
+              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+            >
+              {subCat}
+
+              <button
+                type="button"
+                onClick={() => handleRemoveSubCategory(index)}
+                className="ml-2 text-blue-600 hover:text-blue-800"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* ===== IMAGES ===== */}
+      <div className="border-t border-gray-200 pt-6">
+        <h3 className="text-lg font-medium text-gray-700 mb-4">Images</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          {/* CATEGORY IMAGE */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Category Image
+            </label>
+<input
+  type="file"
+  accept="image/*"
+  onChange={(e) => handleImageUpload(e, 'image')}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md text-gray-700 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-md file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+/>
+
+            {(imagePreview || formData.image) && (
+              <img
+                src={imagePreview || formData.image}
+                className="mt-2 h-20 w-20 object-cover rounded border"
+              />
+            )}
+          </div>
+
+          {/* BANNER IMAGE */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Banner Image
+            </label>
+
+          <input
+  type="file"
+  accept="image/*"
+  onChange={(e) => handleImageUpload(e, 'banner')}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md text-gray-700 file:mr-4 file:px-4 file:py-2 file:border-0 file:rounded-md file:bg-blue-600 file:text-white hover:file:bg-blue-700"
+/>
+
+            {(bannerPreview || formData.banner) && (
+              <img
+                src={bannerPreview || formData.banner}
+                className="mt-2 h-20 w-full object-cover rounded border"
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ===== BUTTONS ===== */}
+      <div className="border-t border-gray-200 pt-6 flex justify-end gap-4">
         <button
+          type="button"
           onClick={() => router.back()}
-          className="text-gray-400 hover:text-gray-500"
+          className="px-4 py-2 border border-gray-700 rounded-md text-gray-700 hover:bg-gray-50"
         >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          Cancel
+        </button>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+        >
+          {loading
+            ? 'Saving...'
+            : id && id !== 'new'
+              ? 'Update Category'
+              : 'Create Category'}
         </button>
       </div>
 
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600">{error}</p>
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6 max-w-4xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Category Name *</label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-              placeholder="e.g., Electronics, Fashion"
-            />
-          </div>
-
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-2">URL Slug</label>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">/categories/</span>
-              <div className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-50">
-                <span className="text-gray-700">{generateSlug()}</span>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
-            <input
-              type="number"
-              name="row_order"
-              value={formData.row_order}
-              onChange={handleChange}
-              min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-            >
-              <option value="true">Active</option>
-              <option value="false">Inactive</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">Sub-Categories</h3>
-          <div className="mb-4">
-            <div className="flex gap-2 mb-3">
-              <input
-                type="text"
-                value={newSubCategory}
-                onChange={(e) => setNewSubCategory(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSubCategory())}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder="Add a sub-category"
-              />
-              <button type="button" onClick={handleAddSubCategory} className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">Add</button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.sub_category.map((subCat, index) => (
-                <span key={index} className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
-                  {subCat}
-                  <button type="button" onClick={() => handleRemoveSubCategory(index)} className="ml-2 text-blue-600 hover:text-blue-800">×</button>
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 pt-6">
-          <h3 className="text-lg font-medium text-gray-700 mb-4">Images</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
-              <div className="flex items-center space-x-4">
-                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'image')} className="hidden" id="category-image-upload" />
-                <label htmlFor="category-image-upload" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer">Choose Image</label>
-                {(formData.image || imagePreview) && <span className="text-sm text-gray-600">Image selected</span>}
-              </div>
-              {(imagePreview || formData.image) && (
-                <div className="mt-2">
-                  <img src={imagePreview || (typeof formData.image === 'string' ? formData.image : '')} alt="Preview" className="h-20 w-20 object-cover rounded border border-gray-200" />
-                  <button type="button" onClick={() => handleRemoveImage('image')} className="mt-2 text-sm text-red-600 hover:text-red-700">Remove</button>
-                </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Banner Image</label>
-              <div className="flex items-center space-x-4">
-                <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'banner')} className="hidden" id="banner-image-upload" />
-                <label htmlFor="banner-image-upload" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer">Choose Image</label>
-                {(formData.banner || bannerPreview) && <span className="text-sm text-gray-600">Image selected</span>}
-              </div>
-              {(bannerPreview || formData.banner) && (
-                <div className="mt-2">
-                  <img src={bannerPreview || (typeof formData.banner === 'string' ? formData.banner : '')} alt="Banner Preview" className="h-20 w-full object-cover rounded border border-gray-200" />
-                  <button type="button" onClick={() => handleRemoveImage('banner')} className="mt-2 text-sm text-red-600 hover:text-red-700">Remove</button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 pt-6">
-          <div className="flex justify-end space-x-4">
-            <button type="button" onClick={() => router.back()} className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50">
-              {loading ? 'Saving...' : (id && id !== 'new' ? 'Update Category' : 'Create Category')}
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  );
+    </form>
+  </div>
+</div>  );
 }

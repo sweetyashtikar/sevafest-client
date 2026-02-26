@@ -8,7 +8,7 @@ import CategoryFilters from "@/components/categories/CategoryFilters";
 import { CATEGORY_FILTERS } from "@/components/categories/categoryTypes";
 import { apiClient } from "@/services/apiClient";
 import { useSelector } from "react-redux";
-import {CategoryViewModal} from "@/components/categories/CategoryViewModal"
+import { CategoryViewModal } from "@/components/categories/CategoryViewModal"
 
 import { getCookie } from "@/utils/getCookies";
 
@@ -251,7 +251,7 @@ export default function CategoriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-8 -ml-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
@@ -284,7 +284,7 @@ export default function CategoriesPage() {
               </button>
               <button
                 onClick={fetchCategories}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 <svg
                   className="mr-2 -ml-1 w-4 h-4"
@@ -345,7 +345,7 @@ export default function CategoriesPage() {
                 <select
                   value={bulkAction}
                   onChange={(e) => setBulkAction(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="" className="text-black bg-white">
                     Select Action
@@ -368,7 +368,7 @@ export default function CategoriesPage() {
                 </button>
                 <button
                   onClick={() => setSelectedCategories([])}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-700 text-gray-700 rounded-md hover:bg-gray-50"
                 >
                   Clear
                 </button>
@@ -402,66 +402,79 @@ export default function CategoriesPage() {
                 onSelectAll={handleSelectAll}
                 onDelete={handleDeleteCategory}
                 onToggleStatus={handleToggleStatus}
-                 onEdit={setEditingCategory}
+                onEdit={setEditingCategory}
                 onView={(id) => setViewCategoryId(id)}
               />
 
               {/* Pagination */}
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex flex-col md:flex-row md:items-center justify-between">
-                  <div className="mb-4 md:mb-0">
-                    <p className="text-sm font-bold text-gray-700">
-                      Showing{" "}
-                      <span className="font-medium">{categories.length}</span>{" "}
-                      of <span className="font-medium">{pagination.total}</span>{" "}
-                      categories
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => handlePageChange(filters.page - 1)}
-                      disabled={!pagination.hasPrev}
-                      className={`px-3 py-1 rounded-md ${
-                        pagination.hasPrev
-                          ? "bg-gray-200 hover:bg-gray-300"
-                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      }`}
-                    >
-                      Previous
-                    </button>
-                    <span className="px-3 py-1 text-sm">
-                      Page {filters.page} of {pagination.totalPages || 1}
-                    </span>
-                    <button
-                      onClick={() => handlePageChange(filters.page + 1)}
-                      disabled={!pagination.hasNext}
-                      className={`px-3 py-1 rounded-md ${
-                        pagination.hasNext
-                          ? "bg-gray-200 hover:bg-gray-300"
-                          : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      }`}
-                    >
-                      Next
-                    </button>
-                    <select
-                      value={filters.limit}
-                      onChange={(e) =>
-                        setFilters((prev) => ({
-                          ...prev,
-                          limit: parseInt(e.target.value),
-                          page: 1,
-                        }))
-                      }
-                      className="ml-4 px-3 py-1 border border-gray-300 rounded-md"
-                    >
-                      <option value="5">5 per page</option>
-                      <option value="10">10 per page</option>
-                      <option value="25">25 per page</option>
-                      <option value="50">50 per page</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+             <div className="px-6 py-4 border-t border-gray-200 text-gray-700">
+  <div className="flex flex-col md:flex-row md:items-center justify-between">
+
+    {/* LEFT TEXT */}
+    <div className="mb-4 md:mb-0">
+      <p className="text-sm font-bold text-gray-700">
+        Showing{" "}
+        <span className="font-medium">{categories.length}</span>{" "}
+        of <span className="font-medium">{pagination.total}</span>{" "}
+        categories
+      </p>
+    </div>
+
+    {/* PAGINATION */}
+    <div className="flex items-center space-x-2">
+
+      {/* PREVIOUS */}
+      <button
+        onClick={() => handlePageChange(filters.page - 1)}
+        disabled={!pagination.hasPrev}
+        className={`px-3 py-1 rounded-md transition ${
+          pagination.hasPrev
+            ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+            : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
+        }`}
+      >
+        Previous
+      </button>
+
+      {/* PAGE INFO ⭐ FIXED */}
+      <span className="px-3 py-1 text-sm font-medium text-gray-700 opacity-100">
+        Page {filters.page} of {pagination.totalPages || 1}
+      </span>
+
+      {/* NEXT */}
+      <button
+        onClick={() => handlePageChange(filters.page + 1)}
+        disabled={!pagination.hasNext}
+        className={`px-3 py-1 rounded-md transition ${
+          pagination.hasNext
+            ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+            : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
+        }`}
+      >
+        Next
+      </button>
+
+      {/* LIMIT */}
+      <select
+        value={filters.limit}
+        onChange={(e) =>
+          setFilters((prev) => ({
+            ...prev,
+            limit: parseInt(e.target.value),
+            page: 1,
+          }))
+        }
+        className="ml-4 px-3 py-1 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      >
+        <option value="5">5 per page</option>
+        <option value="10">10 per page</option>
+        <option value="25">25 per page</option>
+        <option value="50">50 per page</option>
+      </select>
+
+    </div>
+  </div>
+</div>
             </>
           )}
         </div>

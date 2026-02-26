@@ -17,21 +17,28 @@ export default function BrandTable({
   const totalPages = Math.ceil(brands.length / perPage)
 
   return (
-    <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+     <div className="bg-white rounded-2xl shadow-sm border">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-lg font-bold text-black text-center">
+            Brand Table List
+          </h2>
+        </div>
+
+    <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gradient-to-r from-blue-600 to-blue-700">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
             <tr>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Brand Icon
               </th>
-              <th className="px-6 py-4 text-left text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Brand Name
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Status
               </th>
-              <th className="px-6 py-4 text-center text-sm font-semibold text-white">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -197,6 +204,7 @@ export default function BrandTable({
           </button>
         </div>
       )}
+    </div>
     </div>
   )
 }
