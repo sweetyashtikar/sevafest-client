@@ -24,16 +24,16 @@ export const CategoryDropdown = ({ isOpen, onClose }) => {
   return (
     <div
       onMouseLeave={onClose}
-      className="absolute top-full left-0 mt-3 w-[600px] bg-white rounded-xl shadow-2xl border border-gray-100 z-50 p-6"
+      className="absolute top-full left-0 mt-3 w-[650px] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 p-6"
     >
-      <h3 className="text-lg font-semibold mb-4 text-gray-700">
+      <h3 className="text-lg font-semibold mb-6 text-[#1a1c24]">
         Browse Categories
       </h3>
 
       {loading && categoryList.length === 0 ? (
         <div className="text-center text-sm text-gray-500">Loading...</div>
       ) : categoryList.length > 0 ? (
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-3 gap-8">
           {categoryList.map((cat) => (
             <div
               key={cat._id}
@@ -41,27 +41,35 @@ export const CategoryDropdown = ({ isOpen, onClose }) => {
                 router.push(`/category/${cat._id}`);
                 onClose();
               }}
-              className="flex flex-col items-center cursor-pointer group"
+              className="flex items-start gap-4 cursor-pointer group"
             >
-              <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-black group-hover:border-green-600 transition duration-300">
-                <img
-                  src={
-                    cat.image && cat.image.trim() !== ""
-                      ? cat.image
-                      : "/images/category-placeholder.png"
-                  }
-                  alt={cat.name || "Category"}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/category-placeholder.png";
-                  }}
-                />
+              <div className="w-16 h-16 flex-shrink-0">
+                <div className="w-full h-full bg-[#fdd835] p-1 rounded-lg">
+                  <div className="w-full h-full bg-white rounded-md overflow-hidden">
+                    <img
+                      src={
+                        cat.image && cat.image.trim() !== ""
+                          ? cat.image
+                          : "/images/category-placeholder.png"
+                      }
+                      alt={cat.name || "Category"}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src =
+                          "/images/category-placeholder.png";
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
-
-              {/* Name */}
-              <p className="mt-2 text-xs font-medium text-gray-700 group-hover:text-green-600 text-center">
-                {cat.name}
-              </p>
+              <div>
+                <p className="font-semibold text-[#1a1c24] text-sm group-hover:text-[#fcc221] transition">
+                  {cat.name}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Explore decoration services
+                </p>
+              </div>
             </div>
           ))}
         </div>
