@@ -4,8 +4,10 @@ import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 const Swiper = () => {
+  const router = useRouter();
   const { categories, loading } = useSelector((state) => state.category);
 
   console.log("categories", categories);
@@ -31,6 +33,7 @@ const Swiper = () => {
         <div className="flex flex-wrap justify-center gap-x-8 gap-y-12">
           {categories?.data?.map((theme, index) => (
             <motion.div
+              onClick={() => router.push(`/category/${theme._id}`)}
               key={theme?._id || index}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}

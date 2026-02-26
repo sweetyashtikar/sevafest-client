@@ -19,6 +19,7 @@ import { apiClient } from "@/services/apiClient";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
 
 export default function Page() {
+  
   const { id } = useParams();
 
   const [product, setProduct] = useState(null);
