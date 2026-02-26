@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiClient } from "@/services/apiClient";
+import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import BrandTable from "@/components/admin/BrandTable";
 import AddBrandModal from "@/components/admin/AddBrandModal";
 import BrandViewModal from "@/components/admin/BrandViewModal";
-import { apiClient } from "@/services/apiClient";
-import { Plus } from "lucide-react";
 
 export default function Page() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [brands, setBrands] = useState([]);
   const [search, setSearch] = useState("");
-  const [showAddModal, setShowAddModal] = useState(false);
   const [viewBrand, setViewBrand] = useState(null);
-  const [editBrand, setEditBrand] = useState(null);
+
 
   const fetchBrand = async () => {
     try {
@@ -74,8 +75,7 @@ export default function Page() {
   );
 
   const handleEditBrand = (brand) => {
-    setEditBrand(brand);
-    setShowAddModal(true);
+    router.push(`/admin/brands/create?id=${brand._id}`);
   };
 
   return (
@@ -91,8 +91,9 @@ export default function Page() {
           </p>
         </div>
         <button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-all shadow-sm active:scale-95"
+          onClick={() => router.push("/admin/brands/create")}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-all 
+          shadow-sm active:scale-95"
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>Add Brand</span>
@@ -105,7 +106,8 @@ export default function Page() {
           placeholder="Search brand..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-[60%] border border-slate-300 px-4 py-3 rounded-xl text-black placeholder:text-black/40 outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
+          className="w-[60%] border border-slate-300 px-4 py-3 rounded-xl text-black placeholder:text-black/40 outline-none transition-all
+           focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
         />
       </div>
 
@@ -120,18 +122,7 @@ export default function Page() {
           onEdit={handleEditBrand}
         />
       </div>
-
-      {showAddModal && (
-        <AddBrandModal
-          initialData={editBrand}
-          onClose={() => {
-            setShowAddModal(false);
-            setEditBrand(null);
-          }}
-          onSuccess={fetchBrand}
-        />
-      )}
-
+      
       {viewBrand && (
         <BrandViewModal brand={viewBrand} onClose={() => setViewBrand(null)} />
       )}

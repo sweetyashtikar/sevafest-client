@@ -290,7 +290,7 @@ export default function AdminSidebar({ isOpen }) {
   return (
     <aside
       className={`fixed left-0 top-0 h-screen bg-[#0F766E] text-white transition-all duration-300 z-50
-      ${isOpen ? "w-80" : "w-20"} overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
+     w-80 overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
     >
       {/* LOGO */}
       <div className="h-16 flex items-center px-6 mb-2 border-b border-white/10 overflow-hidden">
