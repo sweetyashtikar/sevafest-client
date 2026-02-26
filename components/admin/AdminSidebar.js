@@ -54,7 +54,7 @@ export const menuItems = [
     label: "Products",
     icon: Package,
     children: [
-      { label: "Add Product", path: "/admin/product/add", icon: Package },
+      { label: "Add Product", path: "/admin/product/create", icon: Package },
       { label: "Product List", path: "/admin/product", icon: List },
       { label: "Bulk Import", path: "/admin/product/bulkimport", icon: Upload },
       {
@@ -95,7 +95,7 @@ export const menuItems = [
   {
     label: "Stock management",
     icon: Warehouse,
-    path: "/admin/stock",
+    path: "/admin/stock-management",
   },
 
   {
