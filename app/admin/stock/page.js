@@ -15,7 +15,7 @@ const ViewStockManagement = () => {
   ];
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="p-4 min-h-screen -ml-16">
       <div className="max-w-[1400px] mx-auto bg-white rounded shadow-sm border border-gray-200">
         
         {/* Header */}

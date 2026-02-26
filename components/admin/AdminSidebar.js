@@ -297,95 +297,106 @@ export default function AdminSidebar({ isOpen }) {
   };
 
   return (
-    <aside
-      className={`fixed left-0 top-0 h-screen bg-[#0F766E] text-white transition-all duration-300 z-50
-     w-80 overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
+  <aside
+  className={`fixed left-0 top-0 h-screen bg-[#0F766E] text-white transition-all duration-300 z-50
+  ${isOpen ? "w-64" : "w-20"} overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
+>
+  {/* LOGO */}
+  <div className="h-16 flex items-center px-6 mb-2 border-b border-white/10 overflow-hidden">
+    <h1
+      className={`font-black tracking-tighter transition-all duration-300 ${
+        isOpen ? "text-2xl opacity-100" : "text-xs opacity-0"
+      }`}
     >
-      {/* LOGO */}
-      <div className="h-16 flex items-center px-6 mb-2 border-b border-white/10 overflow-hidden">
-        <h1
-          className={`font-black tracking-tighter transition-all duration-300 ${
-            isOpen ? "text-2xl opacity-100" : "text-xs opacity-0"
-          }`}
-        >
-          ADMIN<span className="text-teal-400"> PANEL</span>
-        </h1>
-        {!isOpen && <span className="text-teal-400 font-bold ml-1">AP</span>}
-      </div>
+      ADMIN<span className="text-teal-300">PANEL</span>
+    </h1>
 
-      {/* NAVIGATION */}
-      <nav className="flex flex-col px-4 gap-2 pb-12">
-        {menuItems.map((item) => {
-          const isActive = item.path && pathname === item.path;
-          const hasChildren = !!item.children;
-          const menuOpen = openMenus[item.label];
+    {!isOpen && <span className="text-teal-400 font-bold ml-1">AP</span>}
+  </div>
 
-          if (hasChildren) {
-            return (
-              <div key={item.label} className="flex flex-col">
-                <button
-                  onClick={() => toggleMenu(item.label)}
-                  className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all
-                  ${menuOpen ? "bg-white/10" : "hover:bg-white/5"}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <item.icon size={24} />
-                    <span className="text-lg font-extrabold tracking-wide">
-                      {item.label}
-                    </span>
-                  </div>
-                  {menuOpen ? (
-                    <ChevronDown size={20} />
-                  ) : (
-                    <ChevronRight size={20} />
-                  )}
-                </button>
+  {/* NAVIGATION */}
+  <nav className="flex flex-col px-3 gap-2 pb-12">
+    {menuItems.map((item) => {
+      const isActive = item.path && pathname === item.path;
+      const hasChildren = !!item.children;
+      const menuOpen = openMenus[item.label];
 
-                {menuOpen && (
-                  <div className="ml-9 mt-2 flex flex-col gap-1 border-l-2 border-teal-500/30 pl-4">
-                    {item.children.map((child) => {
-                      const isChildActive = pathname === child.path;
-                      return (
-                        <button
-                          key={child.label}
-                          onClick={() => router.push(child.path)}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-xl text-[16px] font-bold transition-all
-                          ${
-                            isChildActive
-                              ? "bg-white/20 text-white"
-                              : "text-white/70 hover:text-white hover:bg-white/5"
-                          }`}
-                        >
-                          <child.icon size={18} />
-                          {child.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+      if (hasChildren) {
+        return (
+          <div key={item.label} className="flex flex-col">
+            {/* PARENT */}
+            <button
+              onClick={() => toggleMenu(item.label)}
+              className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all
+              ${menuOpen ? "bg-white/10" : "hover:bg-white/5"}`}
+            >
+              <div className="flex items-center gap-3">
+                <item.icon size={22} />
+                {isOpen && (
+                  <span className="text-base font-bold tracking-wide">
+                    {item.label}
+                  </span>
                 )}
               </div>
-            );
-          }
 
-          return (
-            <button
-              key={item.label}
-              onClick={() => router.push(item.path)}
-              className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-300
-              ${
-                isActive
-                  ? "bg-white/20 text-white translate-x-1"
-                  : "text-white/80 hover:bg-white/10 hover:translate-x-1"
-              }`}
-            >
-              <item.icon size={24} />
-              <span className="text-lg font-extrabold tracking-wide">
-                {item.label}
-              </span>
+              {isOpen &&
+                (menuOpen ? (
+                  <ChevronDown size={18} />
+                ) : (
+                  <ChevronRight size={18} />
+                ))}
             </button>
-          );
-        })}
-      </nav>
-    </aside>
+
+            {/* CHILDREN */}
+            {menuOpen && isOpen && (
+              <div className="ml-8 mt-2 flex flex-col gap-1 border-l-2 border-teal-500/30 pl-3">
+                {item.children.map((child) => {
+                  const isChildActive = pathname === child.path;
+
+                  return (
+                    <button
+                      key={child.label}
+                      onClick={() => router.push(child.path)}
+                      className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold transition-all
+                      ${
+                        isChildActive
+                          ? "bg-white/20 text-white"
+                          : "text-white/70 hover:text-white hover:bg-white/5"
+                      }`}
+                    >
+                      <child.icon size={16} />
+                      {child.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      /* SINGLE MENU */
+      return (
+        <button
+          key={item.label}
+          onClick={() => router.push(item.path)}
+          className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300
+          ${
+            isActive
+              ? "bg-white/20 text-white translate-x-1"
+              : "text-white/80 hover:bg-white/10 hover:translate-x-1"
+          }`}
+        >
+          <item.icon size={22} />
+          {isOpen && (
+            <span className="text-base font-bold tracking-wide">
+              {item.label}
+            </span>
+          )}
+        </button>
+      );
+    })}
+  </nav>
+</aside>
   );
 }

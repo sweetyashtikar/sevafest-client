@@ -54,7 +54,7 @@ export default function BannerPage() {
   return (
     <div className="p-6">
       {/* Header with title and add button */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 -ml-12">
         <div>
           <h1 className="text-2xl font-bold text-black">Banner Management</h1>
           <p className="text-sm text-black/40 mt-1">
@@ -123,29 +123,37 @@ export default function BannerPage() {
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-slate-50 border-y border-slate-100">
+         <div className="bg-white rounded-2xl shadow-sm border -ml-12">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-lg font-bold text-black text-center">
+            Banner Table List
+          </h2>
+        </div>
+
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Image
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Type
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Title
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Category
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Created
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -273,6 +281,8 @@ export default function BannerPage() {
               ))}
             </tbody>
           </table>
+        </div>
+        </div>
         </div>
       )}
     </div>
