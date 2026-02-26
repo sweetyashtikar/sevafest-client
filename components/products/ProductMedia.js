@@ -207,7 +207,7 @@ export default function ProductMedia({ formData, updateFormData }) {
           <div className="flex flex-col md:flex-row gap-8">
             {/* Image Preview */}
             <div className="md:w-1/3">
-              <div className={`relative w-full h-64 border-2 border-dashed rounded-lg overflow-hidden ${formData.mainImage ? 'border-gray-300' : 'border-gray-400'
+              <div className={`relative w-full h-64 border-2 border-dashed rounded-lg overflow-hidden ${formData.mainImage ? 'border-gray-700' : 'border-gray-400'
                 }`}>
                 {formData.mainImage ? (
                   <>
@@ -246,7 +246,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                 />
                 <label
                   htmlFor="mainImage"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                  className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
                 >
                   <svg className="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
@@ -320,7 +320,7 @@ export default function ProductMedia({ formData, updateFormData }) {
             <button
               type="button"
               onClick={triggerFileInput}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
               <svg className="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -337,7 +337,7 @@ export default function ProductMedia({ formData, updateFormData }) {
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {formData.otherImagesPreviews.map((previewUrl, index) => (
                 <div key={index} className="relative group">
-                  <div className="aspect-square rounded-lg overflow-hidden border border-gray-300">
+                  <div className="aspect-square rounded-lg overflow-hidden border border-gray-700">
                     <img
                       src={previewUrl}
                       alt={`Gallery ${index + 1}`}
@@ -375,7 +375,7 @@ export default function ProductMedia({ formData, updateFormData }) {
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+            <div className="text-center py-8 border-2 border-dashed border-gray-700 rounded-lg">
               <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
@@ -420,17 +420,22 @@ export default function ProductMedia({ formData, updateFormData }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Video Source
               </label>
-              <select
-                name="videoType"
-                value={formData.video.videoType || ''}
-                onChange={handleVideoChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">No Video</option>
-                <option value={VIDEO_TYPES.YOUTUBE}>YouTube</option>
-                <option value={VIDEO_TYPES.VIMEO}>Vimeo</option>
-                <option value={VIDEO_TYPES.SELF_HOSTED}>Upload Video File</option>
-              </select>
+            <select
+  name="videoType"
+  value={formData.video.videoType || ''}
+  onChange={handleVideoChange}
+  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+>
+  {/* placeholder */}
+  <option value="" className="text-gray-700">
+    No Video
+  </option>
+
+  <option value={VIDEO_TYPES.YOUTUBE}>YouTube</option>
+  <option value={VIDEO_TYPES.VIMEO}>Vimeo</option>
+  <option value={VIDEO_TYPES.SELF_HOSTED}>Upload Video File</option>
+</select>
             </div>
 
             {/* YouTube/Vimeo URL Input */}
@@ -444,7 +449,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                   name="url"
                   value={formData.video.url || ''}
                   onChange={handleVideoChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={`Enter ${formData.video.videoType} video URL`}
                 />
                 <p className="text-sm text-gray-500 mt-2">
@@ -460,7 +465,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                   Upload Video File
                 </label>
                 {formData.video.file ? (
-                  <div className="flex items-center justify-between p-3 bg-white border border-gray-300 rounded-md">
+                  <div className="flex items-center justify-between p-3 bg-white border border-gray-700 rounded-md">
                     <div className="flex items-center">
                       <div className="p-2 bg-green-100 rounded-md mr-3">
                         <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,7 +495,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                     </div>
                   </div>
                 ) : (
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <div className="border-2 border-dashed border-gray-700 rounded-lg p-6 text-center">
                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
@@ -507,7 +512,7 @@ export default function ProductMedia({ formData, updateFormData }) {
                     <button
                       type="button"
                       onClick={() => videoFileInputRef.current?.click()}
-                      className="mt-4 inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                      className="mt-4 inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                     >
                       Choose Video
                     </button>

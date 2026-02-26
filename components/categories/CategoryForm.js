@@ -205,7 +205,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
               value={formData.name}
               onChange={handleChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="e.g., Electronics, Fashion, Home & Kitchen"
             />
           </div>
@@ -216,10 +216,10 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
               URL Slug
             </label>
             <div className="flex">
-              <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+              <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-700 bg-gray-50 text-gray-500 text-sm">
                 /categories/
               </span>
-              <div className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md bg-gray-50">
+              <div className="flex-1 px-3 py-2 border border-gray-700 rounded-r-md bg-gray-50">
                 <span className="text-gray-700">{generateSlug()}</span>
               </div>
             </div>
@@ -239,7 +239,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
               value={formData.row_order}
               onChange={handleChange}
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
             <p className="text-sm text-gray-500 mt-2">
               Lower numbers appear first
@@ -255,7 +255,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
               name="status"
               value={formData.status}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               <option value="true">Active</option>
               <option value="false">Inactive</option>
@@ -274,7 +274,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
                 value={newSubCategory}
                 onChange={(e) => setNewSubCategory(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSubCategory())}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                className="flex-1 px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="Add a sub-category"
               />
               <button
@@ -426,7 +426,7 @@ export default function CategoryForm({ category, onSubmit, onCancel }) {
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-700 rounded-md text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>

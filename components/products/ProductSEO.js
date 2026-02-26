@@ -87,7 +87,7 @@ export default function ProductSEO({ formData, updateFormData }) {
               value={formData.seo.metaTitle}
               onChange={handleChange}
               maxLength="60"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter meta title (appears in search results)"
             />
             <div className="flex justify-between mt-2">
@@ -139,7 +139,7 @@ export default function ProductSEO({ formData, updateFormData }) {
               onChange={handleChange}
               rows="3"
               maxLength="160"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter meta description (appears under title in search results)"
             />
             <div className="flex justify-between mt-2">
@@ -173,7 +173,7 @@ export default function ProductSEO({ formData, updateFormData }) {
                 value={keywordInput}
                 onChange={(e) => setKeywordInput(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleKeywordAdd())}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Add a keyword and press Enter"
               />
               <button
@@ -229,7 +229,7 @@ export default function ProductSEO({ formData, updateFormData }) {
               Product URL
             </label>
             <div className="flex">
-              <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500">
+              <span className="inline-flex items-center px-3 py-2 rounded-l-md border border-r-0 border-gray-700 bg-gray-50 text-gray-500">
                 https://yourwebsite.com/products/
               </span>
               <input
@@ -237,7 +237,7 @@ export default function ProductSEO({ formData, updateFormData }) {
                 name="slug"
                 value={formData.slug}
                 onChange={handleChange}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 px-3 py-2 border border-gray-700 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="product-name"
               />
             </div>
@@ -382,7 +382,7 @@ export default function ProductSEO({ formData, updateFormData }) {
               <input
                 type="url"
                 name="canonicalUrl"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://example.com/canonical-url"
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -394,7 +394,7 @@ export default function ProductSEO({ formData, updateFormData }) {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Robots Meta Tag
               </label>
-              <select className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="index, follow">index, follow (Default)</option>
                 <option value="noindex, follow">noindex, follow</option>
                 <option value="index, nofollow">index, nofollow</option>
@@ -411,7 +411,7 @@ export default function ProductSEO({ formData, updateFormData }) {
               </label>
               <textarea
                 rows="4"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                 placeholder='{"@context":"https://schema.org/","@type":"Product","name":"Product Name"}'
               />
               <p className="text-xs text-gray-500 mt-1">
