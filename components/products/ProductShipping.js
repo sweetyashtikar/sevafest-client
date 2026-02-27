@@ -272,7 +272,7 @@ export default function ProductShipping({ formData, updateFormData }) {
         </div>
 
         {/* Product Dimensions & Weight */}
-            {formData.ProductType === PRODUCT_TYPES.VARIABLE && (
+            {formData.productType !== PRODUCT_TYPES.VARIABLE && (
         <div className="p-6 border border-gray-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Dimensions & Weight</h3>
           <p className="text-sm text-gray-600 mb-6">
