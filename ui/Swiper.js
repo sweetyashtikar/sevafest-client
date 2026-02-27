@@ -77,6 +77,7 @@ const Swiper = () => {
 
       <div className="text-center mt-16">
         <motion.button
+        onClick={()=> router.push("/products")}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-white font-bold py-3 px-8 

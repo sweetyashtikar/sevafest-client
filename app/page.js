@@ -13,23 +13,22 @@ import Grocery from "@/assets/images/SEVAFASTSLIDING1.jpg";
 
 const HomeBannerSlider = dynamic(() => import("@/ui/HomeBannerSlider"), {
   ssr: false,
-  loading: () => (
-    <div className="h-96 animate-puls rounded-xl" />
-  ),
+  loading: () => <div className="h-96 animate-puls rounded-xl" />,
 });
 
 const TopTrendingProducts = dynamic(() => import("@/ui/TopTrendingProducts"), {
   ssr: false,
-  loading: () => (
-    <div className="h-96 animate-pulse rounded-xl" />
-  ),
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
 });
 
 const Swiper = dynamic(() => import("@/ui/Swiper"), {
-  ssr: false,  
-  loading: () => (
-    <div className="h-96 animate-pulse rounded-xl" />
-  ),
+  ssr: false,
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
+});
+
+const ProductsRow = dynamic(() => import("@/ui/ProductsRow"), {
+  ssr: false,
+  loading: () => <div className="h-96 animate-pulse rounded-xl" />,
 });
 
 export default function Page() {
@@ -70,10 +69,11 @@ export default function Page() {
     dispatch(fetchActiveCategories());
   }, [dispatch]);
 
+  console.log("products", products);
+
   return (
     <>
       {isPageLoading && <Loader fullScreen={true} />}
-
       <main className="min-h-screen bg-white">
         <div className="py-5  " />
         <HomeBannerSlider banners={banners} />
@@ -82,6 +82,10 @@ export default function Page() {
         <OfferBanner />
         <OfferBannerSecond />
         <TopTrendingProducts products={products} loading={isDataLoading} />
+        <ProductsRow name="Sahyadri Elaichi Tea" products={products} />
+        <ProductsRow name="Combo Offers" products={products} />
+        <ProductsRow name="Chochlate" products={products} />
+        <ProductsRow name="Biscuits, Drinks & Packaged Foods" products={products} />
       </main>
     </>
   );
