@@ -1,6 +1,6 @@
 'use client';
 
-import { DELIVERABLE_TYPES } from '@/components/products/productTypes';
+import { DELIVERABLE_TYPES, PRODUCT_TYPES } from '@/components/products/productTypes';
 import { useState } from 'react';
 
 export default function ProductShipping({ formData, updateFormData }) {
@@ -272,6 +272,7 @@ export default function ProductShipping({ formData, updateFormData }) {
         </div>
 
         {/* Product Dimensions & Weight */}
+            {formData.ProductType === PRODUCT_TYPES.VARIABLE && (
         <div className="p-6 border border-gray-200 rounded-lg">
           <h3 className="text-lg font-medium text-gray-700 mb-4">Dimensions & Weight</h3>
           <p className="text-sm text-gray-600 mb-6">
@@ -286,17 +287,17 @@ export default function ProductShipping({ formData, updateFormData }) {
               </label>
               <div className="relative">
                 <input
-  type="number"
-  name="weight"
-  value={formData.dimensions.weight}
-  onChange={handleDimensionsChange}
-  min="0"
-  step="0.01"
-  className="w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md 
-  focus:outline-none focus:ring-2 focus:ring-blue-500 
-  text-gray-700 placeholder:text-gray-700"
-  placeholder="0.00"
-/>
+                    type="number"
+                    name="weight"
+                    value={formData.dimensions.weight}
+                    onChange={handleDimensionsChange}
+                    min="0"
+                    step="0.01"
+                    className="w-full pl-10 pr-3 py-2 border border-gray-700 rounded-md 
+                    focus:outline-none focus:ring-2 focus:ring-blue-500 
+                    text-gray-700 placeholder:text-gray-700"
+                    placeholder="0.00"
+                  />
                 <span className="absolute left-3 top-2 text-gray-500">kg</span>
               </div>
               <p className="text-xs text-gray-500 mt-1">Product weight in kilograms</p>
@@ -423,6 +424,7 @@ export default function ProductShipping({ formData, updateFormData }) {
             </ul>
           </div>
         </div>
+            )}
       </div>
     </div>
   );
