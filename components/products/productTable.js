@@ -1111,19 +1111,19 @@ const ProductTable = ({ path, editPath }) => {
         {/* RIGHT: SEARCH + ADD */}
         <div className="flex items-center gap-3">
           {/* SEARCH */}
-       <div className="relative">
-  <input
-    type="text"
-    placeholder="Search product, brand, category..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    className="w-64 pl-10 pr-4 py-2 border border-gray-700 rounded-md text-sm 
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search product, brand, category..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64 pl-10 pr-4 py-2 border border-gray-700 rounded-md text-sm 
     text-gray-700 placeholder:text-gray-700 
     focus:ring-2 focus:ring-blue-500 focus:outline-none"
-  />
+            />
 
-  <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
-</div>
+            <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
+          </div>
 
           {/* ADD PRODUCT */}
           <button
@@ -1137,147 +1137,147 @@ const ProductTable = ({ path, editPath }) => {
 
 
 
- <div className="bg-white rounded-2xl shadow-sm border">
+      <div className="bg-white rounded-2xl shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h2 className="text-lg font-bold text-black text-center">
             Product Table List
           </h2>
         </div>
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-              <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Serial No
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
-                  onClick={() => handleSort("categoryId.name")}
-                >
-                  <div className="flex items-center">
-                    Category
-                    {sortConfig.key === "categoryId.name" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
-                  onClick={() => handleSort("productName")}
-                >
-                  <div className="flex items-center">
-                    Product Name
-                    {sortConfig.key === "productName" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                 className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
-                  onClick={() => handleSort("price")}
-                >
-                  <div className="flex items-center">
-                    Price
-                    {sortConfig.key === "price" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
-                  onClick={() => handleSort("productType")}
-                >
-                  <div className="flex items-center">
-                    Product Type
-                    {sortConfig.key === "productType" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
-                  onClick={() => handleSort("status")}
-                >
-                  <div className="flex items-center">
-                    Status
-                    {sortConfig.key === "status" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                {isAdmin && (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+                <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                    Approved
+                    Serial No
                   </th>
-                )}
+                  <th
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
+                    onClick={() => handleSort("categoryId.name")}
+                  >
+                    <div className="flex items-center">
+                      Category
+                      {sortConfig.key === "categoryId.name" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
+                    onClick={() => handleSort("productName")}
+                  >
+                    <div className="flex items-center">
+                      Product Name
+                      {sortConfig.key === "productName" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
+                    onClick={() => handleSort("price")}
+                  >
+                    <div className="flex items-center">
+                      Price
+                      {sortConfig.key === "price" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
+                    onClick={() => handleSort("productType")}
+                  >
+                    <div className="flex items-center">
+                      Product Type
+                      {sortConfig.key === "productType" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider"
+                    onClick={() => handleSort("status")}
+                  >
+                    <div className="flex items-center">
+                      Status
+                      {sortConfig.key === "status" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  {isAdmin && (
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Approved
+                    </th>
+                  )}
 
-                <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProducts.map((product) => (
-                <React.Fragment key={product._id || product.id}>
-                  <tr className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="font-mono text-sm font-medium text-gray-900">
-                        {product.serialNo ||
-                          `P${(product._id || "").slice(-6).toUpperCase()}`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {product.categoryId?.name || product.category || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {product.name || "Unnamed Product"}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        {product.brand || "No brand"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
-                        ₹{(product.effectivePrice || 0).toFixed(2)}
-                      </div>
-                      {product.taxId && (
-                        <div className="text-xs text-gray-500">
-                          +{product.taxId.percentage || 0}% tax
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredProducts.map((product) => (
+                  <React.Fragment key={product._id || product.id}>
+                    <tr className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="font-mono text-sm font-medium text-gray-900">
+                          {product.serialNo ||
+                            `P${(product._id || "").slice(-6).toUpperCase()}`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {product.categoryId?.name || product.category || "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm font-medium text-gray-900">
+                          {product.name || "Unnamed Product"}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.productType === "Physical"
-                          ? "bg-green-100 text-green-800"
-                          : product.productType === "Digital"
-                            ? "bg-purple-100 text-purple-800"
-                            : "bg-gray-100 text-gray-800"
-                          }`}
-                      >
-                        {product.productType || "Unknown"}
-                      </span>
-                    </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-xs text-gray-500">
+                          {product.brand || "No brand"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-semibold text-gray-900">
+                          ₹{(product.effectivePrice || 0).toFixed(2)}
+                        </div>
+                        {product.taxId && (
+                          <div className="text-xs text-gray-500">
+                            +{product.taxId.percentage || 0}% tax
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.productType === "Physical"
+                            ? "bg-green-100 text-green-800"
+                            : product.productType === "Digital"
+                              ? "bg-purple-100 text-purple-800"
+                              : "bg-gray-100 text-gray-800"
+                            }`}
+                        >
+                          {product.productType || "Unknown"}
+                        </span>
+                      </td>
+                      {/* <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                           product.status === "Active"
@@ -1293,18 +1293,18 @@ const ProductTable = ({ path, editPath }) => {
                       </span>
                     </td> */}
 
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === true
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                          }`}
-                      >
-                        {product.status === true ? "Active" : "Inactive"}
-                      </span>
-                    </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === true
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                            }`}
+                        >
+                          {product.status === true ? "Active" : "Inactive"}
+                        </span>
+                      </td>
 
-                    {/* {isAdmin && (
+                      {/* {isAdmin && (
                       <td className="px-6 py-4 whitespace-nowrap">
                         <label className="inline-flex items-center cursor-pointer">
                           <input
@@ -1330,207 +1330,207 @@ const ProductTable = ({ path, editPath }) => {
                       </td>
                     )} */}
 
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {isAdmin ? (
-                        /* --- ADMIN VIEW: Interactive Toggle --- */
-                        <label className="inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={product.isApproved === true}
-                            onChange={() => handleApproveToggle(product)}
-                            className="sr-only peer"
-                          />
-                          <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
-                        </label>
-                      ) : (
-                        /* --- NON-ADMIN VIEW: Static Status Badge --- */
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${product.isApproved
-                            ? "bg-green-100 text-green-700"
-                            : "bg-yellow-100 text-yellow-700"
-                            }`}
-                        >
-                          {product.isApproved ? "Approved" : "Pending"}
-                        </span>
-                      )}
-                    </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {isAdmin ? (
+                          /* --- ADMIN VIEW: Interactive Toggle --- */
+                          <label className="inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={product.isApproved === true}
+                              onChange={() => handleApproveToggle(product)}
+                              className="sr-only peer"
+                            />
+                            <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
+                          </label>
+                        ) : (
+                          /* --- NON-ADMIN VIEW: Static Status Badge --- */
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${product.isApproved
+                              ? "bg-green-100 text-green-700"
+                              : "bg-yellow-100 text-yellow-700"
+                              }`}
+                          >
+                            {product.isApproved ? "Approved" : "Pending"}
+                          </span>
+                        )}
+                      </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => handleView(product)}
-                          className="text-blue-600 hover:text-blue-900 transition-colors"
-                          title="View Details"
-                        >
-                          <FiEye size={18} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            router.push(`${editPath}/${product._id}`)
-                          }
-                          className="text-yellow-600 hover:text-yellow-900 transition-colors"
-                          title="Edit"
-                        >
-                          <FiEdit size={18} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product)}
-                          className="text-red-600 hover:text-red-900 transition-colors"
-                          title="Delete"
-                        >
-                          <FiTrash2 size={18} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            toggleRowExpansion(product._id || product.id)
-                          }
-                          className="text-gray-600 hover:text-gray-900 transition-colors"
-                          title="Expand/Collapse"
-                        >
-                          {expandedRows.includes(product._id || product.id) ? (
-                            <FiChevronUp size={18} />
-                          ) : (
-                            <FiChevronDown size={18} />
-                          )}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {expandedRows.includes(product._id || product.id) && (
-                    <tr className="bg-gray-50">
-                      <td colSpan="7" className="px-6 py-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <p className="font-medium text-gray-500">
-                              Description
-                            </p>
-                            <p className="text-gray-900">
-                              {product.description || "No description"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-500">Vendor</p>
-                            <p className="text-gray-900">
-                              {product.vendorId?.username ||
-                                product.vendorId?.company ||
-                                "N/A"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-500">Stock</p>
-                            <p
-                              className={`font-semibold ${(product.stock || 0) > 0
-                                ? "text-green-600"
-                                : "text-red-600"
-                                }`}
-                            >
-                              {product.stock || 0} units
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-500">Created</p>
-                            <p className="text-gray-900">
-                              {product.createdAt
-                                ? new Date(
-                                  product.createdAt,
-                                ).toLocaleDateString()
-                                : "N/A"}
-                            </p>
-                          </div>
-                          {product.attributeValues &&
-                            product.attributeValues.length > 0 && (
-                              <div className="md:col-span-2">
-                                <p className="font-medium text-gray-500 mb-1">
-                                  Attributes
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {product.attributeValues.map(
-                                    (attr, index) => (
-                                      <span
-                                        key={index}
-                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
-                                      >
-                                        {attr.attribute_id?.name || "Attribute"}
-                                        : {attr.value || "N/A"}
-                                      </span>
-                                    ),
-                                  )}
-                                </div>
-                              </div>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => handleView(product)}
+                            className="text-blue-600 hover:text-blue-900 transition-colors"
+                            title="View Details"
+                          >
+                            <FiEye size={18} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              router.push(`${editPath}/${product._id}`)
+                            }
+                            className="text-yellow-600 hover:text-yellow-900 transition-colors"
+                            title="Edit"
+                          >
+                            <FiEdit size={18} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product)}
+                            className="text-red-600 hover:text-red-900 transition-colors"
+                            title="Delete"
+                          >
+                            <FiTrash2 size={18} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              toggleRowExpansion(product._id || product.id)
+                            }
+                            className="text-gray-600 hover:text-gray-900 transition-colors"
+                            title="Expand/Collapse"
+                          >
+                            {expandedRows.includes(product._id || product.id) ? (
+                              <FiChevronUp size={18} />
+                            ) : (
+                              <FiChevronDown size={18} />
                             )}
+                          </button>
                         </div>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
 
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="mt-6 flex justify-center gap-2">
-              <button
-                onClick={() => handlePageChange(filters.page - 1)}
-                disabled={filters.page === 1}
-                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Previous
-              </button>
+                    {expandedRows.includes(product._id || product.id) && (
+                      <tr className="bg-gray-50">
+                        <td colSpan="7" className="px-6 py-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                              <p className="font-medium text-gray-500">
+                                Description
+                              </p>
+                              <p className="text-gray-900">
+                                {product.description || "No description"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-500">Vendor</p>
+                              <p className="text-gray-900">
+                                {product.vendorId?.username ||
+                                  product.vendorId?.company ||
+                                  "N/A"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-500">Stock</p>
+                              <p
+                                className={`font-semibold ${(product.stock || 0) > 0
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                                  }`}
+                              >
+                                {product.stock || 0} units
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-500">Created</p>
+                              <p className="text-gray-900">
+                                {product.createdAt
+                                  ? new Date(
+                                    product.createdAt,
+                                  ).toLocaleDateString()
+                                  : "N/A"}
+                              </p>
+                            </div>
+                            {product.attributeValues &&
+                              product.attributeValues.length > 0 && (
+                                <div className="md:col-span-2">
+                                  <p className="font-medium text-gray-500 mb-1">
+                                    Attributes
+                                  </p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {product.attributeValues.map(
+                                      (attr, index) => (
+                                        <span
+                                          key={index}
+                                          className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                                        >
+                                          {attr.attribute_id?.name || "Attribute"}
+                                          : {attr.value || "N/A"}
+                                        </span>
+                                      ),
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
 
-              {[...Array(pagination.totalPages)].map((_, i) => (
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="mt-6 flex justify-center gap-2">
                 <button
-                  key={i}
-                  onClick={() => handlePageChange(i + 1)}
-                  className={`px-4 py-2 border rounded-md ${filters.page === i + 1
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "border-gray-300 hover:bg-gray-50"
-                    }`}
+                  onClick={() => handlePageChange(filters.page - 1)}
+                  disabled={filters.page === 1}
+                  className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  {i + 1}
+                  Previous
                 </button>
-              ))}
 
-              <button
-                onClick={() => handlePageChange(filters.page + 1)}
-                disabled={filters.page === pagination.totalPages}
-                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
-          )}
+                {[...Array(pagination.totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i + 1)}
+                    className={`px-4 py-2 border rounded-md ${filters.page === i + 1
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 hover:bg-gray-50"
+                      }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(filters.page + 1)}
+                  disabled={filters.page === pagination.totalPages}
+                  className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+
+          <ProductViewModal
+            open={isModalOpen}
+            product={selectedProduct}
+            onClose={() => setIsModalOpen(false)}
+            onEdit={(product) => {
+              setIsModalOpen(false);
+              handleEdit(product);
+            }}
+          />
+
+          <EditProductModal
+            open={isEditModalOpen}
+            product={editingProduct}
+            formData={editFormData}
+            loading={updateLoading}
+            error={updateError}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setEditingProduct(null);
+              setEditFormData(null);
+              setUpdateError("");
+            }}
+            onSubmit={handleUpdateProduct}
+            onChange={handleEditInputChange}
+            onNestedChange={handleNestedChange}
+          />
         </div>
-
-        <ProductViewModal
-          open={isModalOpen}
-          product={selectedProduct}
-          onClose={() => setIsModalOpen(false)}
-          onEdit={(product) => {
-            setIsModalOpen(false);
-            handleEdit(product);
-          }}
-        />
-
-        <EditProductModal
-          open={isEditModalOpen}
-          product={editingProduct}
-          formData={editFormData}
-          loading={updateLoading}
-          error={updateError}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingProduct(null);
-            setEditFormData(null);
-            setUpdateError("");
-          }}
-          onSubmit={handleUpdateProduct}
-          onChange={handleEditInputChange}
-          onNestedChange={handleNestedChange}
-        />
       </div>
-    </div>
     </div>
   );
 };
