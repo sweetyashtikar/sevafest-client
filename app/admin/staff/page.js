@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "react-toastify";
 import { apiClient } from "@/services/apiClient";
 import { useEffect, useState, useMemo } from "react";
 import UsersTable from "@/components/admin/UsersTable";
@@ -30,8 +31,17 @@ export default function Page() {
           user._id === id ? { ...user, status: newStatus } : user,
         ),
       );
+      toast.success(
+        `User ${newStatus ? "Activated" : "Deactivated "} successfully`,
+      );
     } catch (err) {
       console.log("Status update failed:", err);
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update user status ";
+
+      toast.error(errorMessage);
     }
   };
 

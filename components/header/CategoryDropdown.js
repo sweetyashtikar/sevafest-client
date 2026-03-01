@@ -24,7 +24,7 @@ export const CategoryDropdown = ({ isOpen, onClose }) => {
   return (
     <div
       onMouseLeave={onClose}
-      className="absolute top-full left-0 mt-3 w-[650px] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 p-6"
+      className="absolute top-full left-0 mt-3 w-[1300px] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 p-6"
     >
       <h3 className="text-lg font-semibold mb-6 text-[#1a1c24]">
         Browse Categories
@@ -33,7 +33,7 @@ export const CategoryDropdown = ({ isOpen, onClose }) => {
       {loading && categoryList.length === 0 ? (
         <div className="text-center text-sm text-gray-500">Loading...</div>
       ) : categoryList.length > 0 ? (
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-6 gap-8">
           {categoryList.map((cat) => (
             <div
               key={cat._id}

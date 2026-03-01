@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/services/apiClient";
 import { Plus } from "lucide-react";
@@ -14,7 +15,6 @@ export default function Page() {
   const [brands, setBrands] = useState([]);
   const [search, setSearch] = useState("");
   const [viewBrand, setViewBrand] = useState(null);
-
 
   const fetchBrand = async () => {
     try {
@@ -46,8 +46,12 @@ export default function Page() {
           b._id === brand._id ? { ...b, status: !b.status } : b,
         ),
       );
+      toast.success(
+        `Brand ${!brand.status ? "Activated" : "Deactivated"} successfully `,
+      );
     } catch (err) {
       console.error("Status update failed", err);
+      toast.error("Failed to update status ");
     }
   };
 
@@ -64,9 +68,10 @@ export default function Page() {
       });
 
       setBrands((prev) => prev.filter((b) => b._id !== brand._id));
+      toast.success("Brand deleted successfully");
     } catch (err) {
       console.error("Delete failed", err);
-      alert("Failed to delete brand");
+      toast.error("Failed to delete brand");
     }
   };
 
@@ -79,7 +84,7 @@ export default function Page() {
   };
 
   return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8 bg-white min-h-screen text-black -ml-16">
+    <div className="p-8 max-w-7xl mx-auto space-y-8  min-h-screen text-black -ml-16">
       {/* Header Section */}
       <div className="flex items-center justify-between border-b pb-6 border-slate-100">
         <div>
@@ -100,16 +105,16 @@ export default function Page() {
         </button>
       </div>
 
-     <div className="w-full">
-  <input
-    type="text"
-    placeholder="Search brand..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="w-[60%] border border-gray-700 px-4 py-3 rounded-xl text-black placeholder:text-black/40 outline-none transition-all
-    focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm"
-  />
-</div>
+      <div className="w-full">
+        <input
+          type="text"
+          placeholder="Search brand..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-[60%] border-none px-4 py-3 rounded-xl text-black placeholder:text-black/40 outline-none transition-all
+          focus:ring-2 focus:ring-blue-500 shadow-sm"
+        />
+      </div>
       {/* Table Section */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <BrandTable
@@ -121,7 +126,7 @@ export default function Page() {
           onEdit={handleEditBrand}
         />
       </div>
-      
+
       {viewBrand && (
         <BrandViewModal brand={viewBrand} onClose={() => setViewBrand(null)} />
       )}

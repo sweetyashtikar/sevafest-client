@@ -149,17 +149,17 @@ const Page = () => {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
-        className="hidden lg:flex lg:w-1/2 bg-blue-600 relative items-center justify-center p-12 text-white"
+        className="hidden lg:flex lg:w-1/2 bg-[#0F766E] relative items-center justify-center p-12 text-white"
       >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500 rounded-full -mr-20 -mt-20 opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-700 rounded-full -ml-32 -mb-32 opacity-30"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#115E59] rounded-full -mr-20 -mt-20 opacity-50"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#26b5ab] rounded-full -ml-32 -mb-32 opacity-30"></div>
 
         <div className="relative z-10 max-w-md">
           <h1 className="text-5xl font-bold leading-tight">
             Grow your business with our{" "}
-            <span className="text-blue-200">Vendor Network.</span>
+            <span className="text-teal-200">Vendor Network.</span>
           </h1>
-          <p className="mt-6 text-lg text-blue-100">
+          <p className="mt-6 text-lg text-teal-100">
             Thousands of vendors are already selling. Join the community and
             start earning today.
           </p>
@@ -168,7 +168,7 @@ const Page = () => {
             {["Quick Onboarding", "Lowest Commission", "24/7 Support"].map(
               (text, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="text-blue-300" size={24} />
+                  <CheckCircle2 className="text-teal-300" size={24} />
                   <span className="text-lg font-medium">{text}</span>
                 </div>
               ),
@@ -198,7 +198,7 @@ const Page = () => {
               </label>
               <div className="relative group">
                 <User
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F766E] transition-colors"
                   size={20}
                 />
                 <input
@@ -206,7 +206,7 @@ const Page = () => {
                   name="fullName"
                   placeholder="Enter your name"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 text-black py-3 
-                  pl-10 pr-4 outline-none transition-all focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600"
+                  pl-10 pr-4 outline-none transition-all focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -221,7 +221,7 @@ const Page = () => {
               <div className="relative group">
                 <Mail
                   className="absolute left-3 top-1/2 -translate-y-1/2
-                   text-gray-400 group-focus-within:text-blue-600 transition-colors"
+                   text-gray-400 group-focus-within:text-[#0F766E] transition-colors"
                   size={20}
                 />
                 <input
@@ -229,7 +229,7 @@ const Page = () => {
                   name="email"
                   placeholder="name@company.com"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 outline-none 
-                   text-black transition-all focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600"
+                   text-black transition-all focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -243,7 +243,7 @@ const Page = () => {
               </label>
               <div className="relative group">
                 <Phone
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 text-black transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F766E] text-black transition-colors"
                   size={20}
                 />
                 <input
@@ -251,7 +251,7 @@ const Page = () => {
                   name="mobileNumber"
                   placeholder="+91 00000 00000"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 outline-none transition-all text-black
-                   focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600"
+                   focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   required
@@ -268,7 +268,7 @@ const Page = () => {
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 outline-none 
-                focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600 text-black"
+                focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] text-black"
               >
                 <option value="">Select role</option>
                 {rolesOptions.map((role, index) => (
@@ -285,7 +285,7 @@ const Page = () => {
               </label>
               <div className="relative group">
                 <Lock
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-600 transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F766E] transition-colors"
                   size={20}
                 />
                 <input
@@ -293,7 +293,7 @@ const Page = () => {
                   name="password"
                   placeholder="••••••••"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-12 outline-none transition-all
-                   focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-600 text-black"
+                   focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] text-black"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -310,8 +310,8 @@ const Page = () => {
 
             <button
               type="submit"
-              className="w-full mt-4 bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 hover:shadow-lg
-               hover:shadow-blue-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full mt-4 bg-[#0F766E] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#0D5C55]  hover:shadow-lg
+               hover:shadow-[#0F766E]/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
               Register Now
               <ArrowRight size={20} />

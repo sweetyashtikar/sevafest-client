@@ -59,7 +59,7 @@ export default function Page() {
           newStatus: newStatus,
         },
       });
-      if(newStatus === true){
+      if (newStatus === true) {
         alert("Status updated successfully and Email is sent to the user.");
       }
       alert("Status updated successfully");
@@ -91,9 +91,9 @@ export default function Page() {
   });
 
   return (
-    <div className="p-6 space-y-5 text-black -ml-12">
+    <div className="p-6 space-y-5 ml-12">
       {/* HEADING */}
-      <h1 className="text-2xl font-bold">Vendors</h1>
+      <h1 className="text-2xl font-bold text-black">Vendors</h1>
 
       {/* SEARCH + FILTER */}
       <div className="flex items-center justify-between gap-4">
@@ -101,7 +101,7 @@ export default function Page() {
         <div className="relative w-full max-w-md">
           <Search
             size={18}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-black"
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
           />
           <input
             type="text"
@@ -109,11 +109,17 @@ export default function Page() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="
-              w-full pl-10 pr-4 py-2.5
-              border border-gray-700 rounded-lg
-              text-sm text-black
-              outline-none
-            "
+    w-full pl-10 pr-4 py-2.5
+    border border-[#0F766E]
+    rounded-lg
+    text-sm text-black
+    outline-none
+    bg-gray-50
+    focus:bg-white
+    focus:ring-2
+    focus:ring-[#0F766E]/30
+    transition-all
+  "
           />
         </div>
 

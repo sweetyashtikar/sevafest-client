@@ -1,6 +1,7 @@
 // app/products/page.jsx
 "use client";
 import React from "react";
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -25,11 +26,11 @@ const ProductTable = ({ path, editPath }) => {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
 
-  console.log("user", user);
+  // console.log("user", user);
 
   const isAdmin = user?.role?.role === "admin";
 
-  console.log("Role", isAdmin);
+  // console.log("Role", isAdmin);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -286,6 +287,10 @@ const ProductTable = ({ path, editPath }) => {
       if (!res?.success) {
         throw new Error("Update failed");
       }
+
+      toast.success(
+        `Product ${newValue ? "approved" : "disapproved"} successfully`,
+      );
     } catch (error) {
       console.error("Approval update failed:", error);
 
@@ -296,7 +301,7 @@ const ProductTable = ({ path, editPath }) => {
         ),
       );
 
-      alert("Failed to update approval status");
+      toast.error("Failed to update approval status");
     }
   };
 
@@ -355,34 +360,34 @@ const ProductTable = ({ path, editPath }) => {
       ...(product.tags && product.tags.length > 0 && { tags: product.tags }),
       ...(product.attributeValues &&
         product.attributeValues.length > 0 && {
-        attributeValues: product.attributeValues,
-      }),
+          attributeValues: product.attributeValues,
+        }),
       ...(product.variants &&
         product.variants.length > 0 && {
-        variants: product.variants,
-      }),
+          variants: product.variants,
+        }),
       ...(product.deliverableZipcodes &&
         product.deliverableZipcodes.length > 0 && {
-        deliverableZipcodes: product.deliverableZipcodes,
-      }),
+          deliverableZipcodes: product.deliverableZipcodes,
+        }),
 
       // Objects - only if they have properties
       ...(product.dimensions &&
         Object.keys(product.dimensions).length > 0 && {
-        dimensions: product.dimensions,
-      }),
+          dimensions: product.dimensions,
+        }),
       ...(product.video &&
         Object.keys(product.video).length > 0 && {
-        video: product.video,
-      }),
+          video: product.video,
+        }),
       ...(product.productLevelStock &&
         Object.keys(product.productLevelStock).length > 0 && {
-        productLevelStock: product.productLevelStock,
-      }),
+          productLevelStock: product.productLevelStock,
+        }),
       ...(product.simpleProduct &&
         Object.keys(product.simpleProduct).length > 0 && {
-        simpleProduct: product.simpleProduct,
-      }),
+          simpleProduct: product.simpleProduct,
+        }),
 
       // Handle existing images
       ...(product.mainImage && {
@@ -390,11 +395,11 @@ const ProductTable = ({ path, editPath }) => {
       }),
       ...(product.otherImages &&
         product.otherImages.length > 0 && {
-        otherImages: product.otherImages.map((url) => ({
-          url,
-          type: "existing",
-        })),
-      }),
+          otherImages: product.otherImages.map((url) => ({
+            url,
+            type: "existing",
+          })),
+        }),
     };
 
     setEditFormData(formData);
@@ -547,7 +552,7 @@ const ProductTable = ({ path, editPath }) => {
         // Add productLevelStock if using product-level stock
         if (
           editFormData.variantStockLevelType ===
-          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           editFormData.productLevelStock
         ) {
           formDataToSend.append(
@@ -671,8 +676,6 @@ const ProductTable = ({ path, editPath }) => {
       product.categoryId?.name?.toLowerCase().includes(search)
     );
   });
-
-  console.log("filteredProducts", filteredProducts);
 
   if (loading) {
     return (
@@ -1135,8 +1138,6 @@ const ProductTable = ({ path, editPath }) => {
         </div>
       </div>
 
-
-
       <div className="bg-white rounded-2xl shadow-sm border">
         <div className="px-6 py-4 border-b">
           <h2 className="text-lg font-bold text-black text-center">
@@ -1244,7 +1245,9 @@ const ProductTable = ({ path, editPath }) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {product.categoryId?.name || product.category || "N/A"}
+                          {product.categoryId?.name ||
+                            product.category ||
+                            "N/A"}
                         </span>
                       </td>
                       <td className="px-6 py-4">
@@ -1267,12 +1270,13 @@ const ProductTable = ({ path, editPath }) => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.productType === "Physical"
-                            ? "bg-green-100 text-green-800"
-                            : product.productType === "Digital"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-gray-100 text-gray-800"
-                            }`}
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            product.productType === "Physical"
+                              ? "bg-green-100 text-green-800"
+                              : product.productType === "Digital"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
                         >
                           {product.productType || "Unknown"}
                         </span>
@@ -1295,10 +1299,11 @@ const ProductTable = ({ path, editPath }) => {
 
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
-                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${product.status === true
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                            }`}
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            product.status === true
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
                         >
                           {product.status === true ? "Active" : "Inactive"}
                         </span>
@@ -1345,10 +1350,11 @@ const ProductTable = ({ path, editPath }) => {
                         ) : (
                           /* --- NON-ADMIN VIEW: Static Status Badge --- */
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${product.isApproved
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                              }`}
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              product.isApproved
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
                           >
                             {product.isApproved ? "Approved" : "Pending"}
                           </span>
@@ -1387,7 +1393,9 @@ const ProductTable = ({ path, editPath }) => {
                             className="text-gray-600 hover:text-gray-900 transition-colors"
                             title="Expand/Collapse"
                           >
-                            {expandedRows.includes(product._id || product.id) ? (
+                            {expandedRows.includes(
+                              product._id || product.id,
+                            ) ? (
                               <FiChevronUp size={18} />
                             ) : (
                               <FiChevronDown size={18} />
@@ -1410,7 +1418,9 @@ const ProductTable = ({ path, editPath }) => {
                               </p>
                             </div>
                             <div>
-                              <p className="font-medium text-gray-500">Vendor</p>
+                              <p className="font-medium text-gray-500">
+                                Vendor
+                              </p>
                               <p className="text-gray-900">
                                 {product.vendorId?.username ||
                                   product.vendorId?.company ||
@@ -1420,21 +1430,24 @@ const ProductTable = ({ path, editPath }) => {
                             <div>
                               <p className="font-medium text-gray-500">Stock</p>
                               <p
-                                className={`font-semibold ${(product.stock || 0) > 0
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                                  }`}
+                                className={`font-semibold ${
+                                  (product.stock || 0) > 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
                               >
                                 {product.stock || 0} units
                               </p>
                             </div>
                             <div>
-                              <p className="font-medium text-gray-500">Created</p>
+                              <p className="font-medium text-gray-500">
+                                Created
+                              </p>
                               <p className="text-gray-900">
                                 {product.createdAt
                                   ? new Date(
-                                    product.createdAt,
-                                  ).toLocaleDateString()
+                                      product.createdAt,
+                                    ).toLocaleDateString()
                                   : "N/A"}
                               </p>
                             </div>
@@ -1451,7 +1464,8 @@ const ProductTable = ({ path, editPath }) => {
                                           key={index}
                                           className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
                                         >
-                                          {attr.attribute_id?.name || "Attribute"}
+                                          {attr.attribute_id?.name ||
+                                            "Attribute"}
                                           : {attr.value || "N/A"}
                                         </span>
                                       ),
@@ -1483,10 +1497,11 @@ const ProductTable = ({ path, editPath }) => {
                   <button
                     key={i}
                     onClick={() => handlePageChange(i + 1)}
-                    className={`px-4 py-2 border rounded-md ${filters.page === i + 1
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                    className={`px-4 py-2 border rounded-md ${
+                      filters.page === i + 1
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "border-gray-300 hover:bg-gray-50"
+                    }`}
                   >
                     {i + 1}
                   </button>
