@@ -553,13 +553,19 @@ const OrderPlace = React.memo(({ summary, orderId , selectedAddress,
   onCouponApplied,
   orderTotal
 }) => {
+   // Calculate final total including coupon discount
+  const finalTotal = appliedCoupon 
+    ? summary.finalTotal - appliedCoupon.discount 
+    : summary.finalTotal;
+
+
   return (
     <div className="bg-white rounded-lg p-5 shadow h-fit">
       <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
 
           {/* COUPON APPLY COMPONENT */}
       <CouponApply 
-        cartTotal={summary?.total || 0}
+        cartTotal={summary?.finalTotal || 0}
         onCouponApplied={onCouponApplied}
       />
 
@@ -590,7 +596,7 @@ const OrderPlace = React.memo(({ summary, orderId , selectedAddress,
 
         <div className="flex justify-between font-semibold text-lg">
           <span>Total</span>
-          <span>₹{summary.finalTotal}</span>
+          <span>₹{finalTotal}</span>
         </div>
       </div>
 

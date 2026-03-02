@@ -332,6 +332,47 @@ export default function ProductVariants({ formData, updateFormData }) {
             />
           </div>
 
+            <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Weight</label>
+                    <input
+                      type="number"
+                      name="variant_weight"
+                      value={newVariant.variant_weight}
+                      onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Height</label>
+                    <input
+                      type="number"
+                      name="variant_height"
+                      value={newVariant.variant_height}
+                       onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Breadth</label>
+                    <input
+                      type="number"
+                      name="variant_breadth"
+                      value={newVariant.variant_breadth}
+   onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Length</label>
+                    <input
+                      type="number"
+                      name="variant_length"
+                      value={newVariant.variant_length}
+                       onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Stock Status
@@ -476,12 +517,52 @@ export default function ProductVariants({ formData, updateFormData }) {
                       className="w-full px-3 py-2 border border-gray-700 rounded-md uppercase"
                     />
                   </div>
-                  <div>
+                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
                     <input
                       type="number"
                       name="variant_totalStock"
                       value={variant.variant_totalStock}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Weight</label>
+                    <input
+                      type="number"
+                      name="variant_weight"
+                      value={variant.variant_weight}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Height</label>
+                    <input
+                      type="number"
+                      name="variant_height"
+                      value={variant.variant_height}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Breadth</label>
+                    <input
+                      type="number"
+                      name="variant_breadth"
+                      value={variant.variant_breadth}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">varinat Length</label>
+                    <input
+                      type="number"
+                      name="variant_length"
+                      value={variant.variant_length}
                       onChange={(e) => handleVariantChange(e, index)}
                       className="w-full px-3 py-2 border border-gray-700 rounded-md"
                     />

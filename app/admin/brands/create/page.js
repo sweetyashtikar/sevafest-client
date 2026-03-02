@@ -82,7 +82,7 @@ export default function Page() {
       }, 1000);
     } catch (err) {
       console.error("Brand save failed", err);
-      toast.error("Failed to save brand ❌");
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export default function Page() {
   //     } else {
   //       await apiClient("/brands", {
   //         method: "POST",
-  //         body: payload, 
+  //         body: payload,
   //       });
 
   //       toast.success("Brand created successfully 🎉");

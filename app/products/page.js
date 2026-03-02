@@ -79,9 +79,11 @@ export default function Page() {
   // ================= API =================
   const fetchProducts = async () => {
     try {
-      const res = await apiClient(`product?page=1&limit=1000`);
+      const res = await apiClient(`/product?page=1&limit=1000`);
+      console.log("res", res)
       if (res?.success) {
         setProducts(res.data.products || []);
+
       }
     } catch (err) {
       console.error("Failed to fetch products", err);

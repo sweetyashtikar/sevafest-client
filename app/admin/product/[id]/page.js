@@ -283,81 +283,74 @@ export default function UpadateProductPage() {
 
       // ✅ SAME LOGIC AS handleSubmit - only append if NOT undefined/null
       simpleFields.forEach((field) => {
-        if (editFormData[field] !== undefined && editFormData[field] !== null) {
-          formDataToSend.append(field, String(editFormData[field]));
+        if (formData[field] !== undefined && formData[field] !== null) {
+          formDataToSend.append(field, String(formData[field]));
         }
       });
 
       // Handle arrays (SAME AS handleSubmit)
-      if (editFormData.tags && Array.isArray(editFormData.tags)) {
-        formDataToSend.append("tags", JSON.stringify(editFormData.tags));
+      if (formData.tags && Array.isArray(formData.tags)) {
+        formDataToSend.append("tags", JSON.stringify(formData.tags));
       }
 
-      if (
-        editFormData.attributeValues &&
-        Array.isArray(editFormData.attributeValues)
-      ) {
+      if (formData.attributeValues && Array.isArray(formData.attributeValues)) {
         formDataToSend.append(
           "attributeValues",
-          JSON.stringify(editFormData.attributeValues),
+          JSON.stringify(formData.attributeValues),
         );
       }
 
       // Variants handling (SAME AS handleSubmit)
-      if (editFormData.variants && Array.isArray(editFormData.variants)) {
-        formDataToSend.append(
-          "variants",
-          JSON.stringify(editFormData.variants),
-        );
+      if (formData.variants && Array.isArray(formData.variants)) {
+        formDataToSend.append("variants", JSON.stringify(formData.variants));
       }
 
       // Add variantStockLevelType if needed (SAME AS handleSubmit)
-      if (editFormData.variantStockLevelType) {
+      if (formData.variantStockLevelType) {
         formDataToSend.append(
           "variantStockLevelType",
-          editFormData.variantStockLevelType,
+          formData.variantStockLevelType,
         );
       }
 
       // Add productLevelStock if needed (SAME AS handleSubmit)
-      if (editFormData.productLevelStock) {
+      if (formData.productLevelStock) {
         formDataToSend.append(
           "productLevelStock",
-          JSON.stringify(editFormData.productLevelStock),
+          JSON.stringify(formData.productLevelStock),
         );
       }
 
       if (
-        editFormData.deliverableZipcodes &&
-        Array.isArray(editFormData.deliverableZipcodes)
+        formData.deliverableZipcodes &&
+        Array.isArray(formData.deliverableZipcodes)
       ) {
         formDataToSend.append(
           "deliverableZipcodes",
-          JSON.stringify(editFormData.deliverableZipcodes),
+          JSON.stringify(formData.deliverableZipcodes),
         );
       }
 
       // Handle nested objects (SAME AS handleSubmit)
-      if (editFormData.dimensions) {
+      if (formData.dimensions) {
         formDataToSend.append(
           "dimensions",
-          JSON.stringify(editFormData.dimensions),
+          JSON.stringify(formData.dimensions),
         );
       }
 
-      if (editFormData.video) {
-        formDataToSend.append("video", JSON.stringify(editFormData.video));
+      if (formData.video) {
+        formDataToSend.append("video", JSON.stringify(formData.video));
       }
 
       // ⭐⭐ Handle simpleProduct as a JSON string (SAME AS handleSubmit)
-      if (editFormData.simpleProduct) {
+      if (formData.simpleProduct) {
         const simpleProductData = {
-          sp_price: editFormData.simpleProduct.sp_price || 0,
-          sp_specialPrice: editFormData.simpleProduct.sp_specialPrice || 0,
-          sp_sku: editFormData.simpleProduct.sp_sku || "",
-          sp_totalStock: editFormData.simpleProduct.sp_totalStock || 0,
-          sp_stockStatus:
-            editFormData.simpleProduct.sp_stockStatus || "in_stock",
+          sp_price: formData.simpleProduct.sp_price || 0,
+          sp_specialPrice: formData.simpleProduct.sp_specialPrice || 0,
+          sp_sku: formData.simpleProduct.sp_sku || "",
+          sp_totalStock: formData.simpleProduct.sp_totalStock || 0,
+          sp_stockStatus: formData.simpleProduct.sp_stockStatus || "in_stock",
         };
         formDataToSend.append(
           "simpleProduct",
@@ -366,48 +359,45 @@ export default function UpadateProductPage() {
       }
 
       // Variable product handling (SAME AS handleSubmit)
-      if (editFormData.productType === PRODUCT_TYPES.VARIABLE) {
+      if (formData.productType === PRODUCT_TYPES.VARIABLE) {
         // Add variantStockLevelType
-        if (editFormData.variantStockLevelType) {
+        if (formData.variantStockLevelType) {
           formDataToSend.append(
             "variantStockLevelType",
-            editFormData.variantStockLevelType,
+            formData.variantStockLevelType,
           );
         }
 
         // Add variants
-        if (editFormData.variants && Array.isArray(editFormData.variants)) {
-          formDataToSend.append(
-            "variants",
-            JSON.stringify(editFormData.variants),
-          );
+        if (formData.variants && Array.isArray(formData.variants)) {
+          formDataToSend.append("variants", JSON.stringify(formData.variants));
         }
 
         // Add productLevelStock if using product-level stock
         if (
-          editFormData.variantStockLevelType ===
+          formData.variantStockLevelType ===
             VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
-          editFormData.productLevelStock
+          formData.productLevelStock
         ) {
           formDataToSend.append(
             "productLevelStock",
-            JSON.stringify(editFormData.productLevelStock),
+            JSON.stringify(formData.productLevelStock),
           );
         }
       }
 
       // Handle image files separately (MODIFIED FOR UPDATE)
-      if (editFormData.mainImage) {
+      if (formData.mainImage) {
         // If it's a new file, append it
-        if (editFormData.mainImage instanceof File) {
-          formDataToSend.append("mainImage", editFormData.mainImage);
+        if (formData.mainImage instanceof File) {
+          formDataToSend.append("mainImage", formData.mainImage);
         }
         // If it's existing image (with url), don't append anything - backend will keep existing
       }
 
-      if (editFormData.otherImages && Array.isArray(editFormData.otherImages)) {
+      if (formData.otherImages && Array.isArray(formData.otherImages)) {
         // Filter only File objects (new uploads)
-        const fileObjects = editFormData.otherImages.filter(
+        const fileObjects = formData.otherImages.filter(
           (item) => item instanceof File,
         );
         fileObjects.forEach((file) => {
@@ -415,7 +405,7 @@ export default function UpadateProductPage() {
         });
 
         // Handle existing images
-        const existingImages = editFormData.otherImages.filter(
+        const existingImages = formData.otherImages.filter(
           (item) => item.type === "existing",
         );
         if (existingImages.length > 0) {
@@ -432,18 +422,17 @@ export default function UpadateProductPage() {
 
       console.log("Submitting update data:", formDataToSend);
 
-      // Use the ProductApi
-      const response = await ProductApi.update(
-        editingProduct._id,
-        formDataToSend,
-      );
+      const response = await ProductApi.update(id, formDataToSend);
+
+      console.log("response ", response);
     } catch (err) {
       console.error("Error:", err);
-      setUpdateError(err.message || "Failed to update product");
+      setError(err.message || "Failed to update product");
     } finally {
-      setUpdateLoading(false);
+      setLoading(false);
     }
   };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -585,6 +574,7 @@ export default function UpadateProductPage() {
               <button
                 type="submit"
                 disabled={loading}
+                onClick={handleSubmit}
                 className="ml-auto px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
               >
                 {loading ? "Creating..." : "Create Product"}

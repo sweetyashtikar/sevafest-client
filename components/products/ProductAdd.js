@@ -122,36 +122,68 @@ export default function AddProductPage() {
       [field]: value,
     }));
   };
-// Update the next button logic to skip step 7 for VARIABLE products
-const handleNext = () => {
-  let nextStep = step + 1;
-  
-  // If current step is 6 and product is VARIABLE, skip to step 8
-  if (step === 6 && formData.productType === PRODUCT_TYPES.VARIABLE) {
-    nextStep = 8;
-  }
-  // If current step is 7 and product is DIGITAL, go to step 8
-  else if (step === 7 && formData.productType === PRODUCT_TYPES.DIGITAL) {
-    nextStep = 8;
-  }
-  
-  setStep(nextStep);
-};
 
-// Update the progress bar to show correct steps
-const getTotalSteps = () => {
-  if (formData.productType === PRODUCT_TYPES.VARIABLE) {
-    return 8; // Skip Media step
-  } else if (formData.productType === PRODUCT_TYPES.DIGITAL) {
-    return 8; // All steps including Media and Digital
-  }
-  return 8; // Regular products: all steps except Digital
-};
+  // First, define the step order based on product type
+  // Define the step order based on product type
+  const getSteps = () => {
+    const steps = [
+      { number: 1, label: "Basic Info" },
+      { number: 2, label: "Categorization" },
+      { number: 3, label: "Pricing" },
+      { number: 4, label: "Inventory" },
+    ];
 
-  const handleBack = () => {
-    setStep((prev) => prev - 1);
+    let stepCounter = 5;
+
+    // Step 5: Variants (only for VARIABLE products)
+    if (formData.productType === PRODUCT_TYPES.VARIABLE) {
+      steps.push({ number: stepCounter++, label: "Variants" });
+    }
+
+    // Step: Shipping (for all products that need shipping)
+    // Add this for SIMPLE and VARIABLE, skip for DIGITAL
+    if (formData.productType !== PRODUCT_TYPES.DIGITAL) {
+      steps.push({ number: stepCounter++, label: "Shipping" });
+    }
+
+    // Step: Policies (always present for all product types)
+    steps.push({ number: stepCounter++, label: "Policies" });
+
+    // Step: Media (for all products except VARIABLE? Or include for VARIABLE too?)
+    // Currently your code shows Media for non-VARIABLE, so let's maintain that
+    if (formData.productType !== PRODUCT_TYPES.VARIABLE) {
+      steps.push({ number: stepCounter++, label: "Media" });
+    }
+
+    // Step: Digital (only for DIGITAL products)
+    if (formData.productType === PRODUCT_TYPES.DIGITAL) {
+      steps.push({ number: stepCounter++, label: "Digital" });
+    }
+
+    return steps;
+  };
+  // Update the next button logic to skip step 7 for VARIABLE products
+  const handleNext = () => {
+    const steps = getSteps();
+    const currentStepIndex = steps.findIndex(s => s.number === step);
+
+    if (currentStepIndex < steps.length - 1) {
+      setStep(steps[currentStepIndex + 1].number);
+    }
   };
 
+  const getTotalSteps = () => {
+    return getSteps().length;
+  };
+
+  const handleBack = () => {
+    const steps = getSteps();
+    const currentStepIndex = steps.findIndex(s => s.number === step);
+
+    if (currentStepIndex > 0) {
+      setStep(steps[currentStepIndex - 1].number);
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -277,7 +309,7 @@ const getTotalSteps = () => {
         // Add productLevelStock if using product-level stock
         if (
           formData.variantStockLevelType ===
-            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           formData.productLevelStock
         ) {
           formDataToSend.append(
@@ -287,17 +319,17 @@ const getTotalSteps = () => {
         }
       }
 
-        // ⭐ Handle variants WITHOUT images in the JSON
+      // ⭐ Handle variants WITHOUT images in the JSON
       // First, create a copy of variants without File objects
       const variantsWithoutImages = formData.variants.map(variant => {
         // Create a clean copy without File objects and previews
-        const { 
-          variant_images, 
-          variant_images_previews, 
+        const {
+          variant_images,
+          variant_images_previews,
           _id,
-          ...cleanVariant 
+          ...cleanVariant
         } = variant;
-        
+
         return {
           ...cleanVariant,
           // Initialize empty array for images - will be populated by multer
@@ -305,40 +337,40 @@ const getTotalSteps = () => {
         };
       });
 
-       // Append the variants JSON (without images)
+      // Append the variants JSON (without images)
       formDataToSend.append("variants", JSON.stringify(variantsWithoutImages));
 
-       // Create a mapping of images to variants
-  const imageMapping = [];
+      // Create a mapping of images to variants
+      const imageMapping = [];
 
       // ⭐ Now append variant images as separate fields with a naming convention
       // This allows multer to map them to the correct variant
-     formData.variants.forEach((variant, variantIndex) => {
-    if (variant.variant_images && Array.isArray(variant.variant_images)) {
-      variant.variant_images.forEach((image, imageIndex) => {
-        if (image instanceof File) {
-          // Generate a unique ID for this image
-          const imageId = `variant_${variantIndex}_img_${imageIndex}_${Date.now()}`;
-          
-          // Append the image with a custom filename
-          const customFile = new File([image], imageId, { type: image.type });
-          formDataToSend.append('variant_images', customFile);
-          
-          // Store the mapping
-          imageMapping.push({
-            imageId,
-            variantIndex,
-            imageIndex
+      formData.variants.forEach((variant, variantIndex) => {
+        if (variant.variant_images && Array.isArray(variant.variant_images)) {
+          variant.variant_images.forEach((image, imageIndex) => {
+            if (image instanceof File) {
+              // Generate a unique ID for this image
+              const imageId = `variant_${variantIndex}_img_${imageIndex}_${Date.now()}`;
+
+              // Append the image with a custom filename
+              const customFile = new File([image], imageId, { type: image.type });
+              formDataToSend.append('variant_images', customFile);
+
+              // Store the mapping
+              imageMapping.push({
+                imageId,
+                variantIndex,
+                imageIndex
+              });
+            }
           });
         }
       });
-    }
-  });
 
-    // Append the mapping as a separate field
-  if (imageMapping.length > 0) {
-    formDataToSend.append('variant_image_mapping', JSON.stringify(imageMapping));
-  }
+      // Append the mapping as a separate field
+      if (imageMapping.length > 0) {
+        formDataToSend.append('variant_image_mapping', JSON.stringify(imageMapping));
+      }
 
 
       //Handle image files separately
@@ -358,16 +390,16 @@ const getTotalSteps = () => {
 
       console.log("Submitting form data:", formDataToSend);
 
-       // Log FormData contents for debugging
-    for (let pair of formDataToSend.entries()) {
-      if (pair[0] === 'variants') {
-        console.log('variants:', JSON.parse(pair[1]));
-      } else if (pair[0] === 'variant_images') {
-        console.log('variant_images:', pair[1].name);
-      } else {
-        console.log(pair[0], pair[1]);
+      // Log FormData contents for debugging
+      for (let pair of formDataToSend.entries()) {
+        if (pair[0] === 'variants') {
+          console.log('variants:', JSON.parse(pair[1]));
+        } else if (pair[0] === 'variant_images') {
+          console.log('variant_images:', pair[1].name);
+        } else {
+          console.log(pair[0], pair[1]);
+        }
       }
-    }
 
       // Use the ProductApi
       const response = await ProductApi.create(formDataToSend);
@@ -390,10 +422,10 @@ const getTotalSteps = () => {
           }
         });
       }
-// Reset form or redirect
+      // Reset form or redirect
       // setFormData(initialFormState);
       // router.push('/products');
-} catch (err) {
+    } catch (err) {
       console.error("Error:", err);
       setError(err.message || "Something went wrong");
     } finally {
@@ -403,68 +435,37 @@ const getTotalSteps = () => {
   const renderStep = () => {
     switch (step) {
       case 1:
-        return (
-          <ProductBasicInfo
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
+        return <ProductBasicInfo formData={formData} updateFormData={updateFormData} />;
       case 2:
-        return (
-          <ProductCategorization
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
+        return <ProductCategorization formData={formData} updateFormData={updateFormData} />;
       case 3:
-        return (
-          <ProductPricing formData={formData} updateFormData={updateFormData} />
-        );
+        return <ProductPricing formData={formData} updateFormData={updateFormData} />;
       case 4:
-        return (
-          <ProductInventory
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
-      case 5:
-        return formData.productType === PRODUCT_TYPES.VARIABLE ? (
-          <ProductVariants
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        ) : (
-          <ProductShipping
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
-      case 6:
-        return (
-          <ProductPolicies
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
-      case 7:
-        // Skip Media step for VARIABLE products
-      if (formData.productType === PRODUCT_TYPES.VARIABLE) {
-        return null; // Skip this step
-      }
-      return (
-        <ProductMedia formData={formData} updateFormData={updateFormData} />
-      );
-      case 8:
-        return formData.productType === PRODUCT_TYPES.DIGITAL ? (
-          <ProductDigital formData={formData} updateFormData={updateFormData} />
-        ) : null;
-      // case 9:
-      //   return <ProductSEO formData={formData} updateFormData={updateFormData} />;
+        return <ProductInventory formData={formData} updateFormData={updateFormData} />;
+
+      // Dynamic steps based on product type
       default:
-        return null;
+        const steps = getSteps();
+        const currentStep = steps.find(s => s.number === step);
+
+        if (!currentStep) return null;
+
+        switch (currentStep.label) {
+          case "Variants":
+            return <ProductVariants formData={formData} updateFormData={updateFormData} />;
+          case "Shipping":
+            return <ProductShipping formData={formData} updateFormData={updateFormData} />;
+          case "Policies":
+            return <ProductPolicies formData={formData} updateFormData={updateFormData} />;
+          case "Media":
+            return <ProductMedia formData={formData} updateFormData={updateFormData} />;
+          case "Digital":
+            return <ProductDigital formData={formData} updateFormData={updateFormData} />;
+          default:
+            return null;
+        }
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-50 py-8 -ml-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -475,37 +476,36 @@ const getTotalSteps = () => {
           </p>
         </div>
 
+
         {/* Progress Bar */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((stepNum) => (
-              <div
-                key={stepNum}
-                className={`flex-1 h-2 mx-1 rounded-full ${step >= stepNum ? "bg-blue-600" : "bg-gray-200"}`}
-              />
-            ))}
-          </div>
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Basic Info</span>
-            <span>Categorization</span>
-            <span>Pricing</span>
-            <span>Inventory</span>
-            <span>
-              {formData.productType === PRODUCT_TYPES.VARIABLE
-                ? "Variants"
-                : "Shipping"}
-            </span>
-            <span>Policies</span>
-             {formData.productType !== PRODUCT_TYPES.VARIABLE && (
-            <span>Media</span>
-          )}
-            <span>
-              {formData.productType === PRODUCT_TYPES.DIGITAL
-                ? "Digital"
-                : null}
-            </span>
-            {/* <span>SEO/Review</span> */}
-          </div>
+          {/* Get dynamic steps based on product type */}
+          {(() => {
+            const steps = getSteps();
+            return (
+              <>
+                {/* Progress indicators */}
+                <div className="flex items-center justify-between mb-2">
+                  {steps.map((s) => (
+                    <div
+                      key={s.number}
+                      className={`flex-1 h-2 mx-1 rounded-full ${step >= s.number ? "bg-blue-600" : "bg-gray-200"
+                        }`}
+                    />
+                  ))}
+                </div>
+
+                {/* Step labels */}
+                <div className="flex justify-between text-sm text-gray-600 mt-2">
+                  {steps.map((s) => (
+                    <div key={s.number} className="text-center flex-1">
+                      {s.label}
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Form */}
@@ -533,7 +533,33 @@ const getTotalSteps = () => {
               </button>
             )}
 
+            {console.log('Current step:', step)};
+            {console.log('Total steps:', getTotalSteps())}
+            {console.log('Should show Next?', step < getTotalSteps())}
+            {console.log('Should show Submit?', step === getTotalSteps())}
+
             {step < getTotalSteps() ? (
+              <button
+                type="button"
+                onClick={handleNext}
+                className="ml-auto px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              >
+                Next
+              </button>
+            ) : null}
+
+            {/* Always show Next until the very last step */}
+            {step === getTotalSteps() && (
+              <button
+                type="submit"
+                disabled={loading}
+                className="ml-auto px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
+              >
+                {loading ? "Creating..." : "Create Product"}
+              </button>
+            )}
+
+            {/* {step < getTotalSteps() ? (
               <button
                 type="button"
                 onClick={handleNext}
@@ -549,7 +575,7 @@ const getTotalSteps = () => {
               >
                 {loading ? "Creating..." : "Create Product"}
               </button>
-            )}
+            )} */}
           </div>
         </form>
       </div>
