@@ -284,6 +284,15 @@ const ProductTable = ({ path, editPath }) => {
         isApproved: newValue,
       });
 
+      console.log("newValue", newValue);
+
+      // const res = await apiClient(`/product/approve/${product._id}`, {
+      //   method: "PUT",
+      //   body: {
+      //     isApproved: newValue,
+      //   },
+      // });
+
       if (!res?.success) {
         throw new Error("Update failed");
       }
