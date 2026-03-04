@@ -3,6 +3,7 @@ import { store } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 
 export const BASE_URL = "http://localhost:8000/api";
+
 /* =========================
    🔑 JWT EXPIRY CHECK
 ========================= */

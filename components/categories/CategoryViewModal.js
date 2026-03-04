@@ -22,7 +22,7 @@ export function CategoryViewModal({ id, onClose }) {
       try {
         setLoading(true);
         const res = await apiClient(`/category/${id}`);
-        console.log("rescategory", res)
+        console.log("rescategory", res);
 
         if (!res?.success) {
           throw new Error(res?.message || "Failed to load category");
@@ -41,152 +41,162 @@ export function CategoryViewModal({ id, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm
-                 flex items-center justify-center"
+      className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center"
       onClick={onClose}
     >
       {/* Modal Box */}
       <div
-        className="bg-white rounded-xl shadow-xl
-                   w-[80vw] h-[60vh] overflow-y-auto"
+        className="bg-white rounded-xl shadow-2xl w-[780px] max-h-[85vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">
-            Category Details
-          </h2>
+        <div className="px-8 pt-8 pb-6 flex justify-between items-start">
+          <h2 className="text-2xl font-bold text-gray-900">Category Details</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 transition-colors text-lg leading-none"
           >
             ✕
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="px-8 pb-6 space-y-6">
           {loading && (
-            <div className="py-10 text-center text-gray-600">
+            <div className="py-10 text-center text-sm text-gray-500">
               Loading category...
             </div>
           )}
 
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-              <p className="text-red-600">{error}</p>
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
 
           {category && (
-            <div className="space-y-8">
-              {/* Basic Information */}
-              <div>
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
-                  Basic Information
-                </h3>
+            <div className="space-y-6">
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <ViewField label="Category Name" value={category.name} />
+              {/* Category Name */}
+              <ViewField label="Category Name *" value={category.name} />
 
-                  <ViewField
-                    label="Status"
-                    value={category.status ? "Active" : "Inactive"}
-                    badge
-                  />
+              {/* URL Slug */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-gray-700">
+                  URL Slug
+                </label>
+                <div className="flex rounded-lg border border-gray-300 overflow-hidden">
+                  <span className="px-4 py-3 bg-gray-50 text-sm text-gray-500 border-r border-gray-300 whitespace-nowrap">
+                    /categories/
+                  </span>
+                  <div className="flex-1 px-4 py-3 bg-gray-50 text-sm text-gray-800">
+                    {category.slug || "-"}
+                  </div>
+                </div>
+                <p className="text-xs text-gray-400">
+                  This slug will be auto-generated from the category name
+                </p>
+              </div>
 
-                  <ViewField
-                    label="URL Slug"
-                    value={`/categories/${category.slug}`}
-                    full
-                  />
+              {/* Display Order + Status */}
+              <div className="grid grid-cols-2 gap-5">
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Display Order
+                  </label>
+                  <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-800">
+                    {category.row_order ?? "-"}
+                  </div>
+                  <p className="text-xs text-gray-400">Lower numbers appear first</p>
+                </div>
 
-                  <ViewField
-                    label="Display Order"
-                    value={category.row_order}
-                  />
+                <div className="space-y-1.5">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Status
+                  </label>
+                  <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-800">
+                    {category.status ? "Active" : "Inactive"}
+                  </div>
                 </div>
               </div>
 
-              {/* Sub Categories */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
-                  Sub-Categories
-                </h3>
+              {/* Divider */}
+              <div className="border-t border-gray-200" />
 
-                <div className="flex flex-wrap gap-2">
+              {/* Sub Categories */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-gray-700">
+                  Sub-Categories
+                </label>
+                <div className="flex flex-wrap gap-2 min-h-[42px] px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
                   {category.sub_category?.length > 0 ? (
                     category.sub_category.map((sub, i) => (
                       <span
                         key={i}
-                        className="inline-flex items-center px-3 py-1
-                                   rounded-full text-sm
-                                   bg-blue-100 text-blue-800"
+                        className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700"
                       >
                         {sub}
                       </span>
                     ))
                   ) : (
-                    <p className="text-gray-500 text-sm">
-                      No sub-categories
-                    </p>
+                    <p className="text-sm text-gray-400">No sub-categories</p>
                   )}
                 </div>
               </div>
 
+              {/* Divider */}
+              <div className="border-t border-gray-200" />
+
               {/* Images */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
+              <div className="space-y-4">
+                <label className="block text-sm font-medium text-gray-700">
                   Images
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <ImagePreview
-                    label="Category Image"
-                    src={category.image}
-                  />
-
-                  <ImagePreview
-                    label="Banner Image"
-                    src={category.banner}
-                    wide
-                  />
+                </label>
+                <div className="grid grid-cols-2 gap-5">
+                  <ImagePreview label="Category Image" src={category.image} />
+                  <ImagePreview label="Banner Image" src={category.banner} wide />
                 </div>
               </div>
+
+              {/* Divider */}
+              <div className="border-t border-gray-200" />
 
               {/* Meta Info */}
-              <div className="border-t border-gray-200 pt-6">
-                <h3 className="text-lg font-medium text-gray-700 mb-4">
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-gray-700">
                   Meta Information
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <ViewField
-                    label="Total Clicks"
-                    value={category.clicks}
-                  />
-
-                  <ViewField
-                    label="Created At"
-                    value={new Date(category.createdAt).toLocaleString()}
-                  />
-
-                  <ViewField
-                    label="Last Updated"
-                    value={new Date(category.updatedAt).toLocaleString()}
-                  />
+                </label>
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-400">Total Clicks</p>
+                    <div className="px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-800">
+                      {category.clicks ?? "-"}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-400">Created At</p>
+                    <div className="px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-800">
+                      {new Date(category.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-xs text-gray-400">Last Updated</p>
+                    <div className="px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-800">
+                      {new Date(category.updatedAt).toLocaleString()}
+                    </div>
+                  </div>
                 </div>
               </div>
+
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 flex justify-end">
+        <div className="px-8 py-5 border-t border-gray-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md
-                       text-gray-700 hover:bg-gray-50"
+            className="px-5 py-2.5 text-sm border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition-colors"
           >
             Close
           </button>
@@ -198,54 +208,44 @@ export function CategoryViewModal({ id, onClose }) {
 
 /* ---------------- reusable components ---------------- */
 
-function ViewField({ label, value, full = false, badge = false }) {
+function ViewField({ label, value }) {
   return (
-    <div className={full ? "md:col-span-2" : ""}>
-      <p className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="space-y-1.5">
+      <label className="block text-sm font-medium text-gray-700">
         {label}
-      </p>
-      {badge ? (
-        <span
-          className={`inline-block px-3 py-1 rounded-full text-sm font-medium
-            ${
-              value === "Active"
-                ? "bg-green-100 text-green-700"
-                : "bg-red-100 text-red-700"
-            }`}
-        >
-          {value}
-        </span>
-      ) : (
-        <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-900">
-          {value || "-"}
-        </div>
-      )}
+      </label>
+      <div className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-sm text-gray-800">
+        {value || "-"}
+      </div>
     </div>
   );
 }
 
 function ImagePreview({ label, src, wide = false }) {
   return (
-    <div>
-      <p className="block text-sm font-medium text-gray-700 mb-2">
+    <div className="space-y-1.5">
+      <label className="block text-sm font-medium text-gray-700">
         {label}
-      </p>
-
+      </label>
       {src ? (
         <img
-          src={src}  // Just use the src directly since it's already a full URL
+          src={src}
           alt={label}
-          className={`rounded border object-cover
-            ${wide ? "h-24 w-full" : "h-20 w-20"}`}
+          className={`rounded-lg border border-gray-300 object-cover ${
+            wide ? "h-28 w-full" : "h-24 w-24"
+          }`}
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = 'https://via.placeholder.com/300?text=Image+Error';
+            e.target.src = "https://via.placeholder.com/300?text=Image+Error";
           }}
         />
       ) : (
-        <div className={`rounded border bg-gray-100 flex items-center justify-center
-          ${wide ? "h-24 w-full" : "h-20 w-20"}`}>
-          <p className="text-gray-500 text-sm">No image</p>
+        <div
+          className={`rounded-lg border border-gray-300 bg-gray-50 flex items-center justify-center ${
+            wide ? "h-28 w-full" : "h-24 w-24"
+          }`}
+        >
+          <p className="text-xs text-gray-400">No image</p>
         </div>
       )}
     </div>
