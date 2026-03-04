@@ -80,10 +80,9 @@ export default function Page() {
   const fetchProducts = async () => {
     try {
       const res = await apiClient(`/product?page=1&limit=1000`);
-      console.log("res", res)
+      console.log("res", res);
       if (res?.success) {
         setProducts(res.data.products || []);
-
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
@@ -275,6 +274,17 @@ export default function Page() {
     setCurrentPage(1);
   };
 
+  const getProductImage = (product) => {
+    if (product?.mainImage) return product.mainImage;
+
+    if (product?.variants?.length > 0) {
+      const variantImage = product.variants?.[0]?.variant_images?.[0];
+      if (variantImage) return variantImage;
+    }
+
+    return null;
+  };
+
   return (
     <>
       {loading && <Loader fullScreen={true} />}
@@ -351,7 +361,7 @@ export default function Page() {
                       }}
                     >
                       <ProductCard
-                        image={product?.mainImage}
+                        image={getProductImage(product)}
                         name={product?.name}
                         category={product?.categoryId?.name ?? "Uncategorized"}
                         shortDescription={product?.shortDescription}

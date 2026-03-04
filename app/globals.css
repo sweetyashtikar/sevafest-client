@@ -26,7 +26,7 @@ body {
 }
 
 
-/* Smooth Scroll */
+/* Smooth Scroll
 ::-webkit-scrollbar {
   width: 6px;
 }
@@ -38,4 +38,4 @@ body {
 
 ::-webkit-scrollbar-track {
   background: transparent;
-}
+} */

@@ -8,9 +8,7 @@ import { apiClient } from "@/services/apiClient";
 export default function RecommendedProducts() {
   const router = useRouter();
 
-  const recommended = useSelector(
-    (state) => state.recommendation.recommended
-  );
+  const recommended = useSelector((state) => state.recommendation.recommended);
 
   const getProductPrice = (product) => {
     if (product?.effectivePrice != null) return product.effectivePrice;
@@ -18,6 +16,17 @@ export default function RecommendedProducts() {
       return product.simpleProduct.sp_specialPrice;
     if (product?.simpleProduct?.sp_price != null)
       return product.simpleProduct.sp_price;
+    return null;
+  };
+
+  const getProductImage = (product) => {
+    if (product?.mainImage) return product.mainImage;
+
+    if (product?.variants?.length > 0) {
+      const variantImage = product.variants?.[0]?.variant_images?.[0];
+      if (variantImage) return variantImage;
+    }
+
     return null;
   };
 
@@ -51,7 +60,7 @@ export default function RecommendedProducts() {
         {recommended.map((product) => (
           <div key={product._id} className="min-w-[260px]">
             <ProductCard
-              image={product?.mainImage}
+              image={getProductImage(product)}
               name={product?.name}
               category={product?.categoryId?.name ?? "Uncategorized"}
               shortDescription={product?.shortDescription}
@@ -60,9 +69,7 @@ export default function RecommendedProducts() {
               discount={product?.discountPercentage}
               rating={Math.round(product.rating?.average || 0)}
               reviews={product.rating?.count || 0}
-              onNavigate={() =>
-                router.push(`/products/${product._id}`)
-              }
+              onNavigate={() => router.push(`/products/${product._id}`)}
               onAddToCart={() => addToCart(product._id)}
             />
           </div>

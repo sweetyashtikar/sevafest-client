@@ -55,7 +55,7 @@ const ProductCard = ({
       )}
 
       {/* 2. Image Section */}
-      <div className="relative aspect-square overflow-hidden bg-[#F7F8F8] p-5">
+      <div className="relative aspect-square overflow-hidden p-5">
         <img
           src={image}
           alt={name}

@@ -1,10 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Star } from "lucide-react";
 
 export default function ProductsRow({ products = [], loading = false, name }) {
   const router = useRouter();
+
+  console.log("prodcut", products);
 
   const topTen = products.slice(0, 50);
 
@@ -30,6 +33,17 @@ export default function ProductsRow({ products = [], loading = false, name }) {
     return Math.round(((oldPrice - newPrice) / oldPrice) * 100);
   };
 
+  const getProductImage = (product) => {
+    if (product?.mainImage) return product.mainImage;
+
+    if (product?.variants?.length > 0) {
+      const variantImage = product.variants?.[0]?.variant_images?.[0];
+      if (variantImage) return variantImage;
+    }
+
+    return null;
+  };
+
   if (loading) return null;
   if (!topTen.length) return null;
 
@@ -53,6 +67,7 @@ export default function ProductsRow({ products = [], loading = false, name }) {
       <div className="grid grid-cols-5 gap-4">
         {topTen.slice(0, 5).map((product) => {
           const discount = getDiscountPercent(product);
+          const imageUrl = getProductImage(product);
 
           return (
             <div
@@ -70,10 +85,11 @@ export default function ProductsRow({ products = [], loading = false, name }) {
                   </div>
                 )}
 
-                <img
-                  src={product?.mainImage}
-                  alt={product?.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                <Image
+                  src={imageUrl}
+                  alt={product?.name || "product"}
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
 
