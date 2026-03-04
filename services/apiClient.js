@@ -2,7 +2,10 @@ import axios from "axios";
 import { store } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 
-export const BASE_URL = "http://192.168.99.178:8000/api";
+// export const BASE_URL = "http://192.168.99.178:8000/api";
+
+
+export const BASE_URL = "http://localhost:8000/api";
 
 /* =========================
    🔑 JWT EXPIRY CHECK
