@@ -20,26 +20,33 @@ export function CustomersTable({
             <div className="h-10 w-10 border-4 border-gray-300 border-t-orange-500 rounded-full animate-spin" />
           </div>
         ) : (
+          <div className="bg-white rounded-2xl shadow-sm border">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-lg font-bold text-black text-center">
+            Product Table List
+          </h2>
+        </div>
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Joining Date
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Email
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Phone
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-black uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Balance
                   </th>
-                  <th className="px-6 py-3 text-center text-xs font-semibold text-black uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                     Action
                   </th>
                 </tr>
@@ -78,9 +85,10 @@ export function CustomersTable({
               </tbody>
             </table>
           </div>
+          </div>
+          </div>
         )}
       </div>
-
       {!loading && totalPages > 1 && (
         <div className="flex justify-center items-center gap-2 mt-6 text-black">
           <button
