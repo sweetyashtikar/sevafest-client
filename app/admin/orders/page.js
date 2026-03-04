@@ -58,7 +58,7 @@ export default function Page() {
   });
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden">
+    <div className="h-screen flex flex-col bg-slate-50 overflow-hidden -ml-16">
       <div className="p-6 space-y-6 flex-none">
         {/* ===== HEADING ===== */}
         <h1 className="text-2xl font-bold text-black">Orders</h1>
@@ -92,43 +92,51 @@ export default function Page() {
           </div>
 
           {/* FILTER */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="
-            w-48
-            px-4 py-2.5
-            border border-gray-300
-            rounded-lg
-            text-sm
-            text-black
-            bg-white
-            outline-none
-            focus:ring-2
-            focus:ring-blue-500
-            focus:border-blue-500
-          "
-          >
-            <option value="all">All Status</option>
-            <option value="awaiting">Awaiting</option>
-            <option value="processed">Processed</option>
-          </select>
+       <select
+  value={statusFilter}
+  onChange={(e) => setStatusFilter(e.target.value)}
+  className="
+    w-40
+    px-4 py-2.5
+    -pr-12
+    border border-gray-300
+    rounded-lg
+    text-sm
+    text-black
+    bg-white
+    outline-none
+    focus:ring-2
+    focus:ring-blue-500
+    focus:border-blue-500
+  "
+>
+  <option value="all">All Status</option>
+  <option value="awaiting">Awaiting</option>
+  <option value="processed">Processed</option>
+</select>
         </div>
 
         {/* ===== SUMMARY ===== */}
-        {summary && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <SummaryCard title="Total Orders" value={summary.total_items} />
-            <SummaryCard
-              title="Total Quantity"
-              value={summary.total_quantity}
-            />
-            <SummaryCard
-              title="Total Revenue"
-              value={`₹ ${summary.total_revenue}`}
-            />
-          </div>
-        )}
+    {summary && (
+  <div className="max-w-4xl">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <SummaryCard 
+        title="Total Orders" 
+        value={summary.total_items} 
+      />
+
+      <SummaryCard
+        title="Total Quantity"
+        value={summary.total_quantity}
+      />
+
+      <SummaryCard
+        title="Total Revenue"
+        value={`₹ ${summary.total_revenue}`}
+      />
+    </div>
+  </div>
+)}
 
         {/* ===== TABLE ===== */}
         <OrderTable
