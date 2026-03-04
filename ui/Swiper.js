@@ -43,8 +43,8 @@ const Swiper = () => {
               <div className="relative w-28 h-28 md:w-36 md:h-36 rounded-full border-4 border-yellow-400 p-1 bg-white overflow-hidden transition-transform duration-300 group-hover:scale-110 shadow-lg group-hover:shadow-yellow-200">
                 <div className="relative w-full h-full rounded-full overflow-hidden">
                   <Image
-                    src={theme.image}
-                    alt={theme.name}
+                    src={theme?.image}
+                    alt={theme?.name}
                     fill
                     className="object-cover"
                   />
@@ -77,7 +77,7 @@ const Swiper = () => {
 
       <div className="text-center mt-16">
         <motion.button
-        onClick={()=> router.push("/products")}
+          onClick={() => router.push("/products")}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           className="bg-gradient-to-r from-yellow-300 to-yellow-500 text-white font-bold py-3 px-8 

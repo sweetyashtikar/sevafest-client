@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Trash2 } from "lucide-react";
+import { ChevronDown, Trash2 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart } from "@/redux/slices/cartSlice";
@@ -38,7 +38,6 @@ const CartPage = () => {
   );
 
   const removeItem = useCallback(
-    
     async (productId, variantId) => {
       console.log("variantId", variantId);
       console.log("productId", productId);
@@ -126,118 +125,173 @@ const CartPage = () => {
 export default CartPage;
 
 const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
-  console.log("Items", items);
   return (
-    <>
-      {items.map((item) => (
+    <div className="space-y-4">
+      {items.map((item, index) => (
         <div
           key={item._id}
-          className="flex gap-4 border-b last:border-b-0 pb-4 mb-4"
+          className={`flex gap-4 pb-4 ${
+            index !== items.length - 1 ? "border-b border-gray-200" : ""
+          }`}
         >
-          <Image
-            src={item.product.mainImages}
-            alt={item.product.name}
-            width={140}
-            height={140}
-            className="rounded"
-          />
+          {/* Product Image */}
+          <div className="w-[120px] sm:w-[150px] flex-shrink-0 bg-gray-50 rounded-md overflow-hidden border
+           border-gray-100 p-1 flex items-center justify-center">
+            <Image
+              src={item.product.mainImage}
+              alt={item.product.name}
+              width={140}
+              height={140}
+              className="object-contain mix-blend-multiply h-full w-full"
+            />
+          </div>
 
-          <div className="flex-1">
-            <p className="font-medium text-lg text-black">
+          <div className="flex-1 min-w-0">
+            <p className="text-[16px] sm:text-[18px] font-medium text-[#007185] hover:text-[#C7511F] hover:underline cursor-pointer
+             leading-snug truncate-2-lines">
               {item.product.name}
             </p>
 
-            <p className="text-sm text-black">{item.product.productType}</p>
-
             {item.inStock ? (
-              <p className="text-green-600 text-sm mt-1">In Stock</p>
+              <p className="text-[#007600] text-[12px] font-medium mt-1">
+                In Stock
+              </p>
             ) : (
-              <p className="text-red-600 text-sm mt-1">Out of Stock</p>
+              <p className="text-[#B12704] text-[12px] font-medium mt-1">
+                Out of Stock
+              </p>
             )}
 
-            <div className="flex items-center gap-4 mt-3">
-              <select
-                value={item.qty}
-                disabled={!item.inStock}
-                onChange={(e) =>
-                  onQtyChange(item?.product?._id, Number(e.target.value))
-                }
-                className="border rounded px-2 py-1 text-sm text-black"
-              >
-                {Array.from(
-                  { length: Math.min(5, item.maxQty) },
-                  (_, i) => i + 1,
-                ).map((q) => (
-                  <option key={q} value={q}>
-                    Qty: {q}
-                  </option>
-                ))}
-              </select>
+            <p className="text-[11px] text-gray-500 mt-1">
+              Eligible for{" "}
+              <span className="font-bold text-[#00A8E1]">FREE Shipping</span>
+            </p>
+
+            <div className="flex items-center gap-3 mt-3 flex-wrap">
+              <div className="relative inline-block">
+                <select
+                  value={item.qty}
+                  disabled={!item.inStock}
+                  onChange={(e) =>
+                    onQtyChange(item?.product?._id, Number(e.target.value))
+                  }
+                  className="bg-[#F0F2F2] hover:bg-[#E3E6E6] border border-[#D5D9D9] rounded-lg px-2 py-1
+                   text-[13px] text-gray-800 shadow-sm focus:border-[#007185] outline-none cursor-pointer appearance-none pr-7 min-w-[70px]"
+                >
+                  {Array.from(
+                    { length: Math.min(5, item.maxQty || 5) },
+                    (_, i) => i + 1,
+                  ).map((q) => (
+                    <option key={q} value={q}>
+                      Qty: {q}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <ChevronDown size={14} className="text-gray-500" />
+                </div>
+              </div>
+
+              <div className="w-[1px] h-4 bg-gray-300 hidden sm:block"></div>
+
               <button
                 onClick={() =>
                   onRemove(item.product._id, item.variant?._id || null)
                 }
-                className="flex items-center gap-1 text-sm text-red-600 hover:underline"
+                className="flex items-center gap-1 text-[12px] text-[#007185] hover:text-[#C7511F] hover:underline transition-colors group"
               >
-                <Trash2 className="w-4 h-4" />
-                Remove
+                <Trash2
+                  size={14}
+                  className="text-red-500 group-hover:text-[#C7511F] transition-colors"
+                />
               </button>
             </div>
           </div>
 
-          <div className="text-right">
-            <p className="font-semibold text-lg text-black">
-              ₹{item.itemTotal.toLocaleString()}
+          {/* Pricing Section */}
+          <div className="text-right flex flex-col items-end min-w-[100px]">
+            <p className="font-bold text-[18px] text-gray-900">
+              ₹{item.itemTotal.toLocaleString("en-IN")}
             </p>
-            <p className="text-xs text-gray-500">
-              ₹{item.price} × {item.qty}
-            </p>
+            {item.qty > 1 && (
+              <p className="text-[11px] text-gray-500">
+                (₹{item.price.toLocaleString("en-IN")} each)
+              </p>
+            )}
           </div>
         </div>
       ))}
-    </>
+    </div>
   );
 });
 
 const OrderSummary = React.memo(({ summary }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-5 h-fit">
-      <h2 className="text-lg font-semibold mb-4 text-black">Order Summary</h2>
+    <div className="bg-white rounded-md border border-gray-200 shadow-sm p-4 h-fit sticky top-4">
+      <h2 className="text-[18px] font-bold mb-3 text-gray-900 leading-tight">
+        Order Summary
+      </h2>
 
-      <div className="space-y-2 text-sm">
-        <div className="flex justify-between text-black">
-          <span>Items ({summary.itemsCount})</span>
-          <span>₹{summary.totalPrice}</span>
+      <div className="space-y-2 pb-3">
+        {/* Items Count & Price */}
+        <div className="flex justify-between text-[13px] text-gray-700">
+          <span>Items ({summary.itemsCount}):</span>
+          <span>₹{summary.totalPrice.toLocaleString("en-IN")}</span>
         </div>
 
-        <div className="flex justify-between text-black">
-          <span>Discount</span>
-          <span>- ₹{summary.totalDiscount}</span>
+        {/* Discount Section */}
+        <div className="flex justify-between text-[13px] text-gray-700">
+          <span>Promotion Applied:</span>
+          <span className="text-[#B12704]">
+            - ₹{summary.totalDiscount.toLocaleString("en-IN")}
+          </span>
         </div>
 
-        <div className="flex justify-between text-black">
-          <span>Delivery</span>
-          <span>₹{summary.deliveryCharge}</span>
+        {/* Delivery Section */}
+        <div className="flex justify-between text-[13px] text-gray-700">
+          <span>Delivery:</span>
+          <span className="text-gray-900">
+            {summary.deliveryCharge > 0 ? (
+              `₹${summary.deliveryCharge.toLocaleString("en-IN")}`
+            ) : (
+              <span className="text-[#007600] font-medium italic">FREE</span>
+            )}
+          </span>
         </div>
+      </div>
 
-        <hr />
-
-        <div className="flex justify-between font-semibold text-lg text-black">
-          <span>Total</span>
-          <span>₹{summary.finalTotal}</span>
+      <div className="border-t border-gray-200 pt-3 mb-4">
+        <div className="flex justify-between font-bold text-[18px] text-[#B12704]">
+          <span>Order Total:</span>
+          <span>₹{summary.finalTotal.toLocaleString("en-IN")}</span>
         </div>
       </div>
 
       <Link
         href="/checkout"
-        className="block text-center mt-4 bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded"
+        className="block text-center w-full bg-[#FFD814] hover:bg-[#F7CA00] border
+         border-[#FCD200] text-black text-[14px] font-bold py-2
+         rounded-lg shadow-sm transition-all"
       >
         Proceed to Checkout
       </Link>
 
-      <p className="text-xs text-gray-500 mt-2 text-center">
-        Secure transaction
-      </p>
+      <div className="mt-4 space-y-2">
+        <div className="flex items-center justify-center gap-1.5 text-gray-500">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+            <path
+              d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1
+             0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"
+            />
+          </svg>
+          <span className="text-[12px]">Secure transaction</span>
+        </div>
+
+        <p className="text-[11px] text-gray-500 text-center leading-relaxed">
+          Choose a payment method to continue checking out. You will still have
+          a chance to review your order before it's final.
+        </p>
+      </div>
     </div>
   );
 });
