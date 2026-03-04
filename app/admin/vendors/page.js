@@ -98,7 +98,7 @@ export default function Page() {
       {/* SEARCH + FILTER */}
       <div className="flex items-center justify-between gap-4">
         {/* SEARCH */}
-        <div className="relative w-full max-w-md">
+        <div className="relative w-full max-w-md -ml-24 mr-8">
           <Search
             size={18}
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"

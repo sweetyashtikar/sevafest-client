@@ -695,7 +695,7 @@ const ProductTable = ({ path, editPath }) => {
   }
 
   return (
-    <div className="p-6 -ml-20">
+    <div className="p-6 -ml-0">
       <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         {/* Search Bar */}
         <div className="relative w-full md:w-96">
@@ -1147,7 +1147,7 @@ const ProductTable = ({ path, editPath }) => {
         </div>
       </div>
 
-    <div className="bg-white rounded-2xl shadow-sm border -mr-8">
+    <div className="bg-white rounded-2xl shadow-sm border">
       <div className="px-6 py-4 border-b">
         <h2 className="text-base font-bold text-black text-center">
           Product Table List

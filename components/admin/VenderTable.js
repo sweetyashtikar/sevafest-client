@@ -14,7 +14,7 @@ export function VenderTable({
   onStatusChange,
 }) {
   return (
- <div className="bg-white rounded-2xl shadow-sm border">
+ <div className="bg-white rounded-2xl shadow-sm border -ml-24">
         <div className="px-6 py-4 border-b">
           <h2 className="text-lg font-bold text-black text-center">
             Vender Table List
