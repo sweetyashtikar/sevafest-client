@@ -7,6 +7,7 @@ export const fetchCart = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await apiClient("/viewCart"); 
+      console.log("response cart", res)
       return res?.data?.items || [];
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching cart");

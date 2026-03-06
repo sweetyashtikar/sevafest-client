@@ -206,7 +206,8 @@ export default function Page() {
             <select
               value={selectedRole}
               onChange={(e) => setSelectedRole(e.target.value)}
-              className="w-full px-4 py-3 border rounded-lg outline-none bg-white text-black focus:ring-2 focus:ring-orange-400 transition appearance-none"
+              className="w-full px-4 py-3 border rounded-lg outline-none bg-white text-black focus:ring-2
+               focus:ring-orange-400 transition appearance-none"
             >
               <option value="" disabled>Select a role</option>
 

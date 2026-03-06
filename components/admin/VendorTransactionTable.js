@@ -5,7 +5,7 @@ import { Download, Plus, Calendar, Search, ChevronLeft, ChevronRight } from 'luc
 
 const VendorTransactionTable = ({ data }) => {
   return (
-    <div className="w-full bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden font-sans">
+    <div className="w-full bg-white shadow-sm border border-gray-200 rounded-md overflow-hidden font-sans -ml-12">
       {/* Header Section */}
       <div className="bg-[#14948c] p-3 flex justify-between items-center">
         <h2 className="text-white font-semibold text-lg">View Seller List</h2>

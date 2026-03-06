@@ -12,7 +12,7 @@ import {
 export default function BestSellingChart({ data }) {
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-6 text-center">
+      <h2 className="text-xl font-bold mb-6 text-center text-black">
         Best Selling Products
       </h2>
 

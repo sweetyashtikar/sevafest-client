@@ -98,7 +98,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
             onChange={handleChange}
             required
             disabled={loading}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${loading ? 'bg-gray-100 cursor-not-allowed' : ''
+            className={`w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 ${loading ? 'bg-gray-100 cursor-not-allowed' : ''
               }`}
           >
             <option value="">Select Category</option>
@@ -124,7 +124,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
             name="brand"
             value={formData.brand}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             placeholder="Brand name"
           />
         </div>
@@ -139,7 +139,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
             name="hsnCode"
             value={formData.hsnCode}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase text-gray-900"
             placeholder="Enter HSN code"
           />
         </div>
@@ -154,7 +154,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
             name="madeIn"
             value={formData.madeIn}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             placeholder="Country of origin"
           />
         </div>
@@ -168,7 +168,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
             name="indicator"
             value={formData.indicator}
             onChange={handleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
             <option value={INDICATOR_TYPES.NONE}>None</option>
             <option value={INDICATOR_TYPES.VEG}>Vegetarian</option>
@@ -187,7 +187,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="flex-1 px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
               placeholder="Add a tag and press Enter"
             />
             <button
@@ -227,7 +227,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
               )}
             </div>
 
-            <div className="border border-gray-300 rounded-md p-3 max-h-60 overflow-y-auto">
+            <div className="border border-gray-700 rounded-md p-3 max-h-60 overflow-y-auto">
               {attributeValues.length === 0 && !loading ? (
                 <p className="text-sm text-gray-500">No attribute values available</p>
               ) : (
@@ -248,7 +248,7 @@ export default function ProductCategorization({ formData, updateFormData }) {
                             updateFormData('attributeValues', currentValues.filter(id => id !== attributeValue._id));
                           }
                         }}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-700 rounded"
                       />
                       <label
                         htmlFor={`attr-${attributeValue._id}`}

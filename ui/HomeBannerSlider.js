@@ -30,7 +30,7 @@ const HomeBannerSlider = ({ banners = [] }) => {
   };
 
   return (
-    <div className="relative w-full max-w-[1400px] mx-auto px-4">
+    <div className="relative w-full max-w-[1400px] mx-auto px-6">
       <div className="relative h-[360px] md:h-[450px] py-10 rounded-3xl overflow-hidden shadow-xl">
         <Image
           src={activeBanners[current].image}

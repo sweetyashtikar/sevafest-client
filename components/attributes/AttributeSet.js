@@ -140,7 +140,7 @@ export default function AttributeSet() {
               </button>
               <button
                 onClick={fetchSets}
-                className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 <svg
                   className="mr-2 -ml-1 w-4 h-4"
@@ -169,7 +169,7 @@ export default function AttributeSet() {
               placeholder="Search attribute sets..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+              className="w-full px-4 py-2 pl-10 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             />
             <svg
               className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -195,20 +195,21 @@ export default function AttributeSet() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200">
+    <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
                     <tr>
-                      <th className="px-6 py-3 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                         Name
                       </th>
-                      <th className="px-6 py-3 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                         Status
                       </th>
-                      <th className="px-6 py-3 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                         Created At
                       </th>
-                      <th className="px-6 py-3 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
+              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -269,6 +270,7 @@ export default function AttributeSet() {
                   </tbody>
                 </table>
               </div>
+              </div>
 
               {/* Pagination */}
               <div className="px-6 py-4 border-t border-gray-200">
@@ -314,7 +316,7 @@ export default function AttributeSet() {
                           page: 1,
                         }))
                       }
-                      className="ml-4 px-3 py-1 border border-gray-300 rounded-md text-gray-900"
+                      className="ml-4 px-3 py-1 border border-gray-700 rounded-md text-gray-900"
                     >
                       <option value="5">5 per page</option>
                       <option value="10">10 per page</option>
@@ -364,7 +366,7 @@ export default function AttributeSet() {
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                    className="w-full px-3 py-2 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                     placeholder="e.g., Specification, Quality"
                   />
                 </div>
@@ -376,7 +378,7 @@ export default function AttributeSet() {
                       name="status"
                       checked={formData.status}
                       onChange={handleInputChange}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mr-2"
+                      className="rounded border-gray-700 text-blue-600 focus:ring-blue-500 mr-2"
                     />
                     <span className="text-sm font-medium text-gray-700">Active</span>
                   </label>
@@ -391,7 +393,7 @@ export default function AttributeSet() {
                     setEditingSet(null);
                     setFormData({ name: '', status: true });
                   }}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                  className="px-4 py-2 border border-gray-700 rounded-md text-gray-700 hover:bg-gray-50"
                 >
                   Cancel
                 </button>

@@ -19,6 +19,7 @@ export default function CouponApply({ cartTotal, onCouponApplied }) {
 
         try {
             const response = await checkoutService.validateCoupon(couponCode, cartTotal);
+            console.log("response coupon", response)
             
             setAppliedCoupon({
                 code: response.data.couponCode,

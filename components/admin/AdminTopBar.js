@@ -34,7 +34,7 @@ export default function AdminTopBar({ isOpen, setIsOpen }) {
   return (
     <header
       className={`fixed top-0 right-0 h-16 bg-white border-b border-gray-200 z-40 transition-all duration-300
-      ${isOpen ? "left-80" : "left-20"}`}
+      ${isOpen ? "left-60" : "left-20"}`}
     >
       <div className="px-6 h-full flex items-center justify-between">
         <div

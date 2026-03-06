@@ -1,11 +1,11 @@
+import "./globals.css";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
 import { Providers } from "./providers";
-import ClientLayout from "./client-layout";
-
-import AuthHydrator from "@/components/AuthHydrator";
 import { headers } from "next/headers";
+import ClientLayout from "./client-layout";
+import AuthHydrator from "@/components/AuthHydrator";
+import ToastProvider from "@/ui/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +37,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-       <head>
+      <head>
         {/* Add TezGateway Script Here */}
         <script
           src="https://tezgateway.com/pages/tezgateway_cdn.v1.js"
@@ -49,8 +49,9 @@ export default async function RootLayout({
       >
         <Providers>
           <ClientLayout>
-             <AuthHydrator />
+            <AuthHydrator />
             {children}
+            <ToastProvider />
           </ClientLayout>
         </Providers>
       </body>

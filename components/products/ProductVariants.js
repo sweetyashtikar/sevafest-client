@@ -267,7 +267,7 @@ export default function ProductVariants({ formData, updateFormData }) {
               name="variant_name"
               value={newVariant.variant_name}
               onChange={handleNewVariantChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="e.g., Large, Red"
             />
           </div>
@@ -283,7 +283,7 @@ export default function ProductVariants({ formData, updateFormData }) {
               onChange={handleNewVariantChange}
               min="0"
               step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
             />
           </div>
@@ -299,7 +299,7 @@ export default function ProductVariants({ formData, updateFormData }) {
               onChange={handleNewVariantChange}
               min="0"
               step="0.01"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="0.00"
             />
           </div>
@@ -313,7 +313,7 @@ export default function ProductVariants({ formData, updateFormData }) {
               name="variant_sku"
               value={newVariant.variant_sku}
               onChange={handleNewVariantChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 uppercase"
               placeholder="Variant SKU"
             />
           </div>
@@ -328,9 +328,50 @@ export default function ProductVariants({ formData, updateFormData }) {
               value={newVariant.variant_totalStock}
               onChange={handleNewVariantChange}
               min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+            <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Weight</label>
+                    <input
+                      type="number"
+                      name="variant_weight"
+                      value={newVariant.variant_weight}
+                      onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Height</label>
+                    <input
+                      type="number"
+                      name="variant_height"
+                      value={newVariant.variant_height}
+                       onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Breadth</label>
+                    <input
+                      type="number"
+                      name="variant_breadth"
+                      value={newVariant.variant_breadth}
+   onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Length</label>
+                    <input
+                      type="number"
+                      name="variant_length"
+                      value={newVariant.variant_length}
+                       onChange={handleNewVariantChange}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -340,7 +381,7 @@ export default function ProductVariants({ formData, updateFormData }) {
               name="variant_stockStatus"
               value={newVariant.variant_stockStatus}
               onChange={handleNewVariantChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>
               <option value={STOCK_STATUS.OUT_OF_STOCK}>Out of Stock</option>
@@ -369,7 +410,7 @@ export default function ProductVariants({ formData, updateFormData }) {
             <button
               type="button"
               onClick={triggerNewVariantFileInput}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+              className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
             >
               <svg className="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -386,7 +427,7 @@ export default function ProductVariants({ formData, updateFormData }) {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
               {newVariant.variant_images_previews.map((previewUrl, idx) => (
                 <div key={idx} className="relative group">
-                  <div className="aspect-square rounded-lg overflow-hidden border border-gray-300">
+                  <div className="aspect-square rounded-lg overflow-hidden border border-gray-700">
                     <img
                       src={previewUrl}
                       alt={`Variant preview ${idx + 1}`}
@@ -443,7 +484,7 @@ export default function ProductVariants({ formData, updateFormData }) {
                       name="variant_name"
                       value={variant.variant_name}
                       onChange={(e) => handleVariantChange(e, index)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
                     />
                   </div>
                   <div>
@@ -453,7 +494,7 @@ export default function ProductVariants({ formData, updateFormData }) {
                       name="variant_price"
                       value={variant.variant_price}
                       onChange={(e) => handleVariantChange(e, index)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
                     />
                   </div>
                   <div>
@@ -463,7 +504,7 @@ export default function ProductVariants({ formData, updateFormData }) {
                       name="variant_specialPrice"
                       value={variant.variant_specialPrice}
                       onChange={(e) => handleVariantChange(e, index)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
                     />
                   </div>
                   <div>
@@ -473,17 +514,57 @@ export default function ProductVariants({ formData, updateFormData }) {
                       name="variant_sku"
                       value={variant.variant_sku}
                       onChange={(e) => handleVariantChange(e, index)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md uppercase"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md uppercase"
                     />
                   </div>
-                  <div>
+                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Stock Quantity</label>
                     <input
                       type="number"
                       name="variant_totalStock"
                       value={variant.variant_totalStock}
                       onChange={(e) => handleVariantChange(e, index)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Weight</label>
+                    <input
+                      type="number"
+                      name="variant_weight"
+                      value={variant.variant_weight}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Height</label>
+                    <input
+                      type="number"
+                      name="variant_height"
+                      value={variant.variant_height}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Variant Breadth</label>
+                    <input
+                      type="number"
+                      name="variant_breadth"
+                      value={variant.variant_breadth}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
+                    />
+                  </div>
+                   <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">varinat Length</label>
+                    <input
+                      type="number"
+                      name="variant_length"
+                      value={variant.variant_length}
+                      onChange={(e) => handleVariantChange(e, index)}
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
                     />
                   </div>
                   <div>
@@ -492,7 +573,7 @@ export default function ProductVariants({ formData, updateFormData }) {
                       name="variant_stockStatus"
                       value={variant.variant_stockStatus}
                       onChange={(e) => handleVariantChange(e, index)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      className="w-full px-3 py-2 border border-gray-700 rounded-md"
                     >
                       <option value={STOCK_STATUS.IN_STOCK}>In Stock</option>
                       <option value={STOCK_STATUS.OUT_OF_STOCK}>Out of Stock</option>
@@ -521,7 +602,7 @@ export default function ProductVariants({ formData, updateFormData }) {
                     <button
                       type="button"
                       onClick={() => triggerExistingVariantFileInput(index)}
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                      className="inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                     >
                       <svg className="mr-2 -ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
@@ -538,7 +619,7 @@ export default function ProductVariants({ formData, updateFormData }) {
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                       {variant.variant_images_previews.map((previewUrl, imgIdx) => (
                         <div key={imgIdx} className="relative group">
-                          <div className="aspect-square rounded-lg overflow-hidden border border-gray-300">
+                          <div className="aspect-square rounded-lg overflow-hidden border border-gray-700">
                             <img
                               src={previewUrl}
                               alt={`Variant ${index + 1} image ${imgIdx + 1}`}

@@ -15,6 +15,11 @@ import {
   ChevronDown,
   LogIn,
   UserPlus,
+  Sparkles,
+  Info,
+  FileText,
+  BookOpen,
+  PartyPopper,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { apiClient } from "@/services/apiClient";
@@ -24,7 +29,7 @@ import { useRouter } from "next/navigation";
 import { fetchCart } from "@/redux/slices/cartSlice";
 import { SupportModal } from "@/ui/SupportModal";
 import { AddressModal } from "@/ui/AddressModal";
-import {CategoryDropdown} from "@/components/header/CategoryDropdown"
+import { CategoryDropdown } from "@/components/header/CategoryDropdown";
 
 export default function TopBar() {
   const dispatch = useDispatch();
@@ -35,8 +40,6 @@ export default function TopBar() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isPagesOpen, setIsPagesOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isAddressOpen, setIsAddressOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
@@ -47,18 +50,80 @@ export default function TopBar() {
 
   return (
     <>
-      <TopStrick />
-      <div className="bg-gradient-to-r from-green-500 to-green-600 shadow-lg sticky top-0 z-50">
-        <div className="absolute inset-0 shine-effect"></div>
+      <header className="w-full font-sans">
+        <div className="bg-[#1a1c24] text-white py-2 px-4 border-b border-gray-700">
+          <div className="max-w-7xl mx-auto flex justify-between items-center text-[13px] font-medium">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-1.5">
+                <MapPin className="w-4 h-4 text-[#fcc221]" />
+                <span>
+                  Location set to: <span className="font-bold">Parbhani</span>
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Mail className="w-4 h-4 text-[#fcc221]" />
+                <span>
+                  Mail us: <span className="font-bold">info@sevafast.in</span>
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 opacity-90">
+              <Sparkles className="w-4 h-4 text-[#fcc221]" />
+              <span> Welcome to SEVAFAST</span>
+            </div>
+          </div>
+        </div>
 
-        <div className="max-w-7xl mx-auto px-4 py-3 relative">
-          <div className="flex items-center justify-between gap-4">
-            <nav className="hidden lg:flex items-center gap-6 text-white font-medium">
-              <div className="relative">
+        <div className="bg-[#ffcc33] py-2 px-4">
+          <div className="max-w-7xl mx-auto flex justify-between items-center">
+            <div className="flex items-center gap-5 text-[#1a1c24] text-[12px] font-bold uppercase tracking-wide">
+              <a
+                href="/about"
+                className="flex items-center gap-1 hover:opacity-70"
+              >
+                <Info className="w-3.5 h-3.5" /> ABOUT US
+              </a>
+              <a
+                href="/contact"
+                className="flex items-center gap-1 hover:opacity-70"
+              >
+                <Phone className="w-3.5 h-3.5" /> CONTACT
+              </a>
+              <a
+                href="/terms-condition"
+                className="flex items-center gap-1 hover:opacity-70"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                TERMS AND CONDITIONS
+              </a>
+              <a
+                href="/blog"
+                className="flex items-center gap-1 hover:opacity-70"
+              >
+                <BookOpen className="w-3.5 h-3.5" /> BLOGS
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-[#fdd835] px-4 py-1 shadow-sm">
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
+            <div className="flex-shrink-0 cursor-pointer h-full flex items-cente ">
+              <img
+                src="/logo.png"
+                alt="SevaFast Logo"
+                className="h-15 w-auto object-contain"
+              />
+            </div>
+            <nav className="hidden lg:flex items-center gap-8 text-[#1a1c24] font-extrabold text-[15px] uppercase">
+              <div
+                className="relative"
+                onMouseLeave={() => setIsCategoryOpen(false)}
+              >
                 <button
                   onClick={() => setIsCategoryOpen(!isCategoryOpen)}
                   onMouseEnter={() => setIsCategoryOpen(true)}
-                  className="group flex items-center gap-1 text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110"
+                  className="flex items-center gap-1 cursor-pointer hover:text-black group"
                 >
                   Browse Category
                   <ChevronDown
@@ -74,118 +139,69 @@ export default function TopBar() {
                 />
               </div>
 
-              {[
-                { name: "Home", href: "/" },
-                { name: "Products", href: "/products" },
-                { name: "Coupons", href: "/coupons" },
-              ].map((item) => (
-                <a
-                  key={item.name}
-                  href={item.href}
-                  className="relative text-white font-semibold text-base transition-all duration-500 ease-in-out hover:scale-110
-                  after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 
-                   after:bg-white after:transition-all after:duration-500 hover:after:w-full"
-                >
-                  {item.name}
-                </a>
-              ))}
-
-              <div className="relative">
-                <button
-                  onClick={() => setIsPagesOpen(!isPagesOpen)}
-                  onMouseEnter={() => setIsPagesOpen(true)}
-                  className="group flex items-center gap-1 text-white font-semibold text-base transition-all duration-300 hover:scale-110"
-                >
-                  Pages
-                  <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-300 ${
-                      isPagesOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </button>
-
-                {isPagesOpen && (
-                  <div
-                    onMouseLeave={() => setIsPagesOpen(false)}
-                    className="absolute top-full mt-3 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50"
-                  >
-                    {[
-                      { name: "About Us", href: "/about" },
-                      { name: "Contact Us", href: "/contact" },
-                      { name: "Blogs", href: "/blog" },
-                      { name: "Terms & Conditions", href: "/terms-condition" },
-                    ].map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.href}
-                        className="block px-4 py-3 text-sm font-medium text-gray-700 hover:bg-green-50 hover:text-green-600 transition"
-                      >
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <a href="/" className="hover:text-black">
+                Home
+              </a>
+              <a
+                href="/products"
+                className="flex items-center gap-1 cursor-pointer hover:text-black group"
+              >
+                PRODUCTS
+              </a>
+              <a
+                href="/coupons"
+                className="flex items-center gap-1 cursor-pointer hover:text-black"
+              >
+                <PartyPopper className="w-4 h-4" /> COUPONS
+              </a>
             </nav>
 
-            <div className="flex items-center gap-2 md:gap-4">
-              <div
-                className={` overflow-hidden transition-all duration-500 ease-in-out ${
-                  isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0"
-                }`}
-              >
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && searchQuery.trim()) {
-                      router.push(`/${encodeURIComponent(searchQuery.trim())}`);
-                      setIsSearchOpen(false);
-                    }
-                  }}
-                  placeholder="Search products..."
-                  className="w-full px-4 py-2 rounded-full bg-white/90 backdrop-blur-sm text-black border-none outline-none focus:ring-2 focus:ring-yellow-400"
-                />
+            <div className="flex-grow max-w-xl relative">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <Search className="w-5 h-5" />
               </div>
-
-              <button
-                onClick={() => {
-                  if (searchQuery.trim()) {
-                    router.push(`/${encodeURIComponent(searchQuery.trim())}`);
-                    setIsSearchOpen(false);
-                  } else {
-                    setIsSearchOpen((prev) => !prev);
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && searchQuery.trim()) {
+                    router.push(
+                      `/search?q=${encodeURIComponent(searchQuery.trim())}`,
+                    );
+                    setSearchQuery("");
                   }
                 }}
-                className="text-white hover:bg-white/20 p-2 rounded-full transition-all active:scale-90"
-              >
-                <Search className="w-5 h-5" />
-              </button>
+                placeholder="Search for products..."
+                className="w-full bg-[#f3f4f7] text-black rounded-full py-3 pl-12 pr-4 text-sm 
+                outline-none focus:ring-2 focus:ring-black/5"
+              />
+            </div>
 
-              <button
-                onClick={() => router.push("/cart")}
-                className="relative text-white hover:bg-white/20 p-2 rounded-full transition-all group"
-              >
-                <ShoppingCart className="w-5 h-5 group-hover:animate-bounce" />
+            <button
+              onClick={() => router.push("/cart")}
+              className="relative text-black   bg-gray-200/50 p-2 rounded-full transition-all group"
+            >
+              <ShoppingCart className="w-5 h-5 group-hover:animate-bounce" />
 
-                {items?.length > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center 
-                    justify-center font-bold border-2 border-green-600"
-                  >
-                    {items.length}
-                  </span>
-                )}
-              </button>
-
-              <div className="relative">
-                <button
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="text-white hover:bg-white/20 p-2 rounded-full transition-all active:scale-95"
+              {items?.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center 
+                    justify-center font-bold "
                 >
-                  <User className="w-5 h-5" />
-                </button>
+                  {items.length}
+                </span>
+              )}
+            </button>
+
+            <div className="flex items-center gap-2 cursor-pointer group">
+              <div className="relative">
+                <div
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="p-1.5 bg-gray-200/50 rounded-full group-hover:bg-gray-200"
+                >
+                  <User className="w-6 h-6 text-[#1a1c24]" />
+                </div>
 
                 {isProfileOpen &&
                   (user ? (
@@ -202,7 +218,7 @@ export default function TopBar() {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       <SupportModal
         isOpen={isSupportOpen}
@@ -233,10 +249,10 @@ const AuthDropdown = ({ setIsProfileOpen }) => {
   };
 
   return (
-    <div className="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl z-50 border border-gray-100 overflow-hidden">
-      <div className="p-4 border-b bg-gradient-to-r from-green-50 to-green-100">
-        <p className="text-sm text-gray-600 text-center">Welcome to SEVAFAST</p>
-        <p className="text-xs text-gray-500 text-center mt-1">
+    <div className="absolute right-0 mt-3 w-64 bg-white rounded-xl shadow-2xl z-50 border border-gray-200 overflow-hidden">
+      <div className="p-4 border-b bg-[#1a1c24] text-white">
+        <p className="text-sm text-center font-semibold">Welcome to SEVAFAST</p>
+        <p className="text-xs text-center mt-1 text-gray-300">
           Login or Register to continue
         </p>
       </div>
@@ -244,7 +260,9 @@ const AuthDropdown = ({ setIsProfileOpen }) => {
       <div className="p-4 space-y-3">
         <button
           onClick={() => handleNavigation("/login")}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-all active:scale-95 shadow-md"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 
+        rounded-lg bg-[#fdd835] text-[#1a1c24] font-semibold 
+        hover:bg-[#fcc221] transition-all active:scale-95 shadow-md"
         >
           <LogIn className="w-4 h-4" />
           Login
@@ -252,7 +270,9 @@ const AuthDropdown = ({ setIsProfileOpen }) => {
 
         <button
           onClick={() => handleNavigation("/register")}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-green-600 text-green-600 font-medium hover:bg-green-50 transition-all active:scale-95"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 
+        rounded-lg border-2 border-[#1a1c24] text-[#1a1c24] font-semibold
+        hover:bg-[#fdd835] transition-all active:scale-95"
         >
           <UserPlus className="w-4 h-4" />
           Register
@@ -301,24 +321,26 @@ const ProfileModel = ({
   };
 
   return (
-    <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl z-50 border border-gray-100 overflow-hidden">
-      <div className="flex items-center gap-4 p-4 border-b">
-        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-          <User className="w-6 h-6 text-green-600" />
+    <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl z-50 border border-gray-200 overflow-hidden">
+    
+      <div className="flex items-center gap-4 p-4 border-b bg-[#1a1c24] text-white">
+        <div className="w-12 h-12 bg-[#fdd835] rounded-full flex items-center justify-center">
+          <User className="w-6 h-6 text-[#1a1c24]" />
         </div>
         <div>
-          <p className="text-sm text-gray-500">Hello,</p>
-          <h3 className="font-semibold text-gray-800">{user?.username}</h3>
-          <p className="text-xs text-gray-500">{user?.mobile}</p>
+          <p className="text-sm text-gray-300">Hello,</p>
+          <h3 className="font-semibold">{user?.username}</h3>
+          <p className="text-xs text-gray-300">{user?.mobile}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-2 gap-2 p-4">
         <button
           onClick={() => router.push("/order/my-order")}
-          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700"
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 
+        hover:bg-[#fdd835] transition text-sm font-medium text-[#1a1c24]"
         >
-          <ShoppingCart className="w-4 h-4 text-green-600" />
+          <ShoppingCart className="w-4 h-4 text-[#1a1c24]" />
           My Orders
         </button>
 
@@ -327,152 +349,69 @@ const ProfileModel = ({
             setIsProfileOpen(false);
             setIsAddressOpen(true);
           }}
-          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700"
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 
+        hover:bg-[#fdd835] transition text-sm font-medium text-[#1a1c24]"
         >
-          <MapPin className="w-4 h-4 text-green-600" />
+          <MapPin className="w-4 h-4 text-[#1a1c24]" />
           Addresses
         </button>
 
         <button
           onClick={handleSupportClick}
-          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700"
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 
+        hover:bg-[#fdd835] transition text-sm font-medium text-[#1a1c24]"
         >
-          <Mail className="w-4 h-4 text-green-600" />
+          <Mail className="w-4 h-4 text-[#1a1c24]" />
           Support
         </button>
 
-        <button className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 hover:bg-green-50 transition text-sm font-medium text-gray-700">
-          <Phone className="w-4 h-4 text-green-600" />
+        <button
+          className="flex items-center gap-2 p-3 rounded-lg bg-gray-50 
+        hover:bg-[#fdd835] transition text-sm font-medium text-[#1a1c24]"
+        >
+          <Phone className="w-4 h-4 text-[#1a1c24]" />
           Contact Us
         </button>
       </div>
 
+     
       <div className="border-t px-4 py-3 space-y-1">
         <button
           onClick={() => router.push("/profile")}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 text-sm text-gray-700"
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md 
+        hover:bg-[#fdd835] text-sm text-[#1a1c24]"
         >
           My Account
-          <span className="text-gray-400">›</span>
+          <span>›</span>
         </button>
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 text-sm text-gray-700">
+
+        <button
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md 
+        hover:bg-[#fdd835] text-sm text-[#1a1c24]"
+        >
           Wallet & Payments
-          <span className="text-gray-400">›</span>
+          <span>›</span>
         </button>
-        <button className="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-gray-100 text-sm text-gray-700">
+
+        <button
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md 
+        hover:bg-[#fdd835] text-sm text-[#1a1c24]"
+        >
           Coupons
-          <span className="text-gray-400">›</span>
+          <span>›</span>
         </button>
       </div>
 
+     
       <div className="border-t p-3">
         <button
           onClick={handleLogout}
-          className="w-full py-2 rounded-lg border border-red-500 text-red-500 text-sm font-medium hover:bg-red-50 transition"
+          className="w-full py-2 rounded-lg bg-[#fdd835] text-[#1a1c24] 
+        font-semibold hover:bg-[#fcc221] transition"
         >
           Logout
         </button>
       </div>
-    </div>
-  );
-};
-
-const TopStrick = () => {
-  return (
-    <div className="relative bg-gradient-to-r from-purple-800 to-purple-900 text-white py-2 px-4 overflow-hidden">
-      <div className="absolute inset-0 shine-effect"></div>
-      <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between text-xs md:text-sm gap-2">
-        <div className="flex items-center gap-1 overflow-hidden">
-          <span className="font-medium whitespace-nowrap animate-slide-in-left">
-            Welcome to SEVAFAST
-          </span>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 md:gap-6">
-          <a
-            href="mailto:info@sevafast.in"
-            className="flex items-center gap-1.5 hover:text-green-300 transition-colors animate-slide-in-right animation-delay-200"
-          >
-            <Mail className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span className="hidden sm:inline whitespace-nowrap">
-              info@sevafast.in
-            </span>
-          </a>
-          <div className="flex items-center gap-1.5 animate-slide-in-right animation-delay-400">
-            <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4" />
-            <span className="hidden md:inline text-xs whitespace-nowrap">
-              Shop No. Gvhsns raod New Mondha Parbhani, Parbhani, MH, 431401
-            </span>
-            <span className="md:hidden text-xs whitespace-nowrap">
-              Parbhani, MH
-            </span>
-          </div>
-        </div>
-      </div>
-      <style jsx>{`
-        @keyframes slideInLeft {
-          from {
-            transform: translateX(-100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes slideInRight {
-          from {
-            transform: translateX(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateX(0);
-            opacity: 1;
-          }
-        }
-
-        @keyframes shine {
-          0% {
-            transform: translateX(-100%) skewX(-15deg);
-          }
-          100% {
-            transform: translateX(200%) skewX(-15deg);
-          }
-        }
-
-        .shine-effect {
-          background: linear-gradient(
-            90deg,
-            transparent 0%,
-            rgba(255, 255, 255, 0.1) 40%,
-            rgba(255, 255, 255, 0.3) 50%,
-            rgba(255, 255, 255, 0.1) 60%,
-            transparent 100%
-          );
-          animation: shine 3s infinite;
-          pointer-events: none;
-        }
-
-        .animate-slide-in-left {
-          animation: slideInLeft 1s ease-out;
-        }
-
-        .animate-slide-in-right {
-          animation: slideInRight 1s ease-out;
-        }
-
-        .animation-delay-200 {
-          animation-delay: 0.2s;
-          opacity: 0;
-          animation-fill-mode: forwards;
-        }
-
-        .animation-delay-400 {
-          animation-delay: 0.4s;
-          opacity: 0;
-          animation-fill-mode: forwards;
-        }
-      `}</style>
     </div>
   );
 };

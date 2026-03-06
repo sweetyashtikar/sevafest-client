@@ -1,6 +1,7 @@
 // app/products/page.jsx
 "use client";
 import React from "react";
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -25,11 +26,11 @@ const ProductTable = ({ path, editPath }) => {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
 
-  console.log("user", user);
+  // console.log("user", user);
 
   const isAdmin = user?.role?.role === "admin";
 
-  console.log("Role", isAdmin);
+  // console.log("Role", isAdmin);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -283,9 +284,22 @@ const ProductTable = ({ path, editPath }) => {
         isApproved: newValue,
       });
 
+      console.log("newValue", newValue);
+
+      // const res = await apiClient(`/product/approve/${product._id}`, {
+      //   method: "PUT",
+      //   body: {
+      //     isApproved: newValue,
+      //   },
+      // });
+
       if (!res?.success) {
         throw new Error("Update failed");
       }
+
+      toast.success(
+        `Product ${newValue ? "approved" : "disapproved"} successfully`,
+      );
     } catch (error) {
       console.error("Approval update failed:", error);
 
@@ -296,7 +310,7 @@ const ProductTable = ({ path, editPath }) => {
         ),
       );
 
-      alert("Failed to update approval status");
+      toast.error("Failed to update approval status");
     }
   };
 
@@ -672,8 +686,6 @@ const ProductTable = ({ path, editPath }) => {
     );
   });
 
-  console.log("filteredProducts", filteredProducts);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -683,7 +695,7 @@ const ProductTable = ({ path, editPath }) => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6 -ml-20">
       <div className="mb-6 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center">
         {/* Search Bar */}
         <div className="relative w-full md:w-96">
@@ -693,7 +705,9 @@ const ProductTable = ({ path, editPath }) => {
             value={filters.search}
             onChange={(e) => handleFilterChange("search", e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && applyFilters()}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-700 rounded-lg 
+      focus:outline-none 
+      placeholder:text-black text-black"
           />
           <svg
             className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
@@ -733,14 +747,14 @@ const ProductTable = ({ path, editPath }) => {
 
           <button
             onClick={applyFilters}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 text-white border rounded-lg hover:bg-blue-700"
           >
             Apply Filters
           </button>
 
           <button
             onClick={resetFilters}
-            className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-gray-700 text-gray-700 border border-black rounded-lg rounded-lg hover:bg-gray-50"
           >
             Reset
           </button>
@@ -761,9 +775,14 @@ const ProductTable = ({ path, editPath }) => {
               <select
                 value={filters.category}
                 onChange={(e) => handleFilterChange("category", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+  focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All Categories</option>
+                {/* placeholder option */}
+                <option value="" className="text-gray-700">
+                  All Categories
+                </option>
+
                 {categories.map((cat) => (
                   <option key={cat._id} value={cat._id}>
                     {cat.name}
@@ -778,12 +797,18 @@ const ProductTable = ({ path, editPath }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Vendor
                 </label>
+
                 <select
                   value={filters.vendor}
                   onChange={(e) => handleFilterChange("vendor", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 >
-                  <option value="">All Vendors</option>
+                  {/* placeholder */}
+                  <option value="" className="text-gray-700">
+                    All Vendors
+                  </option>
+
                   {vendors.map((ven) => (
                     <option key={ven._id} value={ven._id}>
                       {ven.username || ven.company}
@@ -798,12 +823,18 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Brand
               </label>
+
               <select
                 value={filters.brand}
                 onChange={(e) => handleFilterChange("brand", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All Brands</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All Brands
+                </option>
+
                 {brands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand}
@@ -817,14 +848,20 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Product Type
               </label>
+
               <select
                 value={filters.productType}
                 onChange={(e) =>
                   handleFilterChange("productType", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All Types</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All Types
+                </option>
+
                 <option value="simple">Simple</option>
                 <option value="variable">Variable</option>
                 <option value="digital">Digital</option>
@@ -843,7 +880,9 @@ const ProductTable = ({ path, editPath }) => {
                 value={filters.minPrice}
                 onChange={(e) => handleFilterChange("minPrice", e.target.value)}
                 placeholder="Min"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    text-gray-700 placeholder:text-gray-700"
               />
             </div>
 
@@ -857,40 +896,52 @@ const ProductTable = ({ path, editPath }) => {
                 value={filters.maxPrice}
                 onChange={(e) => handleFilterChange("maxPrice", e.target.value)}
                 placeholder="Max"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 
+    text-gray-700 placeholder:text-gray-700"
               />
             </div>
-
             {/* Indicator (Veg/Non-Veg) */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Indicator
               </label>
+
               <select
                 value={filters.indicator}
                 onChange={(e) =>
                   handleFilterChange("indicator", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All
+                </option>
+
                 <option value="0">None</option>
                 <option value="1">Veg</option>
                 <option value="2">Non-Veg</option>
               </select>
             </div>
-
             {/* Stock Status */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Stock Status
               </label>
+
               <select
                 value={filters.inStock}
                 onChange={(e) => handleFilterChange("inStock", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All
+                </option>
+
                 <option value="true">In Stock</option>
                 <option value="false">Out of Stock</option>
               </select>
@@ -901,12 +952,18 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Status
               </label>
+
               <select
                 value={filters.status}
                 onChange={(e) => handleFilterChange("status", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
-                <option value="">All</option>
+                {/* placeholder */}
+                <option value="" className="text-gray-700">
+                  All
+                </option>
+
                 <option value="true">Active</option>
                 <option value="false">Inactive</option>
               </select>
@@ -918,14 +975,20 @@ const ProductTable = ({ path, editPath }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Approval Status
                 </label>
+
                 <select
                   value={filters.isApproved}
                   onChange={(e) =>
                     handleFilterChange("isApproved", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
                 >
-                  <option value="">All</option>
+                  {/* placeholder */}
+                  <option value="" className="text-gray-700">
+                    All
+                  </option>
+
                   <option value="true">Approved</option>
                   <option value="false">Pending</option>
                 </select>
@@ -937,10 +1000,12 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sort By
               </label>
+
               <select
                 value={filters.sortBy}
                 onChange={(e) => handleFilterChange("sortBy", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
                 <option value="createdAt">Created Date</option>
                 <option value="name">Name</option>
@@ -954,12 +1019,14 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Sort Order
               </label>
+
               <select
                 value={filters.sortOrder}
                 onChange={(e) =>
                   handleFilterChange("sortOrder", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
                 <option value="desc">Descending</option>
                 <option value="asc">Ascending</option>
@@ -971,10 +1038,12 @@ const ProductTable = ({ path, editPath }) => {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Items Per Page
               </label>
+
               <select
                 value={filters.limit}
                 onChange={(e) => handleFilterChange("limit", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-700 rounded-md 
+    focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
               >
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -1060,8 +1129,11 @@ const ProductTable = ({ path, editPath }) => {
               placeholder="Search product, brand, category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64 pl-10 pr-4 py-2 border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-64 pl-10 pr-4 py-2 border border-gray-700 rounded-md text-sm 
+    text-gray-700 placeholder:text-gray-700 
+    focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
+
             <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
           </div>
 
@@ -1075,19 +1147,22 @@ const ProductTable = ({ path, editPath }) => {
         </div>
       </div>
 
-      <div
-        className="bg-white round
-      FiSearch, FiPlused-lg shadow-md overflow-hidden"
-      >
+    <div className="bg-white rounded-2xl shadow-sm border -mr-8">
+      <div className="px-6 py-4 border-b">
+        <h2 className="text-base font-bold text-black text-center">
+          Product Table List
+        </h2>
+      </div>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="w-full text-xs">
+            <thead className="bg-gray-100 text-gray-700 uppercase">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
                   Serial No
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("categoryId.name")}
                 >
                   <div className="flex items-center">
@@ -1101,7 +1176,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("productName")}
                 >
                   <div className="flex items-center">
@@ -1115,7 +1190,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("price")}
                 >
                   <div className="flex items-center">
@@ -1129,7 +1204,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("productType")}
                 >
                   <div className="flex items-center">
@@ -1143,7 +1218,7 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("status")}
                 >
                   <div className="flex items-center">
@@ -1157,12 +1232,11 @@ const ProductTable = ({ path, editPath }) => {
                   </div>
                 </th>
                 {isAdmin && (
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
                     Approved
                   </th>
                 )}
-
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -1171,38 +1245,38 @@ const ProductTable = ({ path, editPath }) => {
               {filteredProducts.map((product) => (
                 <React.Fragment key={product._id || product.id}>
                   <tr className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="font-mono text-sm font-medium text-gray-900">
+                    <td className="px-6 py-3 whitespace-nowrap">
+                      <span className="font-mono text-[11px] font-medium text-gray-900">
                         {product.serialNo ||
                           `P${(product._id || "").slice(-6).toUpperCase()}`}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                    <td className="px-6 py-3 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-[10px] leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                         {product.categoryId?.name || product.category || "N/A"}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">
+                    <td className="px-6 py-3">
+                      <div className="text-[11px] font-medium text-gray-900">
                         {product.name || "Unnamed Product"}
                       </div>
-                      <div className="text-xs text-gray-500">
+                      <div className="text-[10px] text-gray-500">
                         {product.brand || "No brand"}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
+                    <td className="px-6 py-3 whitespace-nowrap">
+                      <div className="text-[11px] font-semibold text-gray-900">
                         ₹{(product.effectivePrice || 0).toFixed(2)}
                       </div>
                       {product.taxId && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-[10px] text-gray-500">
                           +{product.taxId.percentage || 0}% tax
                         </div>
                       )}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
                           product.productType === "Physical"
                             ? "bg-green-100 text-green-800"
                             : product.productType === "Digital"
@@ -1213,25 +1287,9 @@ const ProductTable = ({ path, editPath }) => {
                         {product.productType || "Unknown"}
                       </span>
                     </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          product.status === "Active"
-                            ? "bg-green-100 text-green-800"
-                            : product.status === "Out of Stock"
-                              ? "bg-red-100 text-red-800"
-                              : product.status === "Draft"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {product.status || "Unknown"}
-                      </span>
-                    </td> */}
-
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
                           product.status === true
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
@@ -1240,36 +1298,8 @@ const ProductTable = ({ path, editPath }) => {
                         {product.status === true ? "Active" : "Inactive"}
                       </span>
                     </td>
-
-                    {/* {isAdmin && (
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <label className="inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={product.isApproved === true}
-                            onChange={() => handleApproveToggle(product)}
-                            className="sr-only peer"
-                          />
-                          <div
-                            className="
-          relative w-11 h-6 bg-gray-300 rounded-full
-          peer-checked:bg-green-500
-          transition-colors
-          after:content-['']
-          after:absolute after:top-[2px] after:left-[2px]
-          after:bg-white after:rounded-full
-          after:h-5 after:w-5
-          after:transition-transform
-          peer-checked:after:translate-x-5
-        "
-                          />
-                        </label>
-                      </td>
-                    )} */}
-
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-3 whitespace-nowrap">
                       {isAdmin ? (
-                        /* --- ADMIN VIEW: Interactive Toggle --- */
                         <label className="inline-flex items-center cursor-pointer">
                           <input
                             type="checkbox"
@@ -1280,9 +1310,8 @@ const ProductTable = ({ path, editPath }) => {
                           <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
                         </label>
                       ) : (
-                        /* --- NON-ADMIN VIEW: Static Status Badge --- */
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          className={`px-3 py-1 rounded-full text-[10px] font-medium ${
                             product.isApproved
                               ? "bg-green-100 text-green-700"
                               : "bg-yellow-100 text-yellow-700"
@@ -1292,15 +1321,14 @@ const ProductTable = ({ path, editPath }) => {
                         </span>
                       )}
                     </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-6 py-3 whitespace-nowrap text-[11px] font-medium">
                       <div className="flex items-center space-x-3">
                         <button
                           onClick={() => handleView(product)}
                           className="text-blue-600 hover:text-blue-900 transition-colors"
                           title="View Details"
                         >
-                          <FiEye size={18} />
+                          <FiEye size={16} />
                         </button>
                         <button
                           onClick={() =>
@@ -1309,14 +1337,14 @@ const ProductTable = ({ path, editPath }) => {
                           className="text-yellow-600 hover:text-yellow-900 transition-colors"
                           title="Edit"
                         >
-                          <FiEdit size={18} />
+                          <FiEdit size={16} />
                         </button>
                         <button
                           onClick={() => handleDelete(product)}
                           className="text-red-600 hover:text-red-900 transition-colors"
                           title="Delete"
                         >
-                          <FiTrash2 size={18} />
+                          <FiTrash2 size={16} />
                         </button>
                         <button
                           onClick={() =>
@@ -1326,9 +1354,9 @@ const ProductTable = ({ path, editPath }) => {
                           title="Expand/Collapse"
                         >
                           {expandedRows.includes(product._id || product.id) ? (
-                            <FiChevronUp size={18} />
+                            <FiChevronUp size={16} />
                           ) : (
-                            <FiChevronDown size={18} />
+                            <FiChevronDown size={16} />
                           )}
                         </button>
                       </div>
@@ -1338,7 +1366,7 @@ const ProductTable = ({ path, editPath }) => {
                   {expandedRows.includes(product._id || product.id) && (
                     <tr className="bg-gray-50">
                       <td colSpan="7" className="px-6 py-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px]">
                           <div>
                             <p className="font-medium text-gray-500">
                               Description
@@ -1388,7 +1416,7 @@ const ProductTable = ({ path, editPath }) => {
                                     (attr, index) => (
                                       <span
                                         key={index}
-                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-[10px] rounded"
                                       >
                                         {attr.attribute_id?.name || "Attribute"}
                                         : {attr.value || "N/A"}
@@ -1413,7 +1441,7 @@ const ProductTable = ({ path, editPath }) => {
               <button
                 onClick={() => handlePageChange(filters.page - 1)}
                 disabled={filters.page === 1}
-                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-4 py-2 text-xs border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 Previous
               </button>
@@ -1422,7 +1450,7 @@ const ProductTable = ({ path, editPath }) => {
                 <button
                   key={i}
                   onClick={() => handlePageChange(i + 1)}
-                  className={`px-4 py-2 border rounded-md ${
+                  className={`px-4 py-2 text-xs border rounded-md ${
                     filters.page === i + 1
                       ? "bg-blue-600 text-white border-blue-600"
                       : "border-gray-300 hover:bg-gray-50"
@@ -1435,7 +1463,7 @@ const ProductTable = ({ path, editPath }) => {
               <button
                 onClick={() => handlePageChange(filters.page + 1)}
                 disabled={filters.page === pagination.totalPages}
-                className="px-4 py-2 border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                className="px-4 py-2 text-xs border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
               >
                 Next
               </button>
@@ -1443,33 +1471,38 @@ const ProductTable = ({ path, editPath }) => {
           )}
         </div>
 
-        <ProductViewModal
-          open={isModalOpen}
-          product={selectedProduct}
-          onClose={() => setIsModalOpen(false)}
-          onEdit={(product) => {
-            setIsModalOpen(false);
-            handleEdit(product);
-          }}
-        />
+        {ProductViewModal && (
+          <ProductViewModal
+            open={isModalOpen}
+            product={selectedProduct}
+            onClose={() => setIsModalOpen(false)}
+            onEdit={(product) => {
+              setIsModalOpen(false);
+              handleEdit(product);
+            }}
+          />
+        )}
 
-        <EditProductModal
-          open={isEditModalOpen}
-          product={editingProduct}
-          formData={editFormData}
-          loading={updateLoading}
-          error={updateError}
-          onClose={() => {
-            setIsEditModalOpen(false);
-            setEditingProduct(null);
-            setEditFormData(null);
-            setUpdateError("");
-          }}
-          onSubmit={handleUpdateProduct}
-          onChange={handleEditInputChange}
-          onNestedChange={handleNestedChange}
-        />
+        {EditProductModal && (
+          <EditProductModal
+            open={isEditModalOpen}
+            product={editingProduct}
+            formData={editFormData}
+            loading={updateLoading}
+            error={updateError}
+            onClose={() => {
+              setIsEditModalOpen(false);
+              setEditingProduct(null);
+              setEditFormData(null);
+              setUpdateError("");
+            }}
+            onSubmit={handleUpdateProduct}
+            onChange={handleEditInputChange}
+            onNestedChange={handleNestedChange}
+          />
+        )}
       </div>
+    </div>
     </div>
   );
 };

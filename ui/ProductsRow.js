@@ -1,15 +1,15 @@
 "use client";
+
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 
-export default function TopTrendingProducts({
-  products = [],
-  loading = false,
-}) {
+export default function ProductsRow({ products = [], loading = false, name }) {
   const router = useRouter();
 
-  const topTen = products.slice(0, 10);
+  console.log("prodcut", products);
+
+  const topTen = products.slice(0, 50);
 
   const getProductPrice = (product) => {
     if (product?.effectivePrice != null) return product.effectivePrice;
@@ -48,9 +48,9 @@ export default function TopTrendingProducts({
   if (!topTen.length) return null;
 
   return (
-    <div className="px-16 py-20">
+    <div className="px-16 pb-10">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-4xl font-bold text-gray-900">Products</h2>
+        <h2 className="text-4xl font-bold text-gray-900">{name}</h2>
 
         <button
           onClick={() => router.push("/products")}
@@ -65,7 +65,7 @@ export default function TopTrendingProducts({
       </div>
 
       <div className="grid grid-cols-5 gap-4">
-        {topTen.slice(0, 10).map((product) => {
+        {topTen.slice(0, 5).map((product) => {
           const discount = getDiscountPercent(product);
           const imageUrl = getProductImage(product);
 

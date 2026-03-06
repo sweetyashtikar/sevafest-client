@@ -24,7 +24,7 @@ export default function ProductBasicInfo({ formData, updateFormData }) {
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             placeholder="Enter product name"
           />
         </div>
@@ -39,7 +39,7 @@ export default function ProductBasicInfo({ formData, updateFormData }) {
             value={formData.productType}
             onChange={handleChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
             <option value={PRODUCT_TYPES.SIMPLE}>Simple Product</option>
             <option value={PRODUCT_TYPES.VARIABLE}>Variable Product</option>
@@ -58,7 +58,7 @@ export default function ProductBasicInfo({ formData, updateFormData }) {
             onChange={handleChange}
             rows="3"
             maxLength="500"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             placeholder="Brief description (max 500 characters)"
           />
           <p className="text-sm text-gray-500 mt-1">{formData.shortDescription.length}/500</p>
@@ -74,7 +74,7 @@ export default function ProductBasicInfo({ formData, updateFormData }) {
             value={formData.description}
             onChange={handleChange}
             rows="5"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+            className="w-full px-3 py-2 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             placeholder="Detailed product description"
           />
         </div>

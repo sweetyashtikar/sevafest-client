@@ -79,7 +79,7 @@ export default function CustomersPage() {
   );
 
   return (
-    <div className="p-6 bg-gray-50  text-black min-h-screen">
+    <div className="p-6 bg-gray-50  text-black min-h-screen -ml-16">
       <h1 className="text-3xl font-bold mb-6">Customers</h1>
 
       <div className="mb-6 flex flex-col md:flex-row gap-4 items-start md:items-center">
@@ -87,7 +87,7 @@ export default function CustomersPage() {
           placeholder="Search name / email / phone"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg w-full md:max-w-sm
+          className="px-4 py-2 border border-gray-700 rounded-lg w-full md:max-w-sm
                text-black outline-none focus:ring-2 focus:ring-blue-500"
         />
 
@@ -114,7 +114,7 @@ export default function CustomersPage() {
             setToDate("");
             setCurrentPage(1);
           }}
-          className="px-4 py-2 border rounded-lg text-red-600 hover:bg-red-50"
+          className="px-4 py-2 border rounded-lg text-text-black"
         >
           Clear
         </button>
