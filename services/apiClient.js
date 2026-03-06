@@ -2,7 +2,7 @@ import axios from "axios";
 import { store } from "@/redux/store";
 import { logout } from "@/redux/slices/authSlice";
 
-export const BASE_URL = process.env.NEXT_BACKEND_URI;
+export const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
 console.log("BASE_URL", BASE_URL)
 
