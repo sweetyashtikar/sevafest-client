@@ -17,6 +17,7 @@ const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState(null);
+  const [summaryDelivery, setSummaryDelivery] = useState(null);
 
   // Coupon state
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -54,6 +55,7 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     fetchCheckoutData();
+    fetchSummaryDelivery();
   }, [fetchCheckoutData]);
 
   // Handle address change
@@ -113,6 +115,18 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error("Error generating payment URL:", error);
       return null;
+    }
+  };
+
+  const fetchSummaryDelivery = async () => {
+    try {
+      const res = await apiClient("/viewCart/summary");
+
+      if (res?.success) {
+        setSummaryDelivery(res.data?.estimatedDelivery);
+      }
+    } catch (error) {
+      console.error("Failed to fetch delivery summary", error);
     }
   };
 
@@ -189,6 +203,7 @@ const CheckoutPage = () => {
           appliedCoupon={appliedCoupon}
           onCouponApplied={handleCouponApplied}
           orderTotal={orderTotal}
+          estimatedDelivery={summaryDelivery}
         />
       </div>
     </div>
@@ -660,6 +675,7 @@ const OrderPlace = React.memo(
     appliedCoupon,
     onCouponApplied,
     orderTotal,
+    estimatedDelivery,
   }) => {
     const finalTotal = appliedCoupon
       ? summary.finalTotal - appliedCoupon.discount
@@ -717,6 +733,11 @@ const OrderPlace = React.memo(
           </div>
         </div>
 
+        {estimatedDelivery && (
+          <div className="text-[12px] text-green-600 font-medium mb-3 text-center">
+            Estimated Delivery: {estimatedDelivery}
+          </div>
+        )}
         {/* PROMOTIONAL CODE SECTION */}
         <div className="bg-gray-50 p-3 rounded border border-gray-200 mb-4">
           <p className="text-[13px] font-bold mb-2">Promotional Code</p>

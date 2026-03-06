@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { toast } from "react-toastify";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { ChevronDown, Trash2 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
@@ -17,48 +18,52 @@ const CartPage = () => {
     dispatch(fetchCart());
   }, [dispatch]);
 
-  console.log("item", items);
-
   const updateQty = useCallback(
     async (cartItemId, qty) => {
       try {
-        await apiClient("/cart", {
+        const res = await apiClient(`/viewCart/item/${cartItemId}`, {
           method: "PUT",
           body: {
-            productId: cartItemId,
-            newQty: Number(qty),
+            qty: Number(qty),
           },
         });
+
+        if (res?.success) {
+          toast.success("Quantity updated");
+        }
+
         dispatch(fetchCart());
       } catch (err) {
-        console.error("Qty update failed", err);
+        console.log("error", err);
+        const message = err?.error || "Failed to update quantity";
+
+        toast.error(message);
       }
     },
-    [fetchCart],
+    [dispatch],
   );
 
   const removeItem = useCallback(
-    async (productId, variantId) => {
-      console.log("variantId", variantId);
-      console.log("productId", productId);
+    async (cartItemId) => {
       try {
-        await apiClient("/cart", {
+        const res = await apiClient(`/viewCart/item/${cartItemId}`, {
           method: "DELETE",
-          body: {
-            productId,
-            variantId,
-          },
         });
+
+        if (res?.success) {
+          toast.success("Item removed from cart");
+        }
 
         dispatch(fetchCart());
       } catch (err) {
+        toast.error("Failed to remove item");
         console.error(
           "Remove item failed",
           err?.response?.data?.message || err.message,
         );
       }
     },
-    [fetchCart],
+    [dispatch],
   );
 
   // ================= MEMOIZED VALUES =================
@@ -135,8 +140,10 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
           }`}
         >
           {/* Product Image */}
-          <div className="w-[120px] sm:w-[150px] flex-shrink-0 bg-gray-50 rounded-md overflow-hidden border
-           border-gray-100 p-1 flex items-center justify-center">
+          <div
+            className="w-[120px] sm:w-[150px] flex-shrink-0 bg-gray-50 rounded-md overflow-hidden border
+           border-gray-100 p-1 flex items-center justify-center"
+          >
             <Image
               src={item.product.mainImage}
               alt={item.product.name}
@@ -147,8 +154,10 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-[16px] sm:text-[18px] font-medium text-[#007185] hover:text-[#C7511F] hover:underline cursor-pointer
-             leading-snug truncate-2-lines">
+            <p
+              className="text-[16px] sm:text-[18px] font-medium text-[#007185] hover:text-[#C7511F] hover:underline cursor-pointer
+             leading-snug truncate-2-lines"
+            >
               {item.product.name}
             </p>
 
@@ -173,7 +182,7 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
                   value={item.qty}
                   disabled={!item.inStock}
                   onChange={(e) =>
-                    onQtyChange(item?.product?._id, Number(e.target.value))
+                    onQtyChange(item._id, Number(e.target.value))
                   }
                   className="bg-[#F0F2F2] hover:bg-[#E3E6E6] border border-[#D5D9D9] rounded-lg px-2 py-1
                    text-[13px] text-gray-800 shadow-sm focus:border-[#007185] outline-none cursor-pointer appearance-none pr-7 min-w-[70px]"
@@ -195,9 +204,7 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
               <div className="w-[1px] h-4 bg-gray-300 hidden sm:block"></div>
 
               <button
-                onClick={() =>
-                  onRemove(item.product._id, item.variant?._id || null)
-                }
+                onClick={() => onRemove(item._id)}
                 className="flex items-center gap-1 text-[12px] text-[#007185] hover:text-[#C7511F] hover:underline transition-colors group"
               >
                 <Trash2
