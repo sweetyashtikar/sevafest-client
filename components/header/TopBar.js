@@ -314,6 +314,7 @@ const ProfileModel = ({
 
         document.cookie = "token=; path=/; max-age=0";
         document.cookie = "role=; path=/; max-age=0";
+        document.cookie = "user=; path=/; max-age=0";
       }
     } catch (err) {
       console.error("Logout failed:", err);
@@ -322,7 +323,6 @@ const ProfileModel = ({
 
   return (
     <div className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl z-50 border border-gray-200 overflow-hidden">
-    
       <div className="flex items-center gap-4 p-4 border-b bg-[#1a1c24] text-white">
         <div className="w-12 h-12 bg-[#fdd835] rounded-full flex items-center justify-center">
           <User className="w-6 h-6 text-[#1a1c24]" />
@@ -374,7 +374,6 @@ const ProfileModel = ({
         </button>
       </div>
 
-     
       <div className="border-t px-4 py-3 space-y-1">
         <button
           onClick={() => router.push("/profile")}
@@ -402,7 +401,6 @@ const ProfileModel = ({
         </button>
       </div>
 
-     
       <div className="border-t p-3">
         <button
           onClick={handleLogout}

@@ -1,12 +1,12 @@
 "use client";
 
+import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/services/apiClient";
-import { Plus } from "lucide-react";
+import { Plus, Download, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import BrandTable from "@/components/admin/BrandTable";
-import AddBrandModal from "@/components/admin/AddBrandModal";
 import BrandViewModal from "@/components/admin/BrandViewModal";
 
 export default function Page() {
@@ -83,10 +83,59 @@ export default function Page() {
     router.push(`/admin/brands/create?id=${brand._id}`);
   };
 
+  const handleExportXLS = () => {
+    if (!brands || brands.length === 0) {
+      toast.error("No brands available to export!");
+      return;
+    }
+
+    const excelData = brands.map((brand, index) => ({
+      "Sr. No.": index + 1,
+      "Brand Name": brand.name || "N/A",
+      Status: brand.status ? "Active" : "Inactive",
+      "Logo URL": brand.icon || "No Logo",
+
+      "Created Date": brand.createdAt
+        ? new Date(brand.createdAt).toLocaleString("en-IN", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : "N/A",
+
+      "Updated Date": brand.updatedAt
+        ? new Date(brand.updatedAt).toLocaleString("en-IN", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })
+        : "N/A",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Brands");
+
+    worksheet["!cols"] = [
+      { wch: 10 },
+      { wch: 30 },
+      { wch: 15 },
+      { wch: 60 },
+      { wch: 20 },
+      { wch: 20 },
+    ];
+
+    XLSX.writeFile(
+      workbook,
+      `Brands_Export_${new Date().toISOString().slice(0, 10)}.xlsx`,
+    );
+
+    toast.success("Excel file exported successfully!");
+  };
+
   return (
     <div className="p-8 max-w-7xl mx-auto space-y-8  min-h-screen text-black -ml-16">
-      {/* Header Section */}
-      <div className="flex items-center justify-between border-b pb-6 border-slate-100">
+      <div className="flex items-center justify-between pb-6 border-slate-100">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-black">
             Brands
@@ -95,14 +144,37 @@ export default function Page() {
             Manage and monitor your brand partnerships.
           </p>
         </div>
-        <button
-          onClick={() => router.push("/admin/brands/create")}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition-all 
-          shadow-sm active:scale-95"
-        >
-          <Plus size={18} strokeWidth={2.5} />
-          <span>Add Brand</span>
-        </button>
+        <div className="flex items-center gap-3">
+          {/* Export Button */}
+          <button
+            onClick={handleExportXLS}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-lg font-medium 
+            transition-all shadow-sm active:scale-95"
+          >
+            <Download size={18} />
+            <span>Export XLS</span>
+          </button>
+
+          {/* Import Button */}
+          <button
+            onClick={() => router.push("/admin/brands/bulkimport")}
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-4 py-2.5 rounded-lg font-medium
+             transition-all shadow-sm active:scale-95"
+          >
+            <Upload size={18} />
+            <span>Import</span>
+          </button>
+
+          {/* Add Button */}
+          <button
+            onClick={() => router.push("/admin/brands/create")}
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg font-medium 
+            transition-all shadow-sm active:scale-95"
+          >
+            <Plus size={18} strokeWidth={2.5} />
+            <span>Add Brand</span>
+          </button>
+        </div>
       </div>
 
       <div className="w-full">

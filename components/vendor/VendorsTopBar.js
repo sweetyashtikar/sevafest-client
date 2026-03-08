@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/slices/authSlice";
-import { ShieldCheck, LogOut, UserCircle, ChevronDown } from "lucide-react";
+import { ShieldCheck, LogOut, UserCircle, ChevronDown, Clock, Wallet, Phone } from "lucide-react";
 import { useState } from "react";
 
 export default function VendorsTopBar() {
@@ -17,6 +17,7 @@ export default function VendorsTopBar() {
 
     document.cookie = "token=; path=/; max-age=0";
     document.cookie = "role=; path=/; max-age=0";
+    document.cookie = "user=; path=/; max-age=0";
 
     router.replace("/login");
   };
@@ -33,7 +34,7 @@ export default function VendorsTopBar() {
         >
           <ShieldCheck className="text-orange-500" />
           <h1 className="text-lg font-semibold text-gray-800 capitalize">
-           {roleName?.replaceAll("_", " ")} Panel
+            {roleName?.replaceAll("_", " ")} Panel
           </h1>
         </div>
 
@@ -48,26 +49,96 @@ export default function VendorsTopBar() {
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-3 w-56 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden">
-              {/* USER INFO */}
-              <div className="px-4 py-3 border-b">
-                <p className="text-sm font-medium text-gray-800">
-                  {user?.username || "User"}
-                </p>
-                <p className="text-xs text-gray-500">{user?.email || ""}</p>
-                <p className="mt-1 text-xs text-orange-500 capitalize">
-                  {roleName}
-                </p>
+            <div className="absolute right-0 mt-3 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+              {/* USER HEADER - Gradient Background */}
+              <div className="bg-gradient-to-br from-[#0F766E] to-[#134E4A] px-5 py-6 text-white relative">
+                <div className="relative z-10">
+                  <p className="text-base font-bold truncate">
+                    {user?.username || "User Profile"}
+                  </p>
+                  <p className="text-xs opacity-90 truncate font-medium">
+                    {user?.email || "No Email Provided"}
+                  </p>
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-white/20 backdrop-blur-md rounded-full border border-white/10">
+                      {user?.role || "user"}
+                    </span>
+                    {user?.status && (
+                      <span className="flex items-center gap-1 px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-emerald-400/20 text-emerald-300 rounded-full">
+                        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                        Live
+                      </span>
+                    )}
+                  </div>
+                </div>
+                {/* Decorative Circle */}
+                <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-2xl" />
               </div>
 
-              {/* ACTION */}
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-red-600 hover:bg-gray-50"
-              >
-                <LogOut size={16} />
-                Logout
-              </button>
+              {/* USER DETAILS SECTION */}
+              <div className="p-4 space-y-3">
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                  Account Summary
+                </p>
+
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <div className="p-1.5 bg-blue-50 text-blue-600 rounded-md">
+                        <Phone size={14} />
+                      </div>
+                      <span className="text-xs font-medium">Mobile</span>
+                    </div>
+                    <span className="text-xs font-bold text-gray-800">
+                      {user?.mobile || "N/A"}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <div className="p-1.5 bg-amber-50 text-amber-600 rounded-md">
+                        <Wallet size={14} />
+                      </div>
+                      <span className="text-xs font-medium">
+                        Wallet Balance
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-[#0F766E]">
+                      ₹{user?.balance?.toLocaleString() ?? 0}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center gap-3 text-gray-600">
+                      <div className="p-1.5 bg-purple-50 text-purple-600 rounded-md">
+                        <Clock size={14} />
+                      </div>
+                      <span className="text-xs font-medium">
+                        Recent Activity
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-gray-500">
+                      {user?.last_login
+                        ? new Date(user.last_login).toLocaleDateString(
+                            undefined,
+                            { day: "numeric", month: "short" },
+                          )
+                        : "Never"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* LOGOUT BUTTON */}
+              <div className="p-3 bg-gray-50/50">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-500 bg-white border border-red-100 rounded-xl hover:bg-red-50 hover:text-red-600 shadow-sm transition-all active:scale-95"
+                >
+                  <LogOut size={16} />
+                  Sign Out Account
+                </button>
+              </div>
             </div>
           )}
         </div>
