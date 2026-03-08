@@ -1,16 +1,17 @@
 "use client";
 
+import * as XLSX from "xlsx";
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import CategoryTable from "@/components/categories/categoryTable";
-import CategoryForm from "@/components/categories/CategoryForm";
-import CategoryFilters from "@/components/categories/CategoryFilters";
 import { CATEGORY_FILTERS } from "@/components/categories/categoryTypes";
 import { apiClient } from "@/services/apiClient";
 import { useSelector } from "react-redux";
-import { CategoryViewModal } from "@/components/categories/CategoryViewModal"
+import { CategoryViewModal } from "@/components/categories/CategoryViewModal";
 
-import { getCookie } from "@/utils/getCookies";
+import CategoryTable from "@/components/categories/categoryTable";
+import CategoryForm from "@/components/categories/CategoryForm";
+import CategoryFilters from "@/components/categories/CategoryFilters";
 
 export default function CategoriesPage() {
   const router = useRouter();
@@ -245,9 +246,57 @@ export default function CategoriesPage() {
     }
   };
 
-  // Handle page change
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage }));
+  };
+
+  const handleExportXLS = () => {
+    if (!categories || categories.length === 0) {
+      toast.error("No categories available to export!");
+      return;
+    }
+
+    const excelData = categories.map((cat, index) => ({
+      "Sr. No.": index + 1,
+      "Category ID": cat._id,
+      Name: cat.name || "N/A",
+      Slug: cat.slug || "N/A",
+      Status: cat.status ? "Active" : "Inactive",
+      "Row Order": cat.row_order || 0,
+      Clicks: cat.clicks || 0,
+      "Sub Categories": Array.isArray(cat.sub_category)
+        ? cat.sub_category.join(", ")
+        : "None",
+      "Image URL": cat.image || "No Image",
+      "Created At": cat.createdAt
+        ? new Date(cat.createdAt).toLocaleString()
+        : "N/A",
+      "Updated At": cat.updatedAt
+        ? new Date(cat.updatedAt).toLocaleString()
+        : "N/A",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Categories");
+
+    worksheet["!cols"] = [
+      { wch: 8 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 25 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 10 },
+      { wch: 30 },
+      { wch: 40 },
+      { wch: 20 },
+      { wch: 20 },
+    ];
+
+    const fileName = `Categories_Report_${new Date().toISOString().slice(0, 10)}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+    toast.success("Categories exported successfully!");
   };
 
   return (
@@ -263,6 +312,48 @@ export default function CategoriesPage() {
               </p>
             </div>
             <div className="flex items-center space-x-4">
+              <button
+                onClick={handleExportXLS}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium
+                 text-white bg-green-600 hover:bg-green-700"
+              >
+                <svg
+                  className="mr-2 -ml-1 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                Export XLS
+              </button>
+
+              <button
+                onClick={() => router.push("/admin/category/bulkimport")}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium
+                 text-white bg-orange-500 hover:bg-orange-600"
+              >
+                <svg
+                  className="mr-2 -ml-1 w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                  />
+                </svg>
+                Import
+              </button>
+
               <button
                 onClick={() => setShowForm(true)}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
@@ -407,74 +498,71 @@ export default function CategoriesPage() {
               />
 
               {/* Pagination */}
-             <div className="px-6 py-4 border-t border-gray-200 text-gray-700">
-  <div className="flex flex-col md:flex-row md:items-center justify-between">
+              <div className="px-6 py-4 border-t border-gray-200 text-gray-700">
+                <div className="flex flex-col md:flex-row md:items-center justify-between">
+                  {/* LEFT TEXT */}
+                  <div className="mb-4 md:mb-0">
+                    <p className="text-sm font-bold text-gray-700">
+                      Showing{" "}
+                      <span className="font-medium">{categories.length}</span>{" "}
+                      of <span className="font-medium">{pagination.total}</span>{" "}
+                      categories
+                    </p>
+                  </div>
 
-    {/* LEFT TEXT */}
-    <div className="mb-4 md:mb-0">
-      <p className="text-sm font-bold text-gray-700">
-        Showing{" "}
-        <span className="font-medium">{categories.length}</span>{" "}
-        of <span className="font-medium">{pagination.total}</span>{" "}
-        categories
-      </p>
-    </div>
+                  {/* PAGINATION */}
+                  <div className="flex items-center space-x-2">
+                    {/* PREVIOUS */}
+                    <button
+                      onClick={() => handlePageChange(filters.page - 1)}
+                      disabled={!pagination.hasPrev}
+                      className={`px-3 py-1 rounded-md transition ${
+                        pagination.hasPrev
+                          ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
+                      }`}
+                    >
+                      Previous
+                    </button>
 
-    {/* PAGINATION */}
-    <div className="flex items-center space-x-2">
+                    {/* PAGE INFO ⭐ FIXED */}
+                    <span className="px-3 py-1 text-sm font-medium text-gray-700 opacity-100">
+                      Page {filters.page} of {pagination.totalPages || 1}
+                    </span>
 
-      {/* PREVIOUS */}
-      <button
-        onClick={() => handlePageChange(filters.page - 1)}
-        disabled={!pagination.hasPrev}
-        className={`px-3 py-1 rounded-md transition ${
-          pagination.hasPrev
-            ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
-            : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
-        }`}
-      >
-        Previous
-      </button>
+                    {/* NEXT */}
+                    <button
+                      onClick={() => handlePageChange(filters.page + 1)}
+                      disabled={!pagination.hasNext}
+                      className={`px-3 py-1 rounded-md transition ${
+                        pagination.hasNext
+                          ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                          : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
+                      }`}
+                    >
+                      Next
+                    </button>
 
-      {/* PAGE INFO ⭐ FIXED */}
-      <span className="px-3 py-1 text-sm font-medium text-gray-700 opacity-100">
-        Page {filters.page} of {pagination.totalPages || 1}
-      </span>
-
-      {/* NEXT */}
-      <button
-        onClick={() => handlePageChange(filters.page + 1)}
-        disabled={!pagination.hasNext}
-        className={`px-3 py-1 rounded-md transition ${
-          pagination.hasNext
-            ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
-            : "bg-gray-100 text-gray-400 cursor-not-allowed opacity-70"
-        }`}
-      >
-        Next
-      </button>
-
-      {/* LIMIT */}
-      <select
-        value={filters.limit}
-        onChange={(e) =>
-          setFilters((prev) => ({
-            ...prev,
-            limit: parseInt(e.target.value),
-            page: 1,
-          }))
-        }
-        className="ml-4 px-3 py-1 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        <option value="5">5 per page</option>
-        <option value="10">10 per page</option>
-        <option value="25">25 per page</option>
-        <option value="50">50 per page</option>
-      </select>
-
-    </div>
-  </div>
-</div>
+                    {/* LIMIT */}
+                    <select
+                      value={filters.limit}
+                      onChange={(e) =>
+                        setFilters((prev) => ({
+                          ...prev,
+                          limit: parseInt(e.target.value),
+                          page: 1,
+                        }))
+                      }
+                      className="ml-4 px-3 py-1 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="5">5 per page</option>
+                      <option value="10">10 per page</option>
+                      <option value="25">25 per page</option>
+                      <option value="50">50 per page</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
             </>
           )}
         </div>

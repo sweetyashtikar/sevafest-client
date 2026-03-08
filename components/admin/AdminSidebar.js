@@ -145,11 +145,11 @@ export const menuItems = [
     ],
   },
 
-  {
-    label: "Orders",
-    icon: ShoppingCart,
-    path: "/admin/orders",
-  },
+  // {
+  //   label: "Orders",
+  //   icon: ShoppingCart,
+  //   path: "/admin/orders",
+  // },
 
   {
     label: "Customers",
@@ -157,26 +157,16 @@ export const menuItems = [
     path: "/admin/customers",
   },
   {
-    label: "Stock management",
-    icon: Users,
-    path: "/admin/stock-management",
-  },
-  {
-    label: "Orders",
-    icon: ClipboardList,
-    path: "/admin/orders",
-  },
-  {
     label: "Staff",
     icon: UserCog,
     path: "/admin/staff",
   },
 
-  {
-    label: "Users",
-    icon: Users,
-    path: "/admin/users",
-  },
+  // {
+  //   label: "Users",
+  //   icon: Users,
+  //   path: "/admin/users",
+  // },
   {
     label: "Notification",
     icon: Bell,
@@ -358,7 +348,7 @@ export default function AdminSidebar({ isOpen }) {
 
                       return (
                         <button
-                          key={child.label}
+                          key={`${child.label}-${child.path}`}
                           onClick={() => router.push(child.path)}
                           className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold transition-all
                       ${
@@ -381,7 +371,7 @@ export default function AdminSidebar({ isOpen }) {
           /* SINGLE MENU */
           return (
             <button
-              key={item.label}
+              key={`${item.label}-${index}`}
               onClick={() => router.push(item.path)}
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300
           ${

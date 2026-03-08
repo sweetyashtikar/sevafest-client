@@ -1,9 +1,9 @@
 // app/products/page.jsx
 "use client";
 import React from "react";
+import * as XLSX from "xlsx";
 import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import {
   FiEye,
   FiEdit,
@@ -686,6 +686,99 @@ const ProductTable = ({ path, editPath }) => {
     );
   });
 
+  const handleExport = () => {
+    if (products.length === 0) {
+      toast.error("No products to export!");
+      return;
+    }
+
+    const excelData = products.map((product, index) => {
+      return {
+        // 1. Basic Info
+        "Sr. No.": index + 1,
+        "Product ID": product.id || product._id,
+        Name: product.name || "N/A",
+        Slug: product.slug || "N/A",
+        Brand: product.brand || "N/A",
+        Category: product.categoryId?.name || "N/A",
+        Status: product.status ? "Active" : "Inactive",
+        Approved: product.isApproved ? "Yes" : "No",
+
+        // 2. Pricing & Stock
+        "Effective Price": product.effectivePrice || 0,
+        "Discount %": product.discountPercentage || 0,
+        "MRP (Simple Product)": product.simpleProduct?.sp_price || 0,
+        "Special Price": product.simpleProduct?.sp_specialPrice || 0,
+        SKU: product.simpleProduct?.sp_sku || "N/A",
+        "Stock Count": product.simpleProduct?.sp_totalStock || 0,
+        "Stock Status": product.simpleProduct?.sp_stockStatus || "N/A",
+        "In Stock": product.inStock ? "Yes" : "No",
+
+        // 3. Vendor Details
+        "Vendor Name": product.vendorId?.username || "N/A",
+        "Vendor Email": product.vendorId?.email || "N/A",
+        "Vendor Mobile": product.vendorId?.mobile || "N/A",
+
+        // 4. Descriptions & Codes
+        "Short Description": product.shortDescription || "",
+        "Full Description": product.description || "",
+        "HSN Code": product.hsnCode || "N/A",
+        Tags: product.tags?.join(", ") || "",
+
+        // 5. Policy & Shipping
+        "Made In": product.madeIn || "N/A",
+        Returnable: product.isReturnable ? "Yes" : "No",
+        Cancelable: product.isCancelable ? "Yes" : "No",
+        "Cancelable Till": product.cancelableTill || "N/A",
+        "COD Allowed": product.codAllowed ? "Yes" : "No",
+        Warranty: product.warrantyPeriod || "N/A",
+        Guarantee: product.guaranteePeriod || "N/A",
+
+        // 6. Dimensions (Flattened)
+        Weight: product.dimensions?.weight || 0,
+        Height: product.dimensions?.height || 0,
+        Breadth: product.dimensions?.breadth || 0,
+        Length: product.dimensions?.length || 0,
+
+        // 7. Order Limits
+        "Min Order Qty": product.minimumOrderQuantity || 1,
+        "Max Order Qty": product.totalAllowedQuantity || 0,
+        "Step Size": product.quantityStepSize || 1,
+
+        // 8. Stats & Dates
+        "Total Sales": product.totalSales || 0,
+        "Total Revenue": product.totalRevenue || 0,
+        Views: product.views || 0,
+        "Created At": product.createdAt
+          ? new Date(product.createdAt).toLocaleString()
+          : "N/A",
+        "Updated At": product.updatedAt
+          ? new Date(product.updatedAt).toLocaleString()
+          : "N/A",
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Complete Product Data");
+
+    const objectMaxLength = [];
+    excelData.map((row) => {
+      Object.keys(row).map((key, i) => {
+        const value = row[key] ? row[key].toString() : "";
+        objectMaxLength[i] =
+          objectMaxLength[i] >= value.length
+            ? objectMaxLength[i]
+            : value.length;
+      });
+    });
+    worksheet["!cols"] = objectMaxLength.map((w) => ({ wch: w + 5 }));
+
+    const fileName = `Full_Product_Report_${new Date().getTime()}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+
+    toast.success("All data exported successfully to Excel!");
+  };
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -1129,9 +1222,8 @@ const ProductTable = ({ path, editPath }) => {
               placeholder="Search product, brand, category..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64 pl-10 pr-4 py-2 border border-gray-700 rounded-md text-sm 
-    text-gray-700 placeholder:text-gray-700 
-    focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-64 pl-10 pr-4 py-2 border border-gray-700 rounded-md text-sm text-gray-700 placeholder:text-gray-700 
+              focus:ring-2 focus:ring-blue-500 focus:outline-none"
             />
 
             <FiSearch className="absolute left-3 top-2.5 text-gray-400" />
@@ -1144,365 +1236,416 @@ const ProductTable = ({ path, editPath }) => {
           >
             <FiPlus /> Add Product
           </button>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleExport}
+              className="px-4 py-2 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition flex items-center gap-2"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+              Export
+            </button>
+
+            <button
+              onClick={() => router.push("/admin/product/bulkimport")}
+              className="px-4 py-2 bg-orange-500 text-white text-sm rounded-md hover:bg-orange-600 transition flex items-center gap-2"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                />
+              </svg>
+              Import
+            </button>
+          </div>
         </div>
       </div>
 
-    <div className="bg-white rounded-2xl shadow-sm border -mr-8">
-      <div className="px-6 py-4 border-b">
-        <h2 className="text-base font-bold text-black text-center">
-          Product Table List
-        </h2>
-      </div>
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs">
-            <thead className="bg-gray-100 text-gray-700 uppercase">
-              <tr>
-                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
-                  Serial No
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("categoryId.name")}
-                >
-                  <div className="flex items-center">
-                    Category
-                    {sortConfig.key === "categoryId.name" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("productName")}
-                >
-                  <div className="flex items-center">
-                    Product Name
-                    {sortConfig.key === "productName" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("price")}
-                >
-                  <div className="flex items-center">
-                    Price
-                    {sortConfig.key === "price" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("productType")}
-                >
-                  <div className="flex items-center">
-                    Product Type
-                    {sortConfig.key === "productType" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                <th
-                  className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("status")}
-                >
-                  <div className="flex items-center">
-                    Status
-                    {sortConfig.key === "status" &&
-                      (sortConfig.direction === "asc" ? (
-                        <FiChevronUp className="ml-1" />
-                      ) : (
-                        <FiChevronDown className="ml-1" />
-                      ))}
-                  </div>
-                </th>
-                {isAdmin && (
+      <div className="bg-white rounded-2xl shadow-sm border -mr-8">
+        <div className="px-6 py-4 border-b">
+          <h2 className="text-base font-bold text-black text-center">
+            Product Table List
+          </h2>
+        </div>
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead className="bg-gray-100 text-gray-700 uppercase">
+                <tr>
                   <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
-                    Approved
+                    Serial No
                   </th>
-                )}
-                <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProducts.map((product) => (
-                <React.Fragment key={product._id || product.id}>
-                  <tr className="hover:bg-gray-50 transition-colors duration-150">
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <span className="font-mono text-[11px] font-medium text-gray-900">
-                        {product.serialNo ||
-                          `P${(product._id || "").slice(-6).toUpperCase()}`}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-[10px] leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {product.categoryId?.name || product.category || "N/A"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3">
-                      <div className="text-[11px] font-medium text-gray-900">
-                        {product.name || "Unnamed Product"}
-                      </div>
-                      <div className="text-[10px] text-gray-500">
-                        {product.brand || "No brand"}
-                      </div>
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <div className="text-[11px] font-semibold text-gray-900">
-                        ₹{(product.effectivePrice || 0).toFixed(2)}
-                      </div>
-                      {product.taxId && (
-                        <div className="text-[10px] text-gray-500">
-                          +{product.taxId.percentage || 0}% tax
+                  <th
+                    className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("categoryId.name")}
+                  >
+                    <div className="flex items-center">
+                      Category
+                      {sortConfig.key === "categoryId.name" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("productName")}
+                  >
+                    <div className="flex items-center">
+                      Product Name
+                      {sortConfig.key === "productName" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("price")}
+                  >
+                    <div className="flex items-center">
+                      Price
+                      {sortConfig.key === "price" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("productType")}
+                  >
+                    <div className="flex items-center">
+                      Product Type
+                      {sortConfig.key === "productType" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider cursor-pointer"
+                    onClick={() => handleSort("status")}
+                  >
+                    <div className="flex items-center">
+                      Status
+                      {sortConfig.key === "status" &&
+                        (sortConfig.direction === "asc" ? (
+                          <FiChevronUp className="ml-1" />
+                        ) : (
+                          <FiChevronDown className="ml-1" />
+                        ))}
+                    </div>
+                  </th>
+                  {isAdmin && (
+                    <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
+                      Approved
+                    </th>
+                  )}
+                  <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredProducts.map((product) => (
+                  <React.Fragment key={product._id || product.id}>
+                    <tr className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        <span className="font-mono text-[11px] font-medium text-gray-900">
+                          {product.serialNo ||
+                            `P${(product._id || "").slice(-6).toUpperCase()}`}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        <span className="px-2 inline-flex text-[10px] leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                          {product.categoryId?.name ||
+                            product.category ||
+                            "N/A"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3">
+                        <div className="text-[11px] font-medium text-gray-900">
+                          {product.name || "Unnamed Product"}
                         </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
-                          product.productType === "Physical"
-                            ? "bg-green-100 text-green-800"
-                            : product.productType === "Digital"
-                              ? "bg-purple-100 text-purple-800"
-                              : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {product.productType || "Unknown"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
-                          product.status === true
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {product.status === true ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap">
-                      {isAdmin ? (
-                        <label className="inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={product.isApproved === true}
-                            onChange={() => handleApproveToggle(product)}
-                            className="sr-only peer"
-                          />
-                          <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
-                        </label>
-                      ) : (
+                        <div className="text-[10px] text-gray-500">
+                          {product.brand || "No brand"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        <div className="text-[11px] font-semibold text-gray-900">
+                          ₹{(product.effectivePrice || 0).toFixed(2)}
+                        </div>
+                        {product.taxId && (
+                          <div className="text-[10px] text-gray-500">
+                            +{product.taxId.percentage || 0}% tax
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap">
                         <span
-                          className={`px-3 py-1 rounded-full text-[10px] font-medium ${
-                            product.isApproved
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
+                          className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
+                            product.productType === "Physical"
+                              ? "bg-green-100 text-green-800"
+                              : product.productType === "Digital"
+                                ? "bg-purple-100 text-purple-800"
+                                : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {product.isApproved ? "Approved" : "Pending"}
+                          {product.productType || "Unknown"}
                         </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-3 whitespace-nowrap text-[11px] font-medium">
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => handleView(product)}
-                          className="text-blue-600 hover:text-blue-900 transition-colors"
-                          title="View Details"
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 inline-flex text-[10px] leading-5 font-semibold rounded-full ${
+                            product.status === true
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
                         >
-                          <FiEye size={16} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            router.push(`${editPath}/${product._id}`)
-                          }
-                          className="text-yellow-600 hover:text-yellow-900 transition-colors"
-                          title="Edit"
-                        >
-                          <FiEdit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(product)}
-                          className="text-red-600 hover:text-red-900 transition-colors"
-                          title="Delete"
-                        >
-                          <FiTrash2 size={16} />
-                        </button>
-                        <button
-                          onClick={() =>
-                            toggleRowExpansion(product._id || product.id)
-                          }
-                          className="text-gray-600 hover:text-gray-900 transition-colors"
-                          title="Expand/Collapse"
-                        >
-                          {expandedRows.includes(product._id || product.id) ? (
-                            <FiChevronUp size={16} />
-                          ) : (
-                            <FiChevronDown size={16} />
-                          )}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-
-                  {expandedRows.includes(product._id || product.id) && (
-                    <tr className="bg-gray-50">
-                      <td colSpan="7" className="px-6 py-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px]">
-                          <div>
-                            <p className="font-medium text-gray-500">
-                              Description
-                            </p>
-                            <p className="text-gray-900">
-                              {product.description || "No description"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-500">Vendor</p>
-                            <p className="text-gray-900">
-                              {product.vendorId?.username ||
-                                product.vendorId?.company ||
-                                "N/A"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-500">Stock</p>
-                            <p
-                              className={`font-semibold ${
-                                (product.stock || 0) > 0
-                                  ? "text-green-600"
-                                  : "text-red-600"
-                              }`}
-                            >
-                              {product.stock || 0} units
-                            </p>
-                          </div>
-                          <div>
-                            <p className="font-medium text-gray-500">Created</p>
-                            <p className="text-gray-900">
-                              {product.createdAt
-                                ? new Date(
-                                    product.createdAt,
-                                  ).toLocaleDateString()
-                                : "N/A"}
-                            </p>
-                          </div>
-                          {product.attributeValues &&
-                            product.attributeValues.length > 0 && (
-                              <div className="md:col-span-2">
-                                <p className="font-medium text-gray-500 mb-1">
-                                  Attributes
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {product.attributeValues.map(
-                                    (attr, index) => (
-                                      <span
-                                        key={index}
-                                        className="px-2 py-1 bg-gray-100 text-gray-700 text-[10px] rounded"
-                                      >
-                                        {attr.attribute_id?.name || "Attribute"}
-                                        : {attr.value || "N/A"}
-                                      </span>
-                                    ),
-                                  )}
-                                </div>
-                              </div>
+                          {product.status === true ? "Active" : "Inactive"}
+                        </span>
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap">
+                        {isAdmin ? (
+                          <label className="inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={product.isApproved === true}
+                              onChange={() => handleApproveToggle(product)}
+                              className="sr-only peer"
+                            />
+                            <div className="relative w-11 h-6 bg-gray-300 rounded-full peer-checked:bg-green-500 transition-colors after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-transform peer-checked:after:translate-x-5" />
+                          </label>
+                        ) : (
+                          <span
+                            className={`px-3 py-1 rounded-full text-[10px] font-medium ${
+                              product.isApproved
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {product.isApproved ? "Approved" : "Pending"}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap text-[11px] font-medium">
+                        <div className="flex items-center space-x-3">
+                          <button
+                            onClick={() => handleView(product)}
+                            className="text-blue-600 hover:text-blue-900 transition-colors"
+                            title="View Details"
+                          >
+                            <FiEye size={16} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              router.push(`${editPath}/${product._id}`)
+                            }
+                            className="text-yellow-600 hover:text-yellow-900 transition-colors"
+                            title="Edit"
+                          >
+                            <FiEdit size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(product)}
+                            className="text-red-600 hover:text-red-900 transition-colors"
+                            title="Delete"
+                          >
+                            <FiTrash2 size={16} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              toggleRowExpansion(product._id || product.id)
+                            }
+                            className="text-gray-600 hover:text-gray-900 transition-colors"
+                            title="Expand/Collapse"
+                          >
+                            {expandedRows.includes(
+                              product._id || product.id,
+                            ) ? (
+                              <FiChevronUp size={16} />
+                            ) : (
+                              <FiChevronDown size={16} />
                             )}
+                          </button>
                         </div>
                       </td>
                     </tr>
-                  )}
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
 
-          {/* Pagination */}
-          {pagination.totalPages > 1 && (
-            <div className="mt-6 flex justify-center gap-2">
-              <button
-                onClick={() => handlePageChange(filters.page - 1)}
-                disabled={filters.page === 1}
-                className="px-4 py-2 text-xs border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Previous
-              </button>
+                    {expandedRows.includes(product._id || product.id) && (
+                      <tr className="bg-gray-50">
+                        <td colSpan="7" className="px-6 py-4">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-[11px]">
+                            <div>
+                              <p className="font-medium text-gray-500">
+                                Description
+                              </p>
+                              <p className="text-gray-900">
+                                {product.description || "No description"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-500">
+                                Vendor
+                              </p>
+                              <p className="text-gray-900">
+                                {product.vendorId?.username ||
+                                  product.vendorId?.company ||
+                                  "N/A"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-500">Stock</p>
+                              <p
+                                className={`font-semibold ${
+                                  (product.stock || 0) > 0
+                                    ? "text-green-600"
+                                    : "text-red-600"
+                                }`}
+                              >
+                                {product.stock || 0} units
+                              </p>
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-500">
+                                Created
+                              </p>
+                              <p className="text-gray-900">
+                                {product.createdAt
+                                  ? new Date(
+                                      product.createdAt,
+                                    ).toLocaleDateString()
+                                  : "N/A"}
+                              </p>
+                            </div>
+                            {product.attributeValues &&
+                              product.attributeValues.length > 0 && (
+                                <div className="md:col-span-2">
+                                  <p className="font-medium text-gray-500 mb-1">
+                                    Attributes
+                                  </p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {product.attributeValues.map(
+                                      (attr, index) => (
+                                        <span
+                                          key={index}
+                                          className="px-2 py-1 bg-gray-100 text-gray-700 text-[10px] rounded"
+                                        >
+                                          {attr.attribute_id?.name ||
+                                            "Attribute"}
+                                          : {attr.value || "N/A"}
+                                        </span>
+                                      ),
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
+                ))}
+              </tbody>
+            </table>
 
-              {[...Array(pagination.totalPages)].map((_, i) => (
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="mt-6 flex justify-center gap-2">
                 <button
-                  key={i}
-                  onClick={() => handlePageChange(i + 1)}
-                  className={`px-4 py-2 text-xs border rounded-md ${
-                    filters.page === i + 1
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "border-gray-300 hover:bg-gray-50"
-                  }`}
+                  onClick={() => handlePageChange(filters.page - 1)}
+                  disabled={filters.page === 1}
+                  className="px-4 py-2 text-xs border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
                 >
-                  {i + 1}
+                  Previous
                 </button>
-              ))}
 
-              <button
-                onClick={() => handlePageChange(filters.page + 1)}
-                disabled={filters.page === pagination.totalPages}
-                className="px-4 py-2 text-xs border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
+                {[...Array(pagination.totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => handlePageChange(i + 1)}
+                    className={`px-4 py-2 text-xs border rounded-md ${
+                      filters.page === i + 1
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "border-gray-300 hover:bg-gray-50"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => handlePageChange(filters.page + 1)}
+                  disabled={filters.page === pagination.totalPages}
+                  className="px-4 py-2 text-xs border border-gray-300 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            )}
+          </div>
+
+          {ProductViewModal && (
+            <ProductViewModal
+              open={isModalOpen}
+              product={selectedProduct}
+              onClose={() => setIsModalOpen(false)}
+              onEdit={(product) => {
+                setIsModalOpen(false);
+                handleEdit(product);
+              }}
+            />
+          )}
+
+          {EditProductModal && (
+            <EditProductModal
+              open={isEditModalOpen}
+              product={editingProduct}
+              formData={editFormData}
+              loading={updateLoading}
+              error={updateError}
+              onClose={() => {
+                setIsEditModalOpen(false);
+                setEditingProduct(null);
+                setEditFormData(null);
+                setUpdateError("");
+              }}
+              onSubmit={handleUpdateProduct}
+              onChange={handleEditInputChange}
+              onNestedChange={handleNestedChange}
+            />
           )}
         </div>
-
-        {ProductViewModal && (
-          <ProductViewModal
-            open={isModalOpen}
-            product={selectedProduct}
-            onClose={() => setIsModalOpen(false)}
-            onEdit={(product) => {
-              setIsModalOpen(false);
-              handleEdit(product);
-            }}
-          />
-        )}
-
-        {EditProductModal && (
-          <EditProductModal
-            open={isEditModalOpen}
-            product={editingProduct}
-            formData={editFormData}
-            loading={updateLoading}
-            error={updateError}
-            onClose={() => {
-              setIsEditModalOpen(false);
-              setEditingProduct(null);
-              setEditFormData(null);
-              setUpdateError("");
-            }}
-            onSubmit={handleUpdateProduct}
-            onChange={handleEditInputChange}
-            onNestedChange={handleNestedChange}
-          />
-        )}
       </div>
-    </div>
     </div>
   );
 };
