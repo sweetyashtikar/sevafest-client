@@ -288,7 +288,7 @@ export default function AdminSidebar({ isOpen }) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[#0F766E] text-white transition-all duration-300 z-50
+      className={`fixed left-0 top-0 h-screen bg-[#fdd835] text-white transition-all duration-300 z-50
   ${isOpen ? "w-64" : "w-20"} overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
     >
       {/* LOGO */}
@@ -320,8 +320,8 @@ export default function AdminSidebar({ isOpen }) {
                 {/* PARENT */}
                 <button
                   onClick={() => toggleMenu(item.label)}
-                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all
-              ${menuOpen ? "bg-white/10" : "hover:bg-white/5"}`}
+                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all text-black
+              ${menuOpen ? "bg-[#1a1c24] text-white" : "hover:bg-white/5"}`}
                 >
                   <div className="flex items-center gap-3">
                     <item.icon size={22} />
@@ -353,8 +353,8 @@ export default function AdminSidebar({ isOpen }) {
                           className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold transition-all
                       ${
                         isChildActive
-                          ? "bg-white/20 text-white"
-                          : "text-white/70 hover:text-white hover:bg-white/5"
+                          ? "bg-[#1a1c24] text-white"
+                          : "text-black/70 hover:text-white hover:bg-[#1a1c24]"
                       }`}
                         >
                           <child.icon size={16} />
@@ -376,8 +376,8 @@ export default function AdminSidebar({ isOpen }) {
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300
           ${
             isActive
-              ? "bg-white/20 text-white translate-x-1"
-              : "text-white/80 hover:bg-white/10 hover:translate-x-1"
+              ? "bg-[#1a1c24] text-white translate-x-1"
+              : "text-black/80 hover:bg-white/10 hover:translate-x-1"
           }`}
             >
               <item.icon size={22} />
