@@ -142,135 +142,136 @@ export default function Page() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] py-12 px-4">
-      <div className="max-w-xl mx-auto bg-white rounded-[32px] shadow-sm border border-slate-200/60 overflow-hidden">
-        {/* Header Section */}
-        <div className="px-8 pt-8 pb-6 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-blue-50 rounded-2xl">
-                {isEdit ? (
-                  <Pencil size={20} className="text-blue-600" />
-                ) : (
-                  <Plus size={20} className="text-blue-600" />
-                )}
-              </div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                {isEdit ? "Edit Brand" : "New Brand"}
-              </h1>
+    <div className="min-h-screen py-8">
+      <div className="w-full bg-white rounded-[32px] shadow-sm border border-slate-200/60 overflow-hidden">
+        <div className="px-10 py-8 border-b border-slate-50 flex items-center justify-between">
+          <div className="flex items-center gap-5">
+            <div className="p-3 bg-blue-50 rounded-2xl">
+              {isEdit ? (
+                <Pencil size={24} className="text-blue-600" />
+              ) : (
+                <Plus size={24} className="text-blue-600" />
+              )}
             </div>
-            <p className="text-slate-500 text-sm mt-1 ml-[52px]">
-              {isEdit
-                ? "Modify existing brand identity"
-                : "Add a new brand to your catalog"}
-            </p>
+            <div>
+              <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+                {isEdit ? "Edit Brand Identity" : "Launch New Brand"}
+              </h1>
+              <p className="text-slate-500 text-sm font-medium mt-0.5">
+                {isEdit
+                  ? "Modify existing brand details and market presence."
+                  : "Add a new brand to your global catalog."}
+              </p>
+            </div>
           </div>
-
-          <button
-            onClick={() => router.push("/admin/brands")}
-            className="p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 rounded-full transition-all"
-          >
-            <X size={22} />
-          </button>
         </div>
 
-        <div className="px-8 pb-10 space-y-8">
-          {/* Logo Upload - Premium Square/Circle Style */}
-          <div className="space-y-3">
-            <label className="text-[13px] uppercase tracking-[0.05em] font-bold text-slate-400 ml-1">
-              Brand Identity
-            </label>
+        <div className="p-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="space-y-4">
+              <label className="text-[14px] uppercase tracking-widest font-black text-slate-400 ml-1">
+                Brand Logo / Asset
+              </label>
 
-            <div
-              onClick={() => fileInputRef.current.click()}
-              className="group relative cursor-pointer aspect-[16/9] w-full rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200
-                hover:border-blue-400 hover:bg-blue-50/20 transition-all duration-300 flex items-center justify-center overflow-hidden"
-            >
-              {preview ? (
-                <div className="relative w-full h-full flex items-center justify-center p-6">
-                  <img
-                    src={preview}
-                    className="max-w-full max-h-full object-contain drop-shadow-md group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-3">
-                  <div className="p-4 bg-white rounded-full shadow-sm group-hover:scale-110 transition-transform duration-300">
-                    <Upload size={24} className="text-blue-500" />
+              <div
+                onClick={() => fileInputRef.current.click()}
+                className="group relative cursor-pointer aspect-video w-full rounded-[32px] bg-slate-50 border-2 border-dashed border-slate-200
+              hover:border-blue-400 hover:bg-blue-50/20 transition-all duration-500 flex items-center justify-center overflow-hidden"
+              >
+                {preview ? (
+                  <div className="relative w-full h-full flex items-center justify-center p-8">
+                    <img
+                      src={preview}
+                      className="max-w-full max-h-full object-contain drop-shadow-xl group-hover:scale-105 transition-transform duration-700"
+                    />
+                    <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                   </div>
-                  <span className="text-sm font-medium text-slate-500">
-                    Upload high-res logo
-                  </span>
+                ) : (
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="p-5 bg-white rounded-3xl shadow-sm group-hover:scale-110 transition-transform duration-300">
+                      <Upload size={32} className="text-blue-500" />
+                    </div>
+                    <div className="text-center">
+                      <span className="block text-base font-bold text-slate-700">
+                        Upload High-Resolution Logo
+                      </span>
+                      <span className="text-sm text-slate-400 mt-1 block">
+                        Supports PNG, SVG or WebP
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  className="hidden"
+                  accept="image/*"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col justify-between space-y-8">
+              <div className="space-y-8">
+                <div className="space-y-3">
+                  <label className="text-[14px] uppercase tracking-widest font-black text-slate-400 ml-1">
+                    General Information
+                  </label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Enter brand name (e.g. Nike)"
+                    className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 px-6 py-5 rounded-2xl
+                     text-slate-900 transition-all outline-none placeholder:text-slate-300 font-bold text-lg"
+                  />
                 </div>
-              )}
 
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageChange}
-                className="hidden"
-                accept="image/*"
-              />
-            </div>
-          </div>
+                {/* Visibility Toggle */}
+                <div className="flex items-center justify-between p-6 bg-slate-50/80 rounded-[28px] border border-slate-100">
+                  <div className="flex flex-col">
+                    <span className="text-base font-black text-slate-800">
+                      {isPublic ? "Public Visibility" : "Private Draft"}
+                    </span>
+                    <span className="text-sm text-slate-500 font-medium">
+                      {isPublic
+                        ? "Visible to all customers in the store"
+                        : "Only administrators can view this brand"}
+                    </span>
+                  </div>
 
-          {/* Brand Name - Minimalist Floating-style Input */}
-          <div className="space-y-3">
-            <label className="text-[13px] uppercase tracking-[0.05em] font-bold text-slate-400 ml-1">
-              General Information
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter brand name (e.g. Nike)"
-              className="w-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-500 px-5 py-4 rounded-2xl text-slate-900 transition-all outline-none placeholder:text-slate-300 font-medium"
-            />
-          </div>
+                  <button
+                    onClick={() => setIsPublic(!isPublic)}
+                    className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ${
+                      isPublic ? "bg-blue-600" : "bg-slate-300"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+                        isPublic ? "translate-x-7" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
 
-          {/* Visibility Toggle - Stripe Style */}
-          <div className="flex items-center justify-between p-5 bg-slate-50/80 rounded-[24px] border border-slate-100">
-            <div className="flex flex-col">
-              <span className="text-sm font-bold text-slate-800">
-                {isPublic ? "Public Visibility" : "Private Draft"}
-              </span>
-              <span className="text-xs text-slate-500 font-medium">
-                {isPublic
-                  ? "Visible to all customers"
-                  : "Only admins can see this"}
-              </span>
-            </div>
-
-            <button
-              onClick={() => setIsPublic(!isPublic)}
-              className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${
-                isPublic ? "bg-blue-600" : "bg-slate-300"
-              }`}
-            >
-              <span
-                className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-200 ease-in-out ${
-                  isPublic ? "translate-x-6" : "translate-x-1"
-                }`}
-              />
-            </button>
-          </div>
-
-          {/* Action Button - Large & Bold */}
-          <div className="pt-2">
-            <button
-              onClick={handleSubmit}
-              disabled={!name || loading}
-              className="w-full bg-slate-900 hover:bg-black text-white py-4.5 rounded-2xl font-bold shadow-xl shadow-slate-200 
+              <div className="pt-4">
+                <button
+                  onClick={handleSubmit}
+                  disabled={!name || loading}
+                  className="w-fit px-12 bg-slate-900 hover:bg-black text-white py-4 rounded-2xl font-black shadow-2xl shadow-slate-200 
                 active:scale-[0.98] transition-all disabled:opacity-40 disabled:grayscale disabled:cursor-not-allowed
-                flex items-center justify-center gap-2 text-base"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>{isEdit ? "Update Identity" : "Launch Brand"}</>
-              )}
-            </button>
+                flex items-center justify-center gap-3 text-lg"
+                >
+                  {loading ? (
+                    <div className="w-6 h-6 border-3 border-white/20 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <>{isEdit ? "Update Identity" : "Launch Brand"}</>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

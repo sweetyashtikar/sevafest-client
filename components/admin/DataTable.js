@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 // import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 const DataTable = ({
@@ -9,11 +9,11 @@ const DataTable = ({
   onPageChange,
   onRowSelect,
   selectedRows = [],
-  onBulkDelete
+  onBulkDelete,
 }) => {
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      onRowSelect(data.map(row => row._id));
+      onRowSelect(data.map((row) => row._id));
     } else {
       onRowSelect([]);
     }
@@ -21,7 +21,7 @@ const DataTable = ({
 
   const handleSelectRow = (id) => {
     if (selectedRows.includes(id)) {
-      onRowSelect(selectedRows.filter(rowId => rowId !== id));
+      onRowSelect(selectedRows.filter((rowId) => rowId !== id));
     } else {
       onRowSelect([...selectedRows, id]);
     }
@@ -59,12 +59,15 @@ const DataTable = ({
                 <th className="px-6 py-3 text-left">
                   <input
                     type="checkbox"
-                    checked={selectedRows.length === data.length && data.length > 0}
+                    checked={
+                      selectedRows.length === data.length && data.length > 0
+                    }
                     onChange={handleSelectAll}
                     className="rounded border-gray-700 text-blue-600 focus:ring-blue-500"
                   />
                 </th>
               )}
+
               {columns.map((column) => (
                 <th
                   key={column.key}
@@ -75,11 +78,12 @@ const DataTable = ({
               ))}
             </tr>
           </thead>
+
           <tbody className="bg-white divide-y divide-gray-200">
             {data.map((row) => (
               <tr key={row._id} className="hover:bg-gray-50">
                 {onRowSelect && (
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4">
                     <input
                       type="checkbox"
                       checked={selectedRows.includes(row._id)}
@@ -88,8 +92,12 @@ const DataTable = ({
                     />
                   </td>
                 )}
+
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td
+                    key={column.key}
+                    className="px-6 py-4 text-sm text-gray-900"
+                  >
                     {column.render
                       ? column.render(row[column.key], row)
                       : row[column.key]}
@@ -123,7 +131,8 @@ const DataTable = ({
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing page <span className="font-medium">{pagination.currentPage}</span> of{' '}
+                Showing page{" "}
+                <span className="font-medium">{pagination.currentPage}</span> of{" "}
                 <span className="font-medium">{pagination.totalPages}</span>
               </p>
             </div>
@@ -142,7 +151,10 @@ const DataTable = ({
                     pageNum = i + 1;
                   } else if (pagination.currentPage <= 3) {
                     pageNum = i + 1;
-                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
+                  } else if (
+                    pagination.currentPage >=
+                    pagination.totalPages - 2
+                  ) {
                     pageNum = pagination.totalPages - 4 + i;
                   } else {
                     pageNum = pagination.currentPage - 2 + i;
@@ -154,8 +166,8 @@ const DataTable = ({
                       onClick={() => onPageChange(pageNum)}
                       className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                         pagination.currentPage === pageNum
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-700 text-gray-500 hover:bg-gray-50'
+                          ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                          : "bg-white border-gray-700 text-gray-500 hover:bg-gray-50"
                       }`}
                     >
                       {pageNum}

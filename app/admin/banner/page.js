@@ -1,6 +1,8 @@
 // app/admin/banner/page.js
 "use client";
 
+import * as XLSX from "xlsx";
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
@@ -32,6 +34,7 @@ export default function BannerPage() {
     if (window.confirm("Are you sure you want to delete this banner?")) {
       try {
         await apiClient(`/banners/${id}`, { method: "DELETE" });
+        toast.success("Banner deleted successfully!");
         fetchBanners();
       } catch (error) {
         console.error("Error deleting banner:", error);
@@ -45,10 +48,57 @@ export default function BannerPage() {
         method: "PATCH",
         body: { status: !currentStatus },
       });
-      fetchBanners();
+      if (response.success || response.status === 200) {
+        toast.success(
+          `Banner is now ${!currentStatus ? "Active" : "Inactive"}`,
+        );
+        fetchBanners();
+      } else {
+        toast.error("Failed to update status.");
+      }
     } catch (error) {
-      console.error("Error updating status:", error);
+      toast.error("Error updating banner status.");
     }
+  };
+
+  const handleExportXLS = () => {
+    if (!banners || banners.length === 0) {
+      toast.error("No banners to export!");
+      return;
+    }
+
+    const excelData = banners.map((banner, index) => ({
+      "Sr. No.": index + 1,
+      "Banner Title": banner.title || "N/A",
+      Type: banner.bannerType || "N/A",
+      Category:
+        banner.bannerType === "category" ? banner.category?.name || "N/A" : "—",
+      Status: banner.status ? "Active" : "Inactive",
+      "Image URL": banner.image || "N/A",
+      "Created Date": banner.createdAt
+        ? new Date(banner.createdAt).toLocaleDateString()
+        : "N/A",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Banners");
+
+    worksheet["!cols"] = [
+      { wch: 10 },
+      { wch: 25 },
+      { wch: 15 },
+      { wch: 20 },
+      { wch: 12 },
+      { wch: 40 },
+      { wch: 15 },
+    ];
+
+    XLSX.writeFile(
+      workbook,
+      `Banners_Report_${new Date().toISOString().slice(0, 10)}.xlsx`,
+    );
+    toast.success("Banners exported successfully!");
   };
 
   return (
@@ -61,26 +111,59 @@ export default function BannerPage() {
             Manage your website banners and promotions
           </p>
         </div>
-        <button
-          onClick={() => router.push("/admin/banner/create")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleExportXLS}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all shadow-sm"
           >
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Add New Banner
-        </button>
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export XLS
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/banner/bulkimport")}
+            className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all shadow-sm"
+          >
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            </svg>
+            Import
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/banner/create")}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl font-medium flex items-center gap-2 transition-all shadow-sm"
+          >
+            <svg
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Add New Banner
+          </button>
+        </div>
       </div>
 
       {/* Banner Table */}
@@ -123,166 +206,168 @@ export default function BannerPage() {
           </div>
         </div>
       ) : (
-         <div className="bg-white rounded-2xl shadow-sm border -ml-12">
-        <div className="px-6 py-4 border-b">
-          <h2 className="text-lg font-bold text-black text-center">
-            Banner Table List
-          </h2>
-        </div>
+        <div className="bg-white rounded-2xl shadow-sm border -ml-12">
+          <div className="px-6 py-4 border-b">
+            <h2 className="text-lg font-bold text-black text-center">
+              Banner Table List
+            </h2>
+          </div>
 
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
-              <tr>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Image
-                </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Type
-                </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Title
-                </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Category
-                </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Status
-                </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Created
-                </th>
-              <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {banners.map((banner) => (
-                <tr
-                  key={banner._id}
-                  className="hover:bg-slate-50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="w-16 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
-                      {banner.image ? (
-                        <img
-                          src={banner.image}
-                          alt={banner.title || "Banner"}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-black/20"
-                          >
-                            <rect
-                              x="2"
-                              y="2"
-                              width="20"
-                              height="20"
-                              rx="2.18"
-                              ry="2.18"
-                            ></rect>
-                            <line x1="23" y1="1" x2="1" y2="23"></line>
-                          </svg>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-700">
-                      {banner.bannerType}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-black">
-                    {banner.title || "Untitled"}
-                  </td>
-                  <td className="px-6 py-4 text-black/60">
-                    {banner.bannerType === "category" && banner.category
-                      ? typeof banner.category === "object"
-                        ? banner.category.name
-                        : "Category"
-                      : "—"}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() =>
-                        handleStatusToggle(banner._id, banner.status)
-                      }
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
-                        banner.status
-                          ? "bg-green-100 text-green-700 hover:bg-green-200"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                      }`}
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-100 text-gray-700 uppercase text-xs">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Image
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Type
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Title
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Created
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {banners.map((banner) => (
+                    <tr
+                      key={banner._id}
+                      className="hover:bg-slate-50 transition-colors"
                     >
-                      {banner.status ? "Active" : "Inactive"}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-black/60">
-                    {new Date(banner.createdAt).toLocaleDateString()}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() =>
-                          router.push(`/admin/banner/create?id=${banner._id}`)
-                        }
-                        className="p-1.5 hover:bg-blue-100 rounded-lg text-blue-600 transition-colors"
-                        title="Edit"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                      <td className="px-6 py-4">
+                        <div className="w-16 h-12 rounded-lg overflow-hidden bg-slate-100 border border-slate-200">
+                          {banner.image ? (
+                            <img
+                              src={banner.image}
+                              alt={banner.title || "Banner"}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="text-black/20"
+                              >
+                                <rect
+                                  x="2"
+                                  y="2"
+                                  width="20"
+                                  height="20"
+                                  rx="2.18"
+                                  ry="2.18"
+                                ></rect>
+                                <line x1="23" y1="1" x2="1" y2="23"></line>
+                              </svg>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-blue-100 text-blue-700">
+                          {banner.bannerType}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 font-medium text-black">
+                        {banner.title || "Untitled"}
+                      </td>
+                      <td className="px-6 py-4 text-black/60">
+                        {banner.bannerType === "category" && banner.category
+                          ? typeof banner.category === "object"
+                            ? banner.category.name
+                            : "Category"
+                          : "—"}
+                      </td>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() =>
+                            handleStatusToggle(banner._id, banner.status)
+                          }
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${
+                            banner.status
+                              ? "bg-green-100 text-green-700 hover:bg-green-200"
+                              : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
                         >
-                          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
-                        </svg>
-                      </button>
-                      <button
-                        onClick={() => handleDelete(banner._id)}
-                        className="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition-colors"
-                        title="Delete"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        </div>
+                          {banner.status ? "Active" : "Inactive"}
+                        </button>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-black/60">
+                        {new Date(banner.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/admin/banner/create?id=${banner._id}`,
+                              )
+                            }
+                            className="p-1.5 hover:bg-blue-100 rounded-lg text-blue-600 transition-colors"
+                            title="Edit"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleDelete(banner._id)}
+                            className="p-1.5 hover:bg-red-100 rounded-lg text-red-600 transition-colors"
+                            title="Delete"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="3 6 5 6 21 6"></polyline>
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
     </div>

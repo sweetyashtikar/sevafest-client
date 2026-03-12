@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import TopBar from "@/components/header/TopBar";
 import Footer from "@/components/footer/Footer";
-import AuthHydrator from "@/components/AuthHydrator";
+
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname();

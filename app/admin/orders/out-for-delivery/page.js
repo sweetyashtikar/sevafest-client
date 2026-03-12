@@ -1,7 +1,13 @@
 "use client";
 
-const Page = () => {
-  return <></>;
+import Page from "@/components/order/OrderPage";
+
+const OutFor = () => {
+  return (
+    <>
+      <Page endPoint="active_status=picked_up" />
+    </>
+  );
 };
 
-export default Page;
+export default OutFor;
