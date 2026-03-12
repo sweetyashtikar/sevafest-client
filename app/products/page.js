@@ -4,7 +4,8 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState, useMemo } from "react";
 import { apiClient } from "@/services/apiClient";
-import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import { setRecommended } from "@/redux/slices/recommendationSlice";
 import { fetchCart } from "@/redux/slices/cartSlice";
 import { useRouter } from "next/navigation";
@@ -40,6 +41,8 @@ const PER_PAGE = 20;
 export default function Page() {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const { user } = useSelector((a) => a.auth);
   const [view, setView] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [products, setProducts] = useState([]);
@@ -54,25 +57,45 @@ export default function Page() {
   const [ratings, setRatings] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const addToCart = async (productId, qty = 1) => {
+  const addToCart = async (product, qty = 1) => {
+    if (!user) {
+      toast.warning("Please login to add product to cart");
+      router.push("/login");
+      throw new Error("User not logged in");
+    }
+
     try {
-      console.log("Card");
+      console.log("product", product);
+
+      const payload = {
+        productId: product._id,
+        qty,
+      };
+
+      if (product.productType === "variable_product") {
+        payload.variantId = product?.variants?.[0]?._id;
+      }
+
+      console.log("payload", payload);
+
       const res = await apiClient("/viewCart/addtoCart", {
         method: "POST",
-        body: {
-          productId,
-          qty,
-        },
+        body: payload,
       });
 
       if (res?.success) {
         dispatch(fetchCart());
-        console.log("✅ Added to cart", res);
+        toast.success("Product added to cart");
+        console.log("Added to cart", res);
       } else {
+        toast.error(res?.message || "Failed to add item to cart");
         console.error("Failed to add cart", res);
       }
+
+      return res;
     } catch (err) {
       console.error("Add to cart error", err);
+      toast.error("Something went wrong while adding to cart");
     }
   };
 
@@ -378,7 +401,7 @@ export default function Page() {
                         onNavigate={() =>
                           router.push(`/products/${product._id}`)
                         }
-                        onAddToCart={() => addToCart(product._id)}
+                        onAddToCart={() => addToCart(product)}
                       />
                     </motion.div>
                   ))}

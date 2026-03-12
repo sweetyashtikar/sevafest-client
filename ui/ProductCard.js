@@ -17,11 +17,11 @@ const ProductCard = ({
   onAddToCart,
   onNavigate,
 }) => {
+  
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
 
   const handleAddToCart = async (e) => {
-    
     e.stopPropagation();
     e.preventDefault();
 
@@ -29,15 +29,18 @@ const ProductCard = ({
 
     try {
       setAdding(true);
-      await onAddToCart();
-      setAdded(true);
+
+      const res = await onAddToCart();
+
+      if (res) {
+        setAdded(true);
+      }
     } catch (err) {
       console.error("Add to cart failed", err);
     } finally {
       setAdding(false);
     }
   };
-
   return (
     <motion.div
       onClick={onNavigate}
