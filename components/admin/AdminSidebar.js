@@ -298,10 +298,8 @@ export default function AdminSidebar({ isOpen }) {
             isOpen ? "text-2xl opacity-100" : "text-xs opacity-0"
           }`}
         >
-          ADMIN<span className="text-teal-300">PANEL</span>
+          <span className="text-[#1a1c24]">Admin Panel</span>
         </h1>
-
-        {!isOpen && <span className="text-teal-400 font-bold ml-1">AP</span>}
       </div>
 
       {/* NAVIGATION */}
@@ -342,7 +340,7 @@ export default function AdminSidebar({ isOpen }) {
 
                 {/* CHILDREN */}
                 {menuOpen && isOpen && (
-                  <div className="ml-8 mt-2 flex flex-col gap-1 border-l-2 border-teal-500/30 pl-3">
+                  <div className="ml-8 mt-2 flex flex-col gap-1 border-l-2 border-white/60 pl-3">
                     {item.children.map((child) => {
                       const isChildActive = pathname === child.path;
 

@@ -1,7 +1,13 @@
 "use client";
 
-const Page = () => {
-  return <></>;
+import Page from "@/components/order/OrderPage";
+
+const Pending = () => {
+  return (
+    <>
+      <Page endPoint="active_status=Order%20placed" />
+    </>
+  );
 };
 
-export default Page;
+export default Pending;

@@ -148,12 +148,6 @@ export default function TopBar() {
               >
                 PRODUCTS
               </a>
-              <a
-                href="/coupons"
-                className="flex items-center gap-1 cursor-pointer hover:text-black"
-              >
-                <PartyPopper className="w-4 h-4" /> COUPONS
-              </a>
             </nav>
 
             <div className="flex-grow max-w-xl relative">

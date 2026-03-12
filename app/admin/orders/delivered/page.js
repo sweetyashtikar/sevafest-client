@@ -1,7 +1,13 @@
 "use client";
 
-const Page = () => {
-  return <></>;
+import Page from "@/components/order/OrderPage";
+
+const Delivered = () => {
+  return (
+    <>
+      <Page endPoint="active_status=delivered" />
+    </>
+  );
 };
 
-export default Page;
+export default Delivered;
