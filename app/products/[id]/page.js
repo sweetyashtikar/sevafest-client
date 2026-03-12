@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
@@ -17,11 +18,16 @@ import {
 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import { fetchCart } from "@/redux/slices/cartSlice";
+
 
 export default function Page() {
-  
   const { id } = useParams();
-
+  const { user } = useSelector((a) => a.auth);
+  const router = useRouter();
+  const dispatch = useDispatch()
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -40,12 +46,15 @@ export default function Page() {
         setProduct(res.data.product);
 
         //for variable products
-        if (res.data.product.productType === 'variable_product' &&
-          res.data.product.variants?.length > 0) {
-
+        if (
+          res.data.product.productType === "variable_product" &&
+          res.data.product.variants?.length > 0
+        ) {
           const firstVariant = res.data.product.variants[0];
           setSelectedVariant(firstVariant);
-          setSelectedImage(firstVariant.variant_images?.[0] || res.data.product.mainImage);
+          setSelectedImage(
+            firstVariant.variant_images?.[0] || res.data.product.mainImage,
+          );
           setVariantStock(firstVariant.variant_totalStock);
           setVariantPrice(firstVariant.variant_price);
           setVariantSpecialPrice(firstVariant.variant_specialPrice);
@@ -54,9 +63,9 @@ export default function Page() {
         if (res.data.product.attributeValues?.length > 0) {
           groupVariantsByAttributes(res.data.product.variants);
         } else {
-        setSelectedImage(res.data.product.mainImage);
+          setSelectedImage(res.data.product.mainImage);
+        }
       }
-    }
     } catch (err) {
       console.error("Product fetch failed", err);
     } finally {
@@ -71,22 +80,22 @@ export default function Page() {
   // Group variants by attributes (color, size, etc.)
   const groupVariantsByAttributes = (variants) => {
     const groups = {};
-    
-    variants.forEach(variant => {
+
+    variants.forEach((variant) => {
       if (variant.attributes) {
-        variant.attributes.forEach(attr => {
+        variant.attributes.forEach((attr) => {
           if (!groups[attr.name]) {
             groups[attr.name] = {
               name: attr.name,
-              options: []
+              options: [],
             };
           }
-          
+
           // Check if this option already exists
           const existingOption = groups[attr.name].options.find(
-            opt => opt.value === attr.value
+            (opt) => opt.value === attr.value,
           );
-          
+
           if (!existingOption) {
             groups[attr.name].options.push({
               value: attr.value,
@@ -94,7 +103,7 @@ export default function Page() {
               variantIds: [variant._id],
               price: variant.variant_price,
               specialPrice: variant.variant_specialPrice,
-              inStock: variant.variant_totalStock > 0
+              inStock: variant.variant_totalStock > 0,
             });
           } else {
             existingOption.variantIds.push(variant._id);
@@ -102,11 +111,10 @@ export default function Page() {
         });
       }
     });
-    
+
     setGroupedAttributes(groups);
   };
 
-  
   const handleVariantSelect = (variant) => {
     setSelectedVariant(variant);
     if (variant.variant_images?.length > 0) {
@@ -118,30 +126,34 @@ export default function Page() {
     setQuantity(1); // Reset quantity when variant changes
   };
 
-    const handleAttributeSelect = (attributeName, option) => {
+  const handleAttributeSelect = (attributeName, option) => {
     // Find the variant that matches all selected attributes
     // This is simplified - you'd need to track multiple attribute selections
-    const matchingVariant = product.variants.find(v => 
-      v.attributes?.some(attr => 
-        attr.name === attributeName && attr.value === option.value
-      )
+    const matchingVariant = product.variants.find((v) =>
+      v.attributes?.some(
+        (attr) => attr.name === attributeName && attr.value === option.value,
+      ),
     );
-    
+
     if (matchingVariant) {
       handleVariantSelect(matchingVariant);
     }
   };
 
-
   const addToCart = async (qty = 1) => {
+    if (!user) {
+      toast.warning("Please login to add product to cart");
+      router.push("/login");
+      throw new Error("User not logged in");
+    }
+
     try {
       const payload = {
         productId: product._id,
         qty: quantity,
       };
 
-       // Add variantId only for variable products
-      if (product.productType === 'variable_product' && selectedVariant) {
+      if (product.productType === "variable_product" && selectedVariant) {
         payload.variantId = selectedVariant._id;
       }
 
@@ -151,41 +163,58 @@ export default function Page() {
       });
 
       if (res?.success) {
-        console.log("Added to cart");
+         dispatch(fetchCart());
+        toast.success("Product added to cart ");
         return true;
+      } else {
+        toast.error(res?.message || "Failed to add item to cart");
       }
     } catch (err) {
       console.error("Add to cart failed", err);
+      toast.error("Something went wrong while adding to cart");
     }
+
     return false;
   };
 
   const handleBuyNow = async () => {
-    const ok = await addToCart(quantity);
-    if (ok) {
-      window.location.href = "/checkout";
+    if (!user) {
+      toast.warning("Please login to Buy product");
+      router.push("/login");
+      throw new Error("User not logged in");
     }
+
+    try {
+      const ok = await addToCart(quantity);
+      if (ok) {
+        router.push("/checkout");
+      }
+    } catch (err) {}
   };
 
-    // Get current price based on selected variant or simple product
+  // Get current price based on selected variant or simple product
   const getCurrentPrice = () => {
     if (product?.productType === PRODUCT_TYPES.VARIABLE && selectedVariant) {
       return variantSpecialPrice || variantPrice;
     }
-    return product?.effectivePrice || product?.simpleProduct?.sp_specialPrice || product?.simpleProduct?.sp_price;
+    return (
+      product?.effectivePrice ||
+      product?.simpleProduct?.sp_specialPrice ||
+      product?.simpleProduct?.sp_price
+    );
   };
 
   // Get current MRP
   const getCurrentMRP = () => {
-    if (product?.productType === 'variable_product' && selectedVariant) {
+    if (product?.productType === "variable_product" && selectedVariant) {
       return variantPrice;
     }
     return product?.simpleProduct?.sp_price;
   };
 
-    // Get current stock
+  // Get current stock
   const getCurrentStock = () => {
-    if (product?.productType === 'variable_product' && selectedVariant) {
+    if (product?.productType === "variable_product" && selectedVariant) {
       return variantStock;
     }
     return product?.simpleProduct?.sp_totalStock;
@@ -223,22 +252,32 @@ export default function Page() {
                     onClick={() => handleAttributeSelect(group.name, option)}
                     className={`
                       px-4 py-2 border rounded-lg text-sm transition-all
-                      ${selectedVariant?.attributes?.some(
-                        attr => attr.name === group.name && attr.value === option.value
-                      )
-                        ? 'border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-200'
-                        : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                      ${
+                        selectedVariant?.attributes?.some(
+                          (attr) =>
+                            attr.name === group.name &&
+                            attr.value === option.value,
+                        )
+                          ? "border-orange-500 bg-orange-50 text-orange-700 ring-2 ring-orange-200"
+                          : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
                       }
-                      ${!option.inStock ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'cursor-pointer'}
+                      ${!option.inStock ? "opacity-50 cursor-not-allowed bg-gray-100" : "cursor-pointer"}
                     `}
                     disabled={!option.inStock}
                   >
                     <span className="font-medium">{option.label}</span>
-                    {option.specialPrice && option.specialPrice < option.price && (
-                      <span className="ml-1 text-xs text-green-600">
-                        -{Math.round(((option.price - option.specialPrice) / option.price) * 100)}%
-                      </span>
-                    )}
+                    {option.specialPrice &&
+                      option.specialPrice < option.price && (
+                        <span className="ml-1 text-xs text-green-600">
+                          -
+                          {Math.round(
+                            ((option.price - option.specialPrice) /
+                              option.price) *
+                              100,
+                          )}
+                          %
+                        </span>
+                      )}
                   </button>
                 ))}
               </div>
@@ -260,14 +299,17 @@ export default function Page() {
               disabled={variant.variant_totalStock <= 0}
               className={`
                 flex-1 min-w-[150px] border-2 rounded-lg p-4 text-center transition-all
-                ${selectedVariant?._id === variant._id 
-                  ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-200' 
-                  : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                ${
+                  selectedVariant?._id === variant._id
+                    ? "border-orange-500 bg-orange-50 ring-2 ring-orange-200"
+                    : "border-gray-200 hover:border-gray-400 hover:bg-gray-50"
                 }
-                ${variant.variant_totalStock <= 0 ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'cursor-pointer'}
+                ${variant.variant_totalStock <= 0 ? "opacity-50 cursor-not-allowed bg-gray-100" : "cursor-pointer"}
               `}
             >
-              <div className="font-medium text-gray-900 mb-2">{variant.variant_name}</div>
+              <div className="font-medium text-gray-900 mb-2">
+                {variant.variant_name}
+              </div>
               <div className="flex items-center justify-center gap-1.5">
                 <span className="text-lg font-bold text-gray-900">
                   ₹{variant.variant_specialPrice || variant.variant_price}
@@ -282,7 +324,9 @@ export default function Page() {
                 {variant.variant_totalStock > 10 ? (
                   <span className="text-green-600">✓ In Stock</span>
                 ) : variant.variant_totalStock > 0 ? (
-                  <span className="text-orange-600">⚠ Only {variant.variant_totalStock} left</span>
+                  <span className="text-orange-600">
+                    ⚠ Only {variant.variant_totalStock} left
+                  </span>
                 ) : (
                   <span className="text-red-600">✗ Out of Stock</span>
                 )}
@@ -302,11 +346,12 @@ export default function Page() {
               disabled={variant.variant_totalStock <= 0}
               className={`
                 relative border-2 rounded-lg p-3 text-left transition-all
-                ${selectedVariant?._id === variant._id 
-                  ? 'border-orange-500 bg-orange-50 ring-2 ring-orange-200' 
-                  : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                ${
+                  selectedVariant?._id === variant._id
+                    ? "border-orange-500 bg-orange-50 ring-2 ring-orange-200"
+                    : "border-gray-200 hover:border-gray-400 hover:bg-gray-50"
                 }
-                ${variant.variant_totalStock <= 0 ? 'opacity-50 cursor-not-allowed bg-gray-100' : 'cursor-pointer'}
+                ${variant.variant_totalStock <= 0 ? "opacity-50 cursor-not-allowed bg-gray-100" : "cursor-pointer"}
               `}
             >
               {/* Stock Badge */}
@@ -315,12 +360,12 @@ export default function Page() {
                   Out of Stock
                 </span>
               )}
-              
+
               {/* Variant Name */}
               <div className="font-medium text-gray-900 mb-2 pr-16">
                 {variant.variant_name}
               </div>
-              
+
               {/* Price */}
               <div className="flex items-baseline gap-1.5 flex-wrap">
                 <span className="text-lg font-bold text-gray-900">
@@ -332,23 +377,35 @@ export default function Page() {
                   </span>
                 )}
               </div>
-              
+
               {/* Stock Level */}
               {variant.variant_totalStock > 0 && (
                 <div className="mt-2 text-xs">
                   {variant.variant_totalStock > 10 ? (
                     <span className="text-green-600">In Stock</span>
                   ) : (
-                    <span className="text-orange-600">Only {variant.variant_totalStock} left</span>
+                    <span className="text-orange-600">
+                      Only {variant.variant_totalStock} left
+                    </span>
                   )}
                 </div>
               )}
-              
+
               {/* Selected Indicator */}
               {selectedVariant?._id === variant._id && (
                 <div className="absolute top-2 right-2 w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  <svg
+                    className="w-3 h-3 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               )}
@@ -361,25 +418,27 @@ export default function Page() {
       return (
         <div>
           <select
-            value={selectedVariant?._id || ''}
+            value={selectedVariant?._id || ""}
             onChange={(e) => {
-              const variant = product.variants.find(v => v._id === e.target.value);
+              const variant = product.variants.find(
+                (v) => v._id === e.target.value,
+              );
               handleVariantSelect(variant);
             }}
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
           >
             <option value="">Select a variant</option>
             {product.variants.map((variant) => (
-              <option 
-                key={variant._id} 
+              <option
+                key={variant._id}
                 value={variant._id}
                 disabled={variant.variant_totalStock <= 0}
               >
-                {variant.variant_name} - ₹{variant.variant_specialPrice || variant.variant_price} 
-                {variant.variant_totalStock > 0 
-                  ? ` (${variant.variant_totalStock} in stock)` 
-                  : ' (Out of stock)'
-                }
+                {variant.variant_name} - ₹
+                {variant.variant_specialPrice || variant.variant_price}
+                {variant.variant_totalStock > 0
+                  ? ` (${variant.variant_totalStock} in stock)`
+                  : " (Out of stock)"}
               </option>
             ))}
           </select>
@@ -425,10 +484,17 @@ export default function Page() {
     );
   }
 
-const allImages = product.productType === 'variable_product' && selectedVariant?.variant_images?.length > 0
-    ? [selectedImage, ...(selectedVariant.variant_images.filter(img => img !== selectedImage) || [])]
-    : [product.mainImage, ...(product.otherImages || [])];
-const savingsPercent = getDiscountPercentage();
+  const allImages =
+    product.productType === "variable_product" &&
+    selectedVariant?.variant_images?.length > 0
+      ? [
+          selectedImage,
+          ...(selectedVariant.variant_images.filter(
+            (img) => img !== selectedImage,
+          ) || []),
+        ]
+      : [product.mainImage, ...(product.otherImages || [])];
+  const savingsPercent = getDiscountPercentage();
   const currentPrice = getCurrentPrice();
   const currentMRP = getCurrentMRP();
   const currentStock = getCurrentStock();
@@ -524,7 +590,7 @@ const savingsPercent = getDiscountPercentage();
     //           <div className="mt-6 space-y-3">
     //             <button
     //               onClick={() => addToCart(quantity)}
-    //               className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full 
+    //               className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full
     //               font-medium disabled:bg-gray-300 disabled:cursor-not-allowed"
     //             >
     //               Add to Cart
@@ -851,7 +917,9 @@ const savingsPercent = getDiscountPercentage();
           {selectedVariant && (
             <>
               <ChevronRight size={14} />
-              <span className="text-gray-600">{selectedVariant.variant_name}</span>
+              <span className="text-gray-600">
+                {selectedVariant.variant_name}
+              </span>
             </>
           )}
         </div>
@@ -951,13 +1019,13 @@ const savingsPercent = getDiscountPercentage();
             </div>
 
             {/* Variant Selection Section */}
-            {product.productType === 'variable_product' && (
+            {product.productType === "variable_product" && (
               <div className="mb-6">
                 <h3 className="text-sm font-medium text-gray-900 mb-3">
                   Available Variants ({product.variants.length} options):
                 </h3>
                 {renderVariantSelection()}
-                
+
                 {/* Selected Variant Summary */}
                 {selectedVariant && (
                   <div className="mt-4 p-3 bg-orange-50 border border-orange-200 rounded-lg">
@@ -970,7 +1038,9 @@ const savingsPercent = getDiscountPercentage();
                       </div>
                       <div className="text-right">
                         <div className="text-lg font-bold text-gray-900">
-                          ₹{selectedVariant.variant_specialPrice || selectedVariant.variant_price}
+                          ₹
+                          {selectedVariant.variant_specialPrice ||
+                            selectedVariant.variant_price}
                         </div>
                         {selectedVariant.variant_specialPrice && (
                           <div className="text-sm text-gray-500 line-through">
@@ -1020,9 +1090,7 @@ const savingsPercent = getDiscountPercentage();
                   In Stock ({currentStock} available)
                 </p>
               ) : (
-                <p className="text-red-600 font-medium">
-                  Out of Stock
-                </p>
+                <p className="text-red-600 font-medium">Out of Stock</p>
               )}
             </div>
 
@@ -1040,7 +1108,10 @@ const savingsPercent = getDiscountPercentage();
               {selectedVariant && (
                 <>
                   <DetailRow label="SKU" value={selectedVariant.variant_sku} />
-                  <DetailRow label="Variant" value={selectedVariant.variant_name} />
+                  <DetailRow
+                    label="Variant"
+                    value={selectedVariant.variant_name}
+                  />
                 </>
               )}
             </div>
@@ -1070,7 +1141,9 @@ const savingsPercent = getDiscountPercentage();
             {isInStock && (
               <>
                 <div className="flex items-center gap-4 mb-4">
-                  <span className="text-sm font-medium text-black">Quantity</span>
+                  <span className="text-sm font-medium text-black">
+                    Quantity
+                  </span>
                   <div className="flex items-center border border-gray-300 rounded-full overflow-hidden">
                     <button
                       onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -1083,7 +1156,9 @@ const savingsPercent = getDiscountPercentage();
                       {quantity}
                     </span>
                     <button
-                      onClick={() => setQuantity((q) => Math.min(currentStock, q + 1))}
+                      onClick={() =>
+                        setQuantity((q) => Math.min(currentStock, q + 1))
+                      }
                       className="w-10 h-10 flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-black"
                       disabled={quantity >= currentStock}
                     >
@@ -1098,7 +1173,10 @@ const savingsPercent = getDiscountPercentage();
                 <div className="mt-6 space-y-3">
                   <button
                     onClick={() => addToCart(quantity)}
-                    disabled={product.productType === 'variable_product' && !selectedVariant}
+                    disabled={
+                      product.productType === "variable_product" &&
+                      !selectedVariant
+                    }
                     className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full 
                     font-medium disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
@@ -1106,7 +1184,10 @@ const savingsPercent = getDiscountPercentage();
                   </button>
                   <button
                     onClick={handleBuyNow}
-                    disabled={product.productType === 'variable_product' && !selectedVariant}
+                    disabled={
+                      product.productType === "variable_product" &&
+                      !selectedVariant
+                    }
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full font-medium
                      disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
@@ -1242,7 +1323,9 @@ const savingsPercent = getDiscountPercentage();
               <DetailRow label="Manufacturer" value={product.brand} />
               <DetailRow
                 label="Item model number"
-                value={selectedVariant?.variant_sku || product.simpleProduct?.sp_sku}
+                value={
+                  selectedVariant?.variant_sku || product.simpleProduct?.sp_sku
+                }
               />
               <DetailRow label="Country of Origin" value={product.madeIn} />
               <DetailRow label="HSN Code" value={product.hsnCode} />

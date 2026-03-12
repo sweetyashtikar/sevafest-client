@@ -1,15 +1,18 @@
 "use client";
 import React from "react";
 import Image from "next/image";
+import { toast } from "react-toastify";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { apiClient } from "@/services/apiClient";
 import { User, Mail, Phone, MapPin, Edit3 } from "lucide-react";
-import SimpleTezPaymentButton from "@/components/tez/tezPaymentButton";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
+import SimpleTezPaymentButton from "@/components/tez/tezPaymentButton";
 import AddressModal from "@/components/address/addressModal";
 import CouponApply from "@/components/coupon/couponApply";
 
 const CheckoutPage = () => {
+  const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const [cartData, setCartData] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -78,45 +81,45 @@ const CheckoutPage = () => {
   const items = useMemo(() => cartData?.items || [], [cartData]);
   const summary = useMemo(() => cartData?.summary || {}, [cartData]);
 
-  const getPaymentUrl = async () => {
-    console.log("orderId", orderId);
-    console.log("summary?.finalTotal", summary?.finalTotal);
-    console.log("profile?.mobile", profile?.mobile);
-    try {
-      if (!orderId || !summary?.finalTotal || !profile?.mobile) {
-        console.error("Missing required data for payment");
-        return null;
-      }
+  // const getPaymentUrl = async () => {
+  //   console.log("orderId", orderId);
+  //   console.log("summary?.finalTotal", summary?.finalTotal);
+  //   console.log("profile?.mobile", profile?.mobile);
+  //   try {
+  //     if (!orderId || !summary?.finalTotal || !profile?.mobile) {
+  //       console.error("Missing required data for payment");
+  //       return null;
+  //     }
 
-      const response = await apiClient("/payments/generate-payment-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          order_id: orderId,
-          amount: summary.finalTotal,
-          customer_mobile: profile.mobile,
-          customer_email: profile.email,
-          customer_name: profile.username,
-          return_url: `${window.location.origin}/payment/success`,
-          cancel_url: `${window.location.origin}/payment/cancel`,
-        }),
-      });
+  //     const response = await apiClient("/payments/generate-payment-url", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         order_id: orderId,
+  //         amount: summary.finalTotal,
+  //         customer_mobile: profile.mobile,
+  //         customer_email: profile.email,
+  //         customer_name: profile.username,
+  //         return_url: `${window.location.origin}/payment/success`,
+  //         cancel_url: `${window.location.origin}/payment/cancel`,
+  //       }),
+  //     });
 
-      const data = await response.json();
+  //     const data = await response.json();
 
-      if (data.success && data.data?.payment_url) {
-        return data.data.payment_url;
-      } else {
-        console.error("Failed to generate payment URL:", data.message);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error generating payment URL:", error);
-      return null;
-    }
-  };
+  //     if (data.success && data.data?.payment_url) {
+  //       return data.data.payment_url;
+  //     } else {
+  //       console.error("Failed to generate payment URL:", data.message);
+  //       return null;
+  //     }
+  //   } catch (error) {
+  //     console.error("Error generating payment URL:", error);
+  //     return null;
+  //   }
+  // };
 
   const fetchSummaryDelivery = async () => {
     try {
@@ -131,12 +134,14 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
+    console.log("item", items);
     try {
       const orderData = {
         address_id: selectedAddress?._id,
+        mobile: profile?.mobile,
         items: items.map((item) => ({
-          product_id: item.productId,
-          product_variant_id: item.variantId,
+          product_id: item.product?._id,
+          product_variant_id: item.variant?._id || null,
           quantity: item.qty,
           price: item.price,
         })),
@@ -147,21 +152,31 @@ const CheckoutPage = () => {
               discount: appliedCoupon.discount,
             }
           : null,
-        // ... other required fields
       };
 
-      const response = await apiClient("/order-items", {
+      console.log("orderData", orderData);
+      const response = await apiClient("/order", {
         method: "POST",
         body: orderData,
       });
 
-      if (response.success) {
-        // Redirect to success page or payment
-        const paymentUrl = await getPaymentUrl();
-        if (paymentUrl) window.location.href = paymentUrl;
+      console.log("res", response);
+
+      if (response?.success) {
+        toast.success("Order placed successfully 🎉");
+
+        const orderId = response?.data?.order_id;
+        const totalAmount = response?.data?.total;
+
+        router.push(
+          `/process-payment?amount=${totalAmount}&orderId=${orderId}&mobile=${profile?.mobile}&email=${profile?.email}&name=${profile?.username}`,
+        );
+      } else {
+        toast.error(response?.message || "Failed to place order");
       }
     } catch (error) {
       console.error("Order placement failed:", error);
+      // toast.error("Something went wrong while placing order");
     }
   };
 
@@ -186,13 +201,13 @@ const CheckoutPage = () => {
             onAddressChange={handleAddressChange}
             refreshCheckout={fetchCheckoutData}
           />
-          <Payment
+          {/* <Payment
             summary={summary}
             profile={profile}
             orderId={orderId}
             selectedAddress={selectedAddress}
             getPaymentUrl={getPaymentUrl}
-          />
+          /> */}
           <ReviewItems items={items} />
         </div>
         <OrderPlace
@@ -604,7 +619,7 @@ const ReviewItems = React.memo(({ items }) => {
   return (
     <section className="bg-white rounded-md p-4 border border-gray-200 shadow-sm">
       <h2 className="text-[18px] font-bold mb-4 text-gray-900">
-        3. Review items and delivery
+        2. Review items and delivery
       </h2>
 
       <div className="space-y-4">
@@ -749,11 +764,24 @@ const OrderPlace = React.memo(
 
         <div className="border-t border-gray-200 pt-4">
           <button
-            className={getButtonStyle()}
+            className={`${getButtonStyle()} flex items-center justify-center gap-2`}
             onClick={onPlaceOrder}
             disabled={!selectedAddress}
           >
-            Place your order
+            <span>Proceed to Payment</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14m-7-7 7 7-7 7" />
+            </svg>
           </button>
         </div>
 
