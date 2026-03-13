@@ -1,10 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  Package,
-} from "lucide-react";
+import { LayoutDashboard, Package } from "lucide-react";
 import { useState } from "react";
 
 export const menuItems = [
@@ -27,7 +24,6 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-[#0F766E] border-r border-gray-200">
-
       {/* HEADER */}
       <div className="px-6 py-5 text-lg font-bold text-white">
         Delivery Boy Panel
@@ -43,11 +39,7 @@ export default function Sidebar() {
               key={item.path}
               onClick={() => router.push(item.path)}
               className={`relative flex items-center gap-3 px-6 py-3 text-base font-bold text-white transition
-                ${
-                  isActive
-                    ? "bg-[#115E59]"
-                    : "hover:bg-[#134E4A]"
-                }`}
+                ${isActive ? "bg-[#115E59]" : "hover:bg-[#134E4A]"}`}
             >
               {isActive && (
                 <span className="absolute left-0 top-0 h-full w-1 bg-white rounded-r" />

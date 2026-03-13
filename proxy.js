@@ -24,6 +24,7 @@ export function proxy(request) {
     "/designer": ["webdesigner"],
     "/worker": ["worker"],
     "/courier": ["courier"],
+    "/seller": ["field_manager"],
   };
 
   for (const route in protectedRoutes) {
@@ -64,6 +65,8 @@ function redirectByRole(role, request) {
       return NextResponse.redirect(new URL("/courier", request.url));
     case "delivery_boy":
       return NextResponse.redirect(new URL("/delivery", request.url));
+    case "field_manager":
+      return NextResponse.redirect(new URL("/seller", request.url));
     default:
       return NextResponse.redirect(new URL("/", request.url));
   }
@@ -81,5 +84,6 @@ export const config = {
     "/worker/:path*",
     "/courier/:path*",
     "/delivery/:path*",
+    "/seller/:path*",
   ],
 };
