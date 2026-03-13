@@ -134,16 +134,16 @@ export const menuItems = [
     path: "/admin/timesolt",
   },
 
-  {
-    label: "Delivery boy",
-    icon: Truck,
-    children: [
-      { label: "Add delivery boy", path: "/admin/category", icon: UserPlus },
-      { label: "Manage delivery boy", path: "/admin/category", icon: Users },
-      { label: "Fund transfer", path: "/admin/category", icon: Banknote },
-      { label: "Cash collection", path: "/admin/category", icon: Wallet },
-    ],
-  },
+  // {
+  //   label: "Delivery boy",
+  //   icon: Truck,
+  //   children: [
+  //     { label: "Add delivery boy", path: "/admin/category", icon: UserPlus },
+  //     { label: "Manage delivery boy", path: "/admin/category", icon: Users },
+  //     { label: "Fund transfer", path: "/admin/category", icon: Banknote },
+  //     { label: "Cash collection", path: "/admin/category", icon: Wallet },
+  //   ],
+  // },
 
   // {
   //   label: "Orders",
@@ -163,6 +163,11 @@ export const menuItems = [
     children: [
       { label: "Add Seller", path: "/admin/staff/register", icon: UserPlus },
       { label: "Staff List", path: "/admin/staff", icon: Users },
+      {
+        label: "Field Managers",
+        path: "/admin/staff/field-manager",
+        icon: Users,
+      },
     ],
   },
 
@@ -278,7 +283,7 @@ export default function AdminSidebar({ isOpen }) {
   const router = useRouter();
 
   const [openMenus, setOpenMenus] = useState({
-    Products: true,
+    Products: false,
     Catalog: false,
     Categories: false,
   });

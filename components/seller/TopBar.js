@@ -55,6 +55,8 @@ export default function TopBar() {
             <UserCircle size={28} />
             <ChevronDown size={16} />
           </button>
+
+
           {open && (
             <div className="absolute right-0 mt-3 w-72 bg-white border border-[#fcc221]/30 rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
               {/* USER HEADER */}
@@ -108,22 +110,6 @@ export default function TopBar() {
 
                   <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-center gap-3 text-gray-600">
-                      <div className="p-1.5 bg-yellow-100 text-yellow-700 rounded-md">
-                        <Wallet size={14} />
-                      </div>
-
-                      <span className="text-xs font-medium">
-                        Wallet Balance
-                      </span>
-                    </div>
-
-                    <span className="text-sm font-bold text-[#1a1c24]">
-                      ₹{user?.balance?.toLocaleString() ?? 0}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-3 text-gray-600">
                       <div className="p-1.5 bg-purple-50 text-purple-600 rounded-md">
                         <Clock size={14} />
                       </div>
@@ -157,6 +143,8 @@ export default function TopBar() {
               </div>
             </div>
           )}
+
+          
         </div>
       </div>
     </header>

@@ -1,12 +1,14 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Users, Package } from "lucide-react";
+import { LayoutDashboard, List, PlusCircle, Users } from "lucide-react";
 
 export const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/seller" },
-  { label: "Delivery Staff", icon: Users, path: "/vendor/delivery-staff" },
-  { label: "Products", icon: Package, path: "/vendor/products" },
+  { label: "Add Vendor", icon: PlusCircle, path: "/seller/vendor/create" },
+  { label: "Vendor List", icon: Users, path: "/seller/vendor" },
+  { label: "Add Leads", icon: PlusCircle, path: "/seller/leads/create" },
+  { label: "Recent Leads", icon: List, path: "/seller/leads" },
 ];
 
 export default function Sidebar() {
@@ -15,15 +17,11 @@ export default function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-[#fdd835] border-r border-[#fcc221] flex flex-col">
-      
-      {/* TITLE */}
       <div className="px-6 py-5 text-lg font-bold text-[#1a1c24] border-b border-[#fcc221] tracking-wide">
         Seller Panel
       </div>
 
-      {/* MENU */}
       <nav className="flex flex-col mt-3 px-2 gap-1">
-
         {menuItems.map((item) => {
           const isActive = pathname === item.path;
 
@@ -46,14 +44,12 @@ export default function Sidebar() {
             </button>
           );
         })}
-
       </nav>
 
       {/* FOOTER */}
       <div className="mt-auto px-6 py-4 text-xs text-[#1a1c24]/70 border-t border-[#fcc221]">
         SEVAFAST Seller Panel
       </div>
-
     </aside>
   );
 }
