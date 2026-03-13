@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import ClientLayout from "./client-layout";
 import AuthHydrator from "@/components/AuthHydrator";
 import ToastProvider from "@/ui/ToastProvider";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,10 +40,10 @@ export default async function RootLayout({
     <html lang="en">
       <head>
         {/* Add TezGateway Script Here */}
-        <script
+        {/* <Script
           src="https://tezgateway.com/pages/tezgateway_cdn.v1.js"
-          type="text/javascript"
-        />
+          strategy="afterInteractive"
+        /> */}
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
