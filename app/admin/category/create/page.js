@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiClient } from "@/services/apiClient";
-
+import {toast} from "react-toastify"
 export default function CategoryFormPage() {
   const router = useRouter();
   const { id } = useParams(); // URL madhun ID ghenyasathi (e.g. /category/edit/[id])
@@ -140,12 +140,13 @@ export default function CategoryFormPage() {
       // API Call
       const url = id && id !== "new" ? `/category/${id}` : "/category";
       const method = id && id !== "new" ? "PUT" : "POST";
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+      // const apiUrl = `${process.env.NEXT_PUBLIC_BACKEND_URI}${url}`;
+      console.log("API URL:", url);
+      const result = await apiClient(`${url}`, {
         method,
         body: submitData,
       });
-      const result = await res.json();
+
 
       if (result.success) {
         toast.success(
@@ -156,7 +157,7 @@ export default function CategoryFormPage() {
       }
 
       if (result.success) {
-        router.push("/admin/categories");
+        router.push("/admin/category");
       } else {
         toast.error(result.error || result.message || "Something went wrong");
         setError(result.error || result.message);
