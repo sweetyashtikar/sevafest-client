@@ -41,10 +41,10 @@ const CheckoutPage = () => {
         setCartData(cartRes.data);
         setOrderTotal(cartRes.data.summary?.finalTotal || 0);
 
-        // Generate order ID based on cart
-        const timestamp = Date.now();
-        const randomNum = Math.floor(Math.random() * 10000);
-        setOrderId(`ORD_${timestamp}_${randomNum}`);
+        // // Generate order ID based on cart
+        // const timestamp = Date.now();
+        // const randomNum = Math.floor(Math.random() * 10000);
+        // setOrderId(`TRANS_${timestamp}_${randomNum}`);
       }
 
       if (profileRes?.success) setProfile(profileRes.data);
@@ -98,7 +98,8 @@ const CheckoutPage = () => {
   //       },
   //       body: JSON.stringify({
   //         order_id: orderId,
-  //         amount: summary.finalTotal,
+  //         // amount: summary.finalTotal,
+  //         amount : 1,
   //         customer_mobile: profile.mobile,
   //         customer_email: profile.email,
   //         customer_name: profile.username,
@@ -107,9 +108,11 @@ const CheckoutPage = () => {
   //       }),
   //     });
 
-  //     const data = await response.json();
+  //     const data = await response;
+  //     console.log("data", data)
 
   //     if (data.success && data.data?.payment_url) {
+  //       console.log("data.data.payment_url", data.data.paymentUrl)
   //       return data.data.payment_url;
   //     } else {
   //       console.error("Failed to generate payment URL:", data.message);
@@ -161,16 +164,19 @@ const CheckoutPage = () => {
         body: orderData,
       });
 
-      console.log("res", response);
+      console.log("res order ", response);
 
       if (response?.success) {
         toast.success("Order placed successfully 🎉");
-
-        const orderId = response?.data?.order_id;
-        const totalAmount = response?.data?.total;
+        const orderId = response?.data?.order_id
+        console.log("orderID", orderId)
+        const totalAmount = response?.data?.total; 
+        const transaction_id = response?.data?.transaction_id
+        console.log("transaction_id", transaction_id)
+          
 
         router.push(
-          `/process-payment?amount=${totalAmount}&orderId=${orderId}&mobile=${profile?.mobile}&email=${profile?.email}&name=${profile?.username}`,
+          `/process-payment?amount=${totalAmount}&orderId=${orderId}&transaction_id=${transaction_id}&mobile=${profile?.mobile}&email=${profile?.email}&name=${profile?.username}`,
         );
       } else {
         toast.error(response?.message || "Failed to place order");

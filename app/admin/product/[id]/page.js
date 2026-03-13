@@ -20,10 +20,10 @@ import { ProductApi } from "@/API/api";
 import { useParams } from "next/navigation";
 
 export default function UpadateProductPage() {
+  const [step, setStep] = useState(1);
   const params = useParams();
   const id = params.id;
 
-  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Basic Information
     name: "",
@@ -233,12 +233,67 @@ export default function UpadateProductPage() {
     }));
   };
 
+    const getSteps = () => {
+      const steps = [
+        { number: 1, label: "Basic Info" },
+        { number: 2, label: "Categorization" },
+        { number: 3, label: "Pricing" },
+        { number: 4, label: "Inventory" },
+      ];
+  
+      let stepCounter = 5;
+  
+      // Step 5: Variants (only for VARIABLE products)
+      if (formData.productType === PRODUCT_TYPES.VARIABLE) {
+        steps.push({ number: stepCounter++, label: "Variants" });
+      }
+  
+      // Step: Shipping (for all products that need shipping)
+      // Add this for SIMPLE and VARIABLE, skip for DIGITAL
+      if (formData.productType !== PRODUCT_TYPES.DIGITAL) {
+        steps.push({ number: stepCounter++, label: "Shipping" });
+      }
+  
+      // Step: Policies (always present for all product types)
+      steps.push({ number: stepCounter++, label: "Policies" });
+  
+      // Step: Media (for all products except VARIABLE? Or include for VARIABLE too?)
+      // Currently your code shows Media for non-VARIABLE, so let's maintain that
+      if (formData.productType !== PRODUCT_TYPES.VARIABLE) {
+        steps.push({ number: stepCounter++, label: "Media" });
+      }
+  
+      // Step: Digital (only for DIGITAL products)
+      if (formData.productType === PRODUCT_TYPES.DIGITAL) {
+        steps.push({ number: stepCounter++, label: "Digital" });
+      }
+  
+      return steps;
+    };
+
+  // Update the next button logic to skip step 7 for VARIABLE products
   const handleNext = () => {
-    setStep((prev) => prev + 1);
+    const steps = getSteps();
+    const currentStepIndex = steps.findIndex(s => s.number === step);
+
+    if (currentStepIndex < steps.length - 1) {
+      setStep(steps[currentStepIndex + 1].number);
+    }
   };
 
+
+    const getTotalSteps = () => {
+    return getSteps().length;
+  };
+
+
   const handleBack = () => {
-    setStep((prev) => prev - 1);
+    const steps = getSteps();
+    const currentStepIndex = steps.findIndex(s => s.number === step);
+
+    if (currentStepIndex > 0) {
+      setStep(steps[currentStepIndex - 1].number);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -432,65 +487,38 @@ export default function UpadateProductPage() {
       setLoading(false);
     }
   };
-
-  const renderStep = () => {
+ const renderStep = () => {
     switch (step) {
       case 1:
-        return (
-          <ProductBasicInfo
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
+        return <ProductBasicInfo formData={formData} updateFormData={updateFormData} />;
       case 2:
-        return (
-          <ProductCategorization
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
+        return <ProductCategorization formData={formData} updateFormData={updateFormData} />;
       case 3:
-        return (
-          <ProductPricing formData={formData} updateFormData={updateFormData} />
-        );
+        return <ProductPricing formData={formData} updateFormData={updateFormData} />;
       case 4:
-        return (
-          <ProductInventory
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
-      case 5:
-        return formData.productType === PRODUCT_TYPES.VARIABLE ? (
-          <ProductVariants
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        ) : (
-          <ProductShipping
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
-      case 6:
-        return (
-          <ProductPolicies
-            formData={formData}
-            updateFormData={updateFormData}
-          />
-        );
-      case 7:
-        return (
-          <ProductMedia formData={formData} updateFormData={updateFormData} />
-        );
-      case 8:
-        return formData.productType === PRODUCT_TYPES.DIGITAL ? (
-          <ProductDigital formData={formData} updateFormData={updateFormData} />
-        ) : null;
-      // case 9:
-      //   return <ProductSEO formData={formData} updateFormData={updateFormData} />;
+        return <ProductInventory formData={formData} updateFormData={updateFormData} />;
+
+      // Dynamic steps based on product type
       default:
-        return null;
+        const steps = getSteps();
+        const currentStep = steps.find(s => s.number === step);
+
+        if (!currentStep) return null;
+
+        switch (currentStep.label) {
+          case "Variants":
+            return <ProductVariants formData={formData} updateFormData={updateFormData} />;
+          case "Shipping":
+            return <ProductShipping formData={formData} updateFormData={updateFormData} />;
+          case "Policies":
+            return <ProductPolicies formData={formData} updateFormData={updateFormData} />;
+          case "Media":
+            return <ProductMedia formData={formData} updateFormData={updateFormData} />;
+          case "Digital":
+            return <ProductDigital formData={formData} updateFormData={updateFormData} />;
+          default:
+            return null;
+        }
     }
   };
 
@@ -507,34 +535,34 @@ export default function UpadateProductPage() {
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((stepNum) => (
-              <div
-                key={stepNum}
-                className={`flex-1 h-2 mx-1 rounded-full ${step >= stepNum ? "bg-blue-600" : "bg-gray-200"}`}
-              />
-            ))}
-          </div>
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>Basic Info</span>
-            <span>Categorization</span>
-            <span>Pricing</span>
-            <span>Inventory</span>
-            <span>
-              {formData.productType === PRODUCT_TYPES.VARIABLE
-                ? "Variants"
-                : "Shipping"}
-            </span>
-            <span>Policies</span>
-            <span>Media</span>
-            <span>
-              {formData.productType === PRODUCT_TYPES.DIGITAL
-                ? "Digital"
-                : null}
-            </span>
-            {/* <span>SEO/Review</span> */}
-          </div>
+          <div className="mb-8">
+          {/* Get dynamic steps based on product type */}
+          {(() => {
+            const steps = getSteps();
+            return (
+              <>
+                {/* Progress indicators */}
+                <div className="flex items-center justify-between mb-2">
+                  {steps.map((s) => (
+                    <div
+                      key={s.number}
+                      className={`flex-1 h-2 mx-1 rounded-full ${step >= s.number ? "bg-blue-600" : "bg-gray-200"
+                        }`}
+                    />
+                  ))}
+                </div>
+
+                {/* Step labels */}
+                <div className="flex justify-between text-sm text-gray-600 mt-2">
+                  {steps.map((s) => (
+                    <div key={s.number} className="text-center flex-1">
+                      {s.label}
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
         </div>
 
         {/* Form */}
@@ -562,7 +590,7 @@ export default function UpadateProductPage() {
               </button>
             )}
 
-            {step < 9 ? (
+            {step < getTotalSteps() ? (
               <button
                 type="button"
                 onClick={handleNext}
@@ -570,14 +598,16 @@ export default function UpadateProductPage() {
               >
                 Next
               </button>
-            ) : (
+            ) : null }
+            
+            {step === getTotalSteps() &&(
               <button
                 type="submit"
                 disabled={loading}
                 onClick={handleSubmit}
                 className="ml-auto px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
               >
-                {loading ? "Creating..." : "Create Product"}
+                {loading ? "Updating..." : "update Product"}
               </button>
             )}
           </div>

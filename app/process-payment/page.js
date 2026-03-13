@@ -23,13 +23,58 @@ const PaymentPage = () => {
 
   const amount = searchParams.get("amount");
   const orderId = searchParams.get("orderId");
+  const transaction_id = searchParams.get("transaction_id");
   const mobile = searchParams.get("mobile");
   const email = searchParams.get("email");
   const name = searchParams.get("name");
+  console.log("orderId from payment page", orderId)
 
   const [selectedMethod, setSelectedMethod] = useState("tez");
   const [paymentUrl, setPaymentUrl] = useState(null);
   const [isGeneratingUrl, setIsGeneratingUrl] = useState(false);
+   const [paymentStatus, setPaymentStatus] = useState(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationComplete, setVerificationComplete] = useState(false);
+
+  // Function to verify payment status
+  const verifyPayment = async (orderId) => {
+    try {
+      setIsVerifying(true);
+      const response = await apiClient(`/payments/verify-payment/${orderId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+         body: {
+          trans_id: transaction_id
+        },
+      });
+
+      const data = await response;
+      
+      if (data.success) {
+        setPaymentStatus(data.data);
+        
+        // Check if payment was successful
+        if (data.data.status === true) {
+          alert("payment done")
+          // Redirect to success page or show success message
+          // router.push(`/payment/success?orderId=${orderId}`);
+        } else {
+          alert('payment failed')
+          // Payment failed - show failure message
+          setVerificationComplete(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error verifying payment:", error);
+      setPaymentStatus({ status: false, message: "Verification failed" });
+      setVerificationComplete(true);
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
 
   const getPaymentUrl = async () => {
     try {
@@ -38,13 +83,14 @@ const PaymentPage = () => {
         return null;
       }
 
-      const response = await apiClient("/payments/generate-payment-url", {
+      console.log()
+      const response = await apiClient(`/payments/generate-payment-url/${orderId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: {
-          order_id: orderId,
+          trans_id: transaction_id,
           amount: amount,
           customer_mobile: mobile,
           customer_email: email,
@@ -54,7 +100,7 @@ const PaymentPage = () => {
         },
       });
 
-      const data = await response.json();
+      const data = await response;
 
       if (data.success && data.data?.payment_url) {
         return data.data.payment_url;
@@ -84,7 +130,7 @@ const PaymentPage = () => {
       }
     };
     generateUrl();
-  }, [selectedMethod, paymentUrl, isGeneratingUrl, getPaymentUrl]);
+  }, [selectedMethod]);
 
   const handlePaymentChange = (id) => {
     setSelectedMethod(id);
