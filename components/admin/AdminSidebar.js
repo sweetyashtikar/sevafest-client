@@ -159,7 +159,11 @@ export const menuItems = [
   {
     label: "Staff",
     icon: UserCog,
-    path: "/admin/staff",
+
+    children: [
+      { label: "Add Seller", path: "/admin/staff/register", icon: UserPlus },
+      { label: "Staff List", path: "/admin/staff", icon: Users },
+    ],
   },
 
   // {

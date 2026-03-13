@@ -134,6 +134,7 @@ const CheckoutPage = () => {
   };
 
   const handlePlaceOrder = async () => {
+    
     console.log("item", items);
     try {
       const orderData = {
