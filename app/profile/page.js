@@ -1,4 +1,6 @@
 "use client";
+
+import { toast } from "react-toastify";
 import { apiClient } from "@/services/apiClient";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -6,22 +8,41 @@ import {
   User,
   Mail,
   Phone,
-  MapPin,
-  Calendar,
   ShieldCheck,
   Wallet,
+  ShoppingBag,
+  Star,
   Clock,
-  Activity,
-  Globe,
-  Hash,
-  Zap,
-  CreditCard,
+  MapPin,
+  LogOut,
+  Settings,
 } from "lucide-react";
+import { logout } from "@/redux/slices/authSlice";
+import { useDispatch } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-    
+  const dispatch = useDispatch();
+  const router = useRouter();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const handleLogout = async () => {
+    try {
+      const res = await apiClient("/logout", { method: "POST", body: {} });
+
+      if (res.success) {
+        dispatch(logout());
+        router.push("/login");
+        toast.success("Logged out successfully");
+        document.cookie = "token=; path=/; max-age=0";
+        document.cookie = "role=; path=/; max-age=0";
+        document.cookie = "user=; path=/; max-age=0";
+      }
+    } catch (err) {
+      toast.error("Logout failed");
+    }
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -40,10 +61,7 @@ export default function ProfilePage() {
   // Animation Variants
   const containerVars = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
   };
 
   const itemVars = {
@@ -70,257 +88,166 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#fcfcfc] text-[#1a1c24] py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <motion.div
         variants={containerVars}
         initial="hidden"
         animate="visible"
-        className="max-w-5xl mx-auto"
+        className="max-w-4xl mx-auto"
       >
-        {/* --- HERO SECTION --- */}
+        {/* --- PROFILE HEADER (E-COMMERCE STYLE) --- */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="relative overflow-hidden bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 border border-slate-100 p-8 mb-8 z-10"
+          variants={itemVars}
+          className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 mb-6"
         >
-          {/* Decorative background icon */}
-          <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none">
-            <User size={250} />
-          </div>
-
-          <div className="relative z-20 flex flex-col md:flex-row items-center gap-8">
-            {/* Avatar / Profile Icon */}
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            {/* Avatar Section */}
             <div className="relative">
-              <div className="w-32 h-32 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-3xl flex items-center justify-center text-white shadow-lg">
-                <User size={60} className="-rotate-3" />
+              <div className="w-28 h-28 bg-[#fdd835] rounded-full flex items-center justify-center text-black shadow-inner">
+                <User size={48} strokeWidth={1.5} />
               </div>
-              {/* Active Status Indicator */}
-              <div className="absolute -bottom-2 -right-2 bg-green-500 border-4 border-white w-8 h-8 rounded-full shadow-md"></div>
+              <div className="absolute bottom-1 right-1 bg-green-500 border-4 border-white w-7 h-7 rounded-full"></div>
             </div>
 
-            {/* User Details */}
+            {/* User Primary Info */}
             <div className="text-center md:text-left flex-1">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-2">
-                <h1 className="text-4xl font-extrabold tracking-tight text-slate-800 capitalize leading-tight">
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                <h1 className="text-3xl font-bold tracking-tight text-[#1a1c24]">
                   {profile.username}
                 </h1>
-                <div className="px-4 py-1 bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-[0.2em] rounded-full border border-blue-100">
-                  {profile.role?.role || "User"}
-                </div>
+                <span className="px-3 py-1 bg-[#fdd835]/20 text-[#1a1c24] text-xs font-bold rounded-lg border border-[#fdd835]/30">
+                  {profile.role?.role || "Member"}
+                </span>
               </div>
 
-              <div className="flex flex-col md:flex-row gap-4 mt-2">
-                <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2">
-                  <Mail size={16} className="text-blue-400" /> {profile.email}
+              <div className="mt-2 space-y-1">
+                <p className="text-gray-500 flex items-center justify-center md:justify-start gap-2 text-sm">
+                  <Mail size={16} className="text-gray-400" /> {profile.email}
                 </p>
-                <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2">
-                  <Phone size={16} className="text-blue-400" /> {profile.mobile}
+                <p className="text-gray-500 flex items-center justify-center md:justify-start gap-2 text-sm">
+                  <Phone size={16} className="text-gray-400" /> {profile.mobile}
                 </p>
               </div>
+            </div>
 
-              <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-8 border-t border-slate-50 pt-6">
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">
-                    Account Status
-                  </span>
-                  <span className="text-sm font-bold text-green-600 flex items-center gap-1">
-                    <ShieldCheck size={14} />{" "}
-                    {profile.status ? "Verified Active" : "Pending"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[10px] uppercase text-slate-400 font-bold tracking-widest mb-1">
-                    Registration Date
-                  </span>
-                  <span className="text-sm font-bold text-slate-700">
-                    {new Date(profile.createdAt).toLocaleDateString("en-US", {
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-              </div>
+            {/* Verification Badge */}
+            <div className="hidden lg:flex flex-col items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+              <ShieldCheck size={28} className="text-green-500 mb-1" />
+              <span className="text-[10px] font-bold text-gray-400">
+                Account Verified
+              </span>
             </div>
           </div>
         </motion.div>
 
-        {/* --- GRID BODY --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Financial Overview */}
+        {/* --- STATS & ASSETS GRID --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {/* Wallet Card */}
           <motion.div
             variants={itemVars}
-            className="md:col-span-2 bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm"
+            className="bg-[#1a1c24] rounded-3xl p-8 text-white relative overflow-hidden group shadow-lg shadow-gray-200"
           >
-            <div className="flex items-center justify-between mb-8">
-              <h3 className="text-lg font-bold flex items-center gap-2">
-                <Wallet className="text-blue-600" size={22} /> Wallet Assets
-              </h3>
-              <Zap size={18} className="text-yellow-400 fill-yellow-400" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 text-[#fdd835] mb-4">
+                <Wallet size={20} />
+                <span className="text-sm font-semibold">Available Balance</span>
+              </div>
+              <h2 className="text-4xl font-bold mb-6 italic tracking-tight">
+                ₹{profile.balance.toLocaleString()}
+              </h2>
+              <button className="w-full py-3 bg-[#fdd835] text-black rounded-xl font-bold text-sm hover:bg-[#ebc72e] transition-colors active:scale-95">
+                Add Money
+              </button>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 transition-colors group">
-                <p className="text-sm text-slate-500 mb-1 group-hover:text-blue-600 transition-colors">
-                  Available Balance
-                </p>
-                <h4 className="text-3xl font-black text-slate-800">
-                  ₹{profile.balance.toLocaleString()}
-                </h4>
-              </div>
-              <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
-                <p className="text-sm text-slate-500 mb-1">
-                  Total Cash Received
-                </p>
-                <h4 className="text-3xl font-black text-slate-800">
-                  ₹{profile.cash_received.toLocaleString()}
-                </h4>
-              </div>
+            <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <ShoppingBag size={150} />
             </div>
+          </motion.div>
 
-            <div className="mt-6 flex items-center gap-4 p-4 bg-blue-50/50 rounded-xl">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                <CreditCard size={20} className="text-blue-600" />
-              </div>
+          {/* Reward Tier Card */}
+          <motion.div
+            variants={itemVars}
+            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm flex flex-col justify-between"
+          >
+            <div className="flex justify-between items-start">
               <div>
-                <p className="text-[10px] uppercase font-bold text-blue-400">
-                  Reward Tier
+                <p className="text-xs font-bold text-gray-400 mb-1">
+                  Loyalty Tier
                 </p>
-                <p className="text-sm font-bold text-blue-900 capitalize">
-                  {profile.bonus_type.replace(/_/g, " ")}
-                </p>
+                <h3 className="text-xl font-bold capitalize text-[#1a1c24]">
+                  {profile.bonus_type.replace(/_/g, " ")} Member
+                </h3>
+              </div>
+              <div className="p-2 bg-yellow-50 rounded-xl text-[#fdd835]">
+                <Star size={24} fill="currentColor" />
               </div>
             </div>
-          </motion.div>
 
-          {/* Contact & Tech Details */}
-          <motion.div
-            variants={itemVars}
-            className="bg-slate-900 rounded-[2rem] p-8 text-white shadow-xl"
-          >
-            <h3 className="text-lg font-bold mb-8 flex items-center gap-2">
-              <Activity size={22} className="text-blue-400" /> Secure Details
-            </h3>
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Phone size={18} className="text-blue-300" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
-                    Mobile
-                  </p>
-                  <p className="text-sm font-medium">{profile.mobile}</p>
-                </div>
+            <div className="mt-6">
+              <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-full bg-[#fdd835] w-[70%] rounded-full" />
               </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Globe size={18} className="text-blue-300" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
-                    Network IP
-                  </p>
-                  <p className="text-sm font-mono">{profile.ip_address}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                  <Hash size={18} className="text-blue-300" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">
-                    Role ID
-                  </p>
-                  <p className="text-[11px] font-mono break-all text-slate-300">
-                    {profile.role?._id}
-                  </p>
-                </div>
-              </div>
+              <p className="text-[11px] text-gray-400 mt-2 font-medium">
+                300 more points to reach Platinum
+              </p>
             </div>
           </motion.div>
+        </div>
 
-          {/* Activity Log */}
+        {/* --- INFORMATION LISTS --- */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Summary Section */}
           <motion.div
             variants={itemVars}
-            className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm"
+            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm"
           >
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <Clock className="text-purple-600" size={22} /> System History
+              <Clock size={20} className="text-gray-400" /> Account Summary
             </h3>
             <div className="space-y-4">
-              <div className="flex justify-between items-end border-b border-slate-50 pb-3">
-                <span className="text-xs text-slate-400 font-medium italic">
-                  Last Activity
-                </span>
-                <span className="text-sm font-bold text-slate-700">
-                  {new Date(profile.last_login).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-end border-b border-slate-50 pb-3">
-                <span className="text-xs text-slate-400 font-medium italic">
-                  Account Created
-                </span>
-                <span className="text-sm font-bold text-slate-700">
-                  {new Date(profile.createdAt).toLocaleDateString()}
-                </span>
-              </div>
-              <div className="flex justify-between items-end">
-                <span className="text-xs text-slate-400 font-medium italic">
-                  Data Version
-                </span>
-                <span className="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold">
-                  V{profile.__v}
-                </span>
-              </div>
+              <InfoRow
+                label="Joined on"
+                value={new Date(profile.createdAt).toLocaleDateString()}
+              />
+              <InfoRow
+                label="Last login"
+                value={new Date(profile.last_login).toLocaleDateString()}
+              />
+              <InfoRow
+                label="Total cash received"
+                value={`₹${profile.cash_received.toLocaleString()}`}
+              />
             </div>
           </motion.div>
 
-          {/* Regional Settings */}
+          {/* Service Area Section */}
           <motion.div
             variants={itemVars}
-            className="md:col-span-2 bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm"
+            className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm"
           >
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-              <MapPin className="text-red-500" size={22} /> Regional & Logistics
+              <MapPin size={20} className="text-gray-400" /> Service Areas
             </h3>
-            <div className="flex flex-col sm:flex-row gap-8">
-              <div className="flex-1">
-                <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">
-                  Geolocation (Point)
+            <div className="flex flex-wrap gap-2">
+              {profile.zipcodes.length > 0 ? (
+                profile.zipcodes.map((zip, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1.5 bg-gray-50 text-gray-600 text-xs font-bold rounded-lg border border-gray-100"
+                  >
+                    {zip}
+                  </span>
+                ))
+              ) : (
+                <p className="text-sm text-gray-400 italic">
+                  Global service access enabled
                 </p>
-                <div className="flex gap-2">
-                  {profile.location.coordinates.map((coord, i) => (
-                    <span
-                      key={i}
-                      className="px-4 py-2 bg-slate-50 rounded-xl font-mono text-sm text-slate-600 border border-slate-100"
-                    >
-                      {coord.toFixed(4)}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">
-                  Serviceable Zipcodes
-                </p>
-                {profile.zipcodes.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {profile.zipcodes.map((zip, i) => (
-                      <span
-                        key={i}
-                        className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-lg border border-green-100"
-                      >
-                        {zip}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="px-4 py-2 bg-slate-50 rounded-xl text-xs text-slate-400 italic">
-                    Global Service Access
-                  </div>
-                )}
-              </div>
+              )}
+            </div>
+            <div className="mt-8 pt-6 border-t border-gray-50">
+              <button className="text-sm font-bold text-[#1a1c24] hover:underline flex items-center gap-1">
+                View all locations <Star size={12} />
+              </button>
             </div>
           </motion.div>
         </div>
@@ -328,26 +255,27 @@ export default function ProfilePage() {
         {/* --- FOOTER ACTIONS --- */}
         <motion.div
           variants={itemVars}
-          className="mt-10 flex flex-col sm:flex-row items-center justify-between gap-6 px-4"
+          className="mt-8 flex items-center justify-center gap-4"
         >
-          <div className="text-left">
-            <p className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">
-              Registry ID
-            </p>
-            <p className="text-[12px] font-mono text-slate-500">
-              {profile._id}
-            </p>
-          </div>
-          <div className="flex gap-4 w-full sm:w-auto">
-            <button className="flex-1 sm:flex-none px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold shadow-xl shadow-blue-200 hover:bg-blue-700 hover:-translate-y-1 transition-all active:scale-95">
-              Edit Profile
-            </button>
-            <button className="flex-1 sm:flex-none px-10 py-4 bg-white text-slate-700 border border-slate-200 rounded-2xl font-bold hover:bg-slate-50 transition-all active:scale-95">
-              Logout
-            </button>
-          </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-8 py-3.5 bg-red-50 text-red-600 rounded-2xl font-bold text-sm hover:bg-red-100 transition-all active:scale-95"
+          >
+            <LogOut size={18} />
+            Logout
+          </button>
         </motion.div>
       </motion.div>
+    </div>
+  );
+}
+
+// --- HELPER COMPONENT ---
+function InfoRow({ label, value }) {
+  return (
+    <div className="flex justify-between items-center py-1">
+      <span className="text-sm text-gray-400">{label}</span>
+      <span className="text-sm font-bold text-[#1a1c24]">{value}</span>
     </div>
   );
 }

@@ -1,7 +1,13 @@
 "use client";
 
-const Page = () => {
-  return <></>;
+import Page from "@/components/order/OrderPage";
+
+const Cancelled = () => {
+  return (
+    <>
+      <Page endPoint="active_status=cancelled" />
+    </>
+  );
 };
 
-export default Page;
+export default Cancelled;

@@ -318,7 +318,7 @@
 
 import { apiClient } from "@/services/apiClient";
 
-const API_BASE_URL = "http://localhost:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URI;
 
 // Helper function for API calls
 const apiCall = async (endpoint, options = {}) => {

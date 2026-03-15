@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-export default function VendorsTopBar() {
+export default function TopBar() {
   const router = useRouter();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
@@ -55,6 +55,7 @@ export default function VendorsTopBar() {
             <UserCircle size={28} />
             <ChevronDown size={16} />
           </button>
+
 
           {open && (
             <div className="absolute right-0 mt-3 w-72 bg-white border border-[#fcc221]/30 rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
@@ -142,6 +143,8 @@ export default function VendorsTopBar() {
               </div>
             </div>
           )}
+
+          
         </div>
       </div>
     </header>

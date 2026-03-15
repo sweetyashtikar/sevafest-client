@@ -91,17 +91,21 @@ const CheckoutPage = () => {
 
   // Remove unused getPaymentUrl
 
-  const fetchSummaryDelivery = async () => {
+ const fetchSummaryDelivery = useCallback(async () => {
     try {
       const res = await apiClient("/viewCart/summary");
-
       if (res?.success) {
         setSummaryDelivery(res.data?.estimatedDelivery);
       }
     } catch (error) {
       console.error("Failed to fetch delivery summary", error);
     }
-  };
+}, []); // ✅ stable reference
+
+useEffect(() => {
+    fetchCheckoutData();
+    fetchSummaryDelivery();
+}, [fetchCheckoutData, fetchSummaryDelivery]); // ✅ both in deps
 
   const handleRazorpaySuccess = async (response, appOrderId) => {
     try {
