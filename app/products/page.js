@@ -2,14 +2,14 @@
 
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { apiClient } from "@/services/apiClient";
-import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { setRecommended } from "@/redux/slices/recommendationSlice";
-import { fetchCart } from "@/redux/slices/cartSlice";
+import { addToCart } from "@/redux/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import { Loader } from "@/ui/Loader";
+import { toast } from "react-toastify";
 
 const ProductCard = dynamic(() => import("@/ui/ProductCard"), {
   ssr: false,
@@ -43,6 +43,7 @@ export default function Page() {
   const dispatch = useDispatch();
 
   const { user } = useSelector((a) => a.auth);
+
   const [view, setView] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [products, setProducts] = useState([]);
@@ -57,7 +58,7 @@ export default function Page() {
   const [ratings, setRatings] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const addToCart = async (product, qty = 1) => {
+  const addToCartAction = async (product, qty = 1) => {
     if (!user) {
       toast.warning("Please login to add product to cart");
       router.push("/login");
@@ -65,42 +66,26 @@ export default function Page() {
     }
 
     try {
-      console.log("product", product);
-
-      const payload = {
-        productId: product._id,
-        qty,
-      };
+      let variantId = null;
 
       if (product.productType === "variable_product") {
-        payload.variantId = product?.variants?.[0]?._id;
+        const firstVariant = product.variants?.find(
+          (v) => v.variant_isActive && v.variant_totalStock > 0,
+        );
+        variantId = firstVariant?._id;
       }
 
-      console.log("payload", payload);
-
-      const res = await apiClient("/viewCart/addtoCart", {
-        method: "POST",
-        body: payload,
-      });
-
-      if (res?.success) {
-        dispatch(fetchCart());
-        toast.success("Product added to cart");
-        console.log("Added to cart", res);
-      } else {
-        toast.error(res?.message || "Failed to add item to cart");
-        console.error("Failed to add cart", res);
-      }
-
-      return res;
+      await dispatch(
+        addToCart({ productId: product._id, variantId, qty }),
+      ).unwrap();
+      console.log("✅ Added to cart");
     } catch (err) {
       console.error("Add to cart error", err);
-      toast.error("Something went wrong while adding to cart");
     }
   };
 
   // ================= API =================
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const res = await apiClient(`/product?page=1&limit=1000`);
       console.log("res", res);
@@ -112,11 +97,11 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts, dispatch]);
 
   useEffect(() => {
     if (products.length > 0) {
@@ -260,7 +245,7 @@ export default function Page() {
             : true,
         )
     );
-  }, [products, search, price, brands, ratings]);
+  }, [products, search, price, brands, ratings, categories]);
 
   const sortedProducts = useMemo(() => {
     return [...filteredProducts].sort((a, b) => {
@@ -296,6 +281,8 @@ export default function Page() {
     setSortBy("featured");
     setCurrentPage(1);
   };
+
+  const isOutOfStock = (product) => product.inStock === false;
 
   const getProductImage = (product) => {
     if (product?.mainImage) return product.mainImage;
@@ -398,10 +385,11 @@ export default function Page() {
                         discount={product?.discountPercentage}
                         rating={Math.round(product.rating?.average || 0)}
                         reviews={product.rating?.count || 0}
+                        outOfStock={isOutOfStock(product)}
                         onNavigate={() =>
                           router.push(`/products/${product._id}`)
                         }
-                        onAddToCart={() => addToCart(product)}
+                        onAddToCart={() => addToCartAction(product)}
                       />
                     </motion.div>
                   ))}

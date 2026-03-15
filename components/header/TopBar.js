@@ -30,40 +30,24 @@ import { fetchCart } from "@/redux/slices/cartSlice";
 import { SupportModal } from "@/ui/SupportModal";
 import { AddressModal } from "@/ui/AddressModal";
 import { CategoryDropdown } from "@/components/header/CategoryDropdown";
+import Link from "next/link";
 
 export default function TopBar() {
   const dispatch = useDispatch();
   const router = useRouter();
+
   const { user } = useSelector((state) => state.auth);
   const { items } = useSelector((c) => c.cart);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isAddressOpen, setIsAddressOpen] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
-  const [addresses, setAddresses] = useState([]);
 
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
-
-  const fetchAddresses = async () => {
-    try {
-      const res = await apiClient("/address/user");
-
-      if (res?.success) {
-        setAddresses(res.data?.addresses || []);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    if (user) {
-      fetchAddresses();
-    }
-  }, [user]);
 
   return (
     <>
@@ -126,13 +110,16 @@ export default function TopBar() {
         <div className="bg-[#fdd835] px-4 py-1 shadow-sm">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
             <div className="flex-shrink-0 cursor-pointer h-full flex items-cente ">
-              <img
+              <Image
                 src="/logo.png"
                 alt="SevaFast Logo"
+                width={150}
+                height={60}
                 className="h-15 w-auto object-contain"
+                onClick={() => router.push("/")}
+                priority
               />
             </div>
-
             <nav className="hidden lg:flex items-center gap-8 text-[#1a1c24] font-extrabold text-[15px] uppercase">
               <div
                 className="relative"
@@ -157,15 +144,21 @@ export default function TopBar() {
                 />
               </div>
 
-              <a href="/" className="hover:text-black">
+              <Link href="/" className="hover:text-black">
                 Home
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/products"
                 className="flex items-center gap-1 cursor-pointer hover:text-black group"
               >
                 PRODUCTS
-              </a>
+              </Link>
+              {/* <a
+                href="/coupons"
+                className="flex items-center gap-1 cursor-pointer hover:text-black"
+              >
+                <PartyPopper className="w-4 h-4" /> COUPONS
+              </a> */}
             </nav>
 
             <div className="flex-grow max-w-xl relative">
@@ -190,29 +183,31 @@ export default function TopBar() {
               />
             </div>
 
-            <div className="flex items-center gap-6">
-              <button
-                onClick={() => router.push("/cart")}
-                className="relative text-black bg-gray-200/50 p-2 rounded-full hover:bg-gray-200 transition"
-              >
-                <ShoppingCart className="w-5 h-5" />
-                {items?.length > 0 && (
-                  <span
-                    className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full
-                   flex items-center justify-center font-bold"
-                  >
-                    {items.length}
-                  </span>
-                )}
-              </button>
+            <button
+              onClick={() => router.push("/cart")}
+              className="relative text-black   bg-gray-200/50 p-2 rounded-full transition-all group"
+            >
+              <ShoppingCart className="w-5 h-5 group-hover:animate-bounce" />
 
+              {items?.length > 0 && (
+                <span
+                  className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center 
+                    justify-center font-bold "
+                >
+                  {items.length}
+                </span>
+              )}
+            </button>
+
+            <div className="flex items-center gap-2 cursor-pointer group">
               <div className="relative">
                 <div
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="p-2 bg-gray-200/50 rounded-full hover:bg-gray-200 cursor-pointer"
+                  className="p-1.5 bg-gray-200/50 rounded-full group-hover:bg-gray-200"
                 >
-                  <User className="w-5 h-5 text-[#1a1c24]" />
+                  <User className="w-6 h-6 text-[#1a1c24]" />
                 </div>
+
                 {isProfileOpen &&
                   (user ? (
                     <ProfileModel
@@ -238,7 +233,6 @@ export default function TopBar() {
       <AddressModal
         isOpen={isAddressOpen}
         onClose={() => setIsAddressOpen(false)}
-        addresses={addresses}
       />
 
       {isProfileOpen && (
@@ -400,6 +394,14 @@ const ProfileModel = ({
         hover:bg-[#fdd835] text-sm text-[#1a1c24]"
         >
           Wallet & Payments
+          <span>›</span>
+        </button>
+
+        <button
+          className="w-full flex items-center justify-between px-3 py-2 rounded-md 
+        hover:bg-[#fdd835] text-sm text-[#1a1c24]"
+        >
+          Coupons
           <span>›</span>
         </button>
       </div>

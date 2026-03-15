@@ -6,11 +6,30 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await apiClient("/viewCart"); 
-      console.log("response cart", res)
+      const res = await apiClient("/viewCart");
       return res?.data?.items || [];
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching cart");
+    }
+  }
+);
+
+export const addToCart = createAsyncThunk(
+  "cart/addToCart",
+  async (payload, { dispatch, rejectWithValue }) => {
+    try {
+      const res = await apiClient("/viewCart/addtoCart", {
+        method: "POST",
+        body: payload,
+      });
+
+      if (res?.success) {
+        dispatch(fetchCart());
+        return res.data;
+      }
+      return rejectWithValue(res?.message || "Failed to add to cart");
+    } catch (err) {
+      return rejectWithValue(err.response?.data || "Error adding to cart");
     }
   }
 );

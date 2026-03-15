@@ -1,16 +1,17 @@
 "use client";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { apiClient } from "@/services/apiClient";
-import { toast } from "react-toastify";
 import ProductCard from "@/ui/ProductCard";
-import { fetchCart } from "@/redux/slices/cartSlice";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/redux/slices/cartSlice";
+import { toast } from "react-toastify";
 
 export default function RecommendedProducts() {
+  const dispatch = useDispatch();
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
-  const dispatch = useDispatch();
+
   const recommended = useSelector((state) => state.recommendation.recommended);
 
   const getProductPrice = (product) => {
@@ -33,7 +34,9 @@ export default function RecommendedProducts() {
     return null;
   };
 
-  const addToCart = async (product, qty = 1) => {
+  const isOutOfStock = (product) => product.inStock === false;
+
+  const addToCartAction = async (product, qty = 1) => {
     if (!user) {
       toast.warning("Please login to add product to cart");
       router.push("/login");
@@ -41,30 +44,21 @@ export default function RecommendedProducts() {
     }
 
     try {
-      const payload = {
-        productId: product._id,
-        qty,
-      };
+      let variantId = null;
 
       if (product.productType === "variable_product") {
-        payload.variantId = product?.variants?.[0]?._id;
+        const firstVariant = product.variants?.find(
+          (v) => v.variant_isActive && v.variant_totalStock > 0,
+        );
+        variantId = firstVariant?._id;
       }
 
-      const res = await apiClient("/viewCart/addtoCart", {
-        method: "POST",
-        body: payload,
-      });
-
-      if (res?.success) {
-        dispatch(fetchCart());
-        toast.success("Product added to cart ");
-      } else {
-        toast.error(res?.message || "Failed to add item to cart");
-      }
-      return res;
+      await dispatch(
+        addToCart({ productId: product._id, variantId, qty }),
+      ).unwrap();
+      console.log("✅ Added to cart");
     } catch (err) {
       console.error("Add to cart error", err);
-      toast.error("Something went wrong while adding to cart");
     }
   };
 
@@ -73,7 +67,7 @@ export default function RecommendedProducts() {
   return (
     <div className="mt-16">
       <h2 className="text-2xl font-semibold mb-6 text-black">
-        Suggest For You
+        🔥 Recommended For You
       </h2>
 
       <div className="flex overflow-x-auto gap-6 pb-4 scrollbar-hide">
@@ -89,8 +83,9 @@ export default function RecommendedProducts() {
               discount={product?.discountPercentage}
               rating={Math.round(product.rating?.average || 0)}
               reviews={product.rating?.count || 0}
+              outOfStock={isOutOfStock(product)}
               onNavigate={() => router.push(`/products/${product._id}`)}
-              onAddToCart={() => addToCart(product)}
+              onAddToCart={() => addToCartAction(product)}
             />
           </div>
         ))}

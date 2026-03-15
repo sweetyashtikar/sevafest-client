@@ -1,3 +1,4 @@
+/*
 // components/tez/tezPaymentButton.js
 "use client";
 
@@ -69,3 +70,4 @@ export default function SimpleTezPaymentButton({
     </button>
   );
 }
+*/

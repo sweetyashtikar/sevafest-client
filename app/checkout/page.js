@@ -1,18 +1,17 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { toast } from "react-toastify";
 import { useEffect, useState, useMemo, useCallback } from "react";
+import Script from "next/script";
 import { apiClient } from "@/services/apiClient";
-import { User, Mail, Phone, MapPin, Edit3 } from "lucide-react";
+import { Phone, MapPin, Edit3 } from "lucide-react";
+// import SimpleTezPaymentButton from "@/components/tez/tezPaymentButton";
+// import RazorpayButton from "@/components/razorpay/RazorpayButton";
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
-import SimpleTezPaymentButton from "@/components/tez/tezPaymentButton";
 import AddressModal from "@/components/address/addressModal";
 import CouponApply from "@/components/coupon/couponApply";
 
 const CheckoutPage = () => {
-  const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const [cartData, setCartData] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -20,6 +19,7 @@ const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [orderId, setOrderId] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState("razorpay");
   const [summaryDelivery, setSummaryDelivery] = useState(null);
 
   // Coupon state
@@ -48,7 +48,15 @@ const CheckoutPage = () => {
       }
 
       if (profileRes?.success) setProfile(profileRes.data);
-      if (addressRes?.success) setAddress(addressRes.data);
+      if (addressRes?.success) {
+        setAddress(addressRes.data);
+        if (addressRes.data?.addresses?.length > 0) {
+          const defaultAddr =
+            addressRes.data.addresses.find((addr) => addr.is_default === true) ||
+            addressRes.data.addresses[0];
+          setSelectedAddress(defaultAddr);
+        }
+      }
     } catch (err) {
       console.error("Checkout fetch failed", err);
     } finally {
@@ -81,72 +89,60 @@ const CheckoutPage = () => {
   const items = useMemo(() => cartData?.items || [], [cartData]);
   const summary = useMemo(() => cartData?.summary || {}, [cartData]);
 
-  // const getPaymentUrl = async () => {
-  //   console.log("orderId", orderId);
-  //   console.log("summary?.finalTotal", summary?.finalTotal);
-  //   console.log("profile?.mobile", profile?.mobile);
-  //   try {
-  //     if (!orderId || !summary?.finalTotal || !profile?.mobile) {
-  //       console.error("Missing required data for payment");
-  //       return null;
-  //     }
+  // Remove unused getPaymentUrl
 
-  //     const response = await apiClient("/payments/generate-payment-url", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         order_id: orderId,
-  //         amount: summary.finalTotal,
-  //         customer_mobile: profile.mobile,
-  //         customer_email: profile.email,
-  //         customer_name: profile.username,
-  //         return_url: `${window.location.origin}/payment/success`,
-  //         cancel_url: `${window.location.origin}/payment/cancel`,
-  //       }),
-  //     });
-
-  //     const data = await response.json();
-
-  //     if (data.success && data.data?.payment_url) {
-  //       return data.data.payment_url;
-  //     } else {
-  //       console.error("Failed to generate payment URL:", data.message);
-  //       return null;
-  //     }
-  //   } catch (error) {
-  //     console.error("Error generating payment URL:", error);
-  //     return null;
-  //   }
-  // };
-
-  const fetchSummaryDelivery = async () => {
+ const fetchSummaryDelivery = useCallback(async () => {
     try {
       const res = await apiClient("/viewCart/summary");
-
       if (res?.success) {
         setSummaryDelivery(res.data?.estimatedDelivery);
       }
     } catch (error) {
       console.error("Failed to fetch delivery summary", error);
     }
+}, []); // ✅ stable reference
+
+useEffect(() => {
+    fetchCheckoutData();
+    fetchSummaryDelivery();
+}, [fetchCheckoutData, fetchSummaryDelivery]); // ✅ both in deps
+
+  const handleRazorpaySuccess = async (response, appOrderId) => {
+    try {
+      const verifyRes = await apiClient("/payments/verify-payment", {
+        method: "POST",
+        body: {
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          order_id: appOrderId,
+        },
+      });
+
+      if (verifyRes.success) {
+        window.location.href = `/order/success/${appOrderId}`;
+      } else {
+        alert("Payment verification failed. Please contact support.");
+      }
+    } catch (error) {
+      console.error("Verification failed", error);
+    }
   };
 
   const handlePlaceOrder = async () => {
-    
-    console.log("item", items);
     try {
       const orderData = {
         address_id: selectedAddress?._id,
-        mobile: profile?.mobile,
         items: items.map((item) => ({
           product_id: item.product?._id,
-          product_variant_id: item.variant?._id || null,
+          product_variant_id: item.variant?._id,
           quantity: item.qty,
           price: item.price,
         })),
-        payment_method: "upi",
+        mobile: selectedAddress?.mobile,
+        address: selectedAddress?.address,
+        location: selectedAddress?.location,
+        payment_method: selectedPayment === "razorpay" ? "Razorpay" : "COD",
         promo_details: appliedCoupon
           ? {
               code: appliedCoupon.code,
@@ -155,29 +151,86 @@ const CheckoutPage = () => {
           : null,
       };
 
-      console.log("orderData", orderData);
-      const response = await apiClient("/order", {
-        method: "POST",
-        body: orderData,
-      });
+      if (selectedPayment === "razorpay") {
+        // 1. Create App Order first (status will be PENDING_PAYMENT)
+        const appOrderRes = await apiClient("/order", {
+          method: "POST",
+          body: orderData,
+        });
 
-      console.log("res", response);
+        if (!appOrderRes.success) {
+          alert("Failed to initialize order.");
+          return;
+        }
 
-      if (response?.success) {
-        toast.success("Order placed successfully 🎉");
+        const appOrderId = appOrderRes.data.order_id;
+        const appOrderNumber = appOrderRes.data.order_number;
 
-        const orderId = response?.data?.order_id;
-        const totalAmount = response?.data?.total;
+        // 2. Create Razorpay Order
+        const rzpRes = await apiClient("/payments/create-order", {
+          method: "POST",
+          body: {
+            amount: appOrderRes.data.total,
+            receipt: appOrderNumber
+          }
+        });
 
-        router.push(
-          `/process-payment?amount=${totalAmount}&orderId=${orderId}&mobile=${profile?.mobile}&email=${profile?.email}&name=${profile?.username}`,
-        );
+        if (!rzpRes.success) {
+          alert("Failed to initialize payment gateway.");
+          return;
+        }
+
+        // 3. Open Razorpay Modal
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: rzpRes.order.amount,
+          currency: "INR",
+          name: "Sevafast",
+          description: "Order Checkout",
+          order_id: rzpRes.order.id,
+          handler: async function (response) {
+            // 4. Verify Payment on Success
+            handleRazorpaySuccess(response, appOrderId);
+          },
+          modal: {
+            ondismiss: async function () {
+              // 5. User Closed Modal - Mark Order as CANCELLED
+              try {
+                await apiClient("/payments/cancel-payment", {
+                  method: "POST",
+                  body: { order_id: appOrderId, reason: "Payment window closed by user" }
+                });
+              } catch (err) {
+                console.error("Cancellation record failed", err);
+              }
+            }
+          },
+          prefill: {
+            name: profile?.username,
+            email: profile?.email,
+            contact: profile?.mobile,
+          },
+          theme: {
+            color: "#B12704",
+          },
+        };
+
+        const rzp1 = new window.Razorpay(options);
+        rzp1.open();
       } else {
-        toast.error(response?.message || "Failed to place order");
+        // COD logic
+        const response = await apiClient("/order", {
+          method: "POST",
+          body: orderData,
+        });
+
+        if (response.success) {
+          window.location.href = `/order/success/${response.data.order_id}`;
+        }
       }
     } catch (error) {
       console.error("Order placement failed:", error);
-      // toast.error("Something went wrong while placing order");
+      alert("Order placement failed. Please verify your details and try again.");
     }
   };
 
@@ -197,18 +250,17 @@ const CheckoutPage = () => {
         {/* LEFT */}
         <div className="lg:col-span-2 space-y-6">
           <Delivery
-            profile={profile}
             address={address}
+            selectedAddress={selectedAddress}
             onAddressChange={handleAddressChange}
             refreshCheckout={fetchCheckoutData}
           />
-          {/* <Payment
+          <Payment
             summary={summary}
             profile={profile}
             orderId={orderId}
-            selectedAddress={selectedAddress}
-            getPaymentUrl={getPaymentUrl}
-          /> */}
+            onPaymentMethodChange={setSelectedPayment}
+          />
           <ReviewItems items={items} />
         </div>
         <OrderPlace
@@ -220,6 +272,11 @@ const CheckoutPage = () => {
           onCouponApplied={handleCouponApplied}
           orderTotal={orderTotal}
           estimatedDelivery={summaryDelivery}
+          selectedPayment={selectedPayment}
+        />
+        <Script
+          id="razorpay-checkout-js"
+          src="https://checkout.razorpay.com/v1/checkout.js"
         />
       </div>
     </div>
@@ -229,30 +286,12 @@ const CheckoutPage = () => {
 export default CheckoutPage;
 
 const Delivery = React.memo(
-  ({ profile, address, onAddressChange, refreshCheckout }) => {
+  function Delivery({ address, selectedAddress, onAddressChange, refreshCheckout }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedAddress, setSelectedAddress] = useState(null);
-
     // Get addresses array
-    const addressesArray = address?.addresses || [];
-
-    // Initialize selected address
-    useEffect(() => {
-      if (!selectedAddress && addressesArray.length > 0) {
-        const defaultAddr =
-          addressesArray.find((addr) => addr.is_default === true) ||
-          addressesArray[0];
-        setSelectedAddress(defaultAddr);
-
-        // Notify parent component
-        if (onAddressChange) {
-          onAddressChange(defaultAddr);
-        }
-      }
-    }, [addressesArray, selectedAddress, onAddressChange]);
+    const addressesArray = useMemo(() => address?.addresses || [], [address]);
 
     const handleAddressSelect = (addr) => {
-      setSelectedAddress(addr);
       if (onAddressChange) {
         onAddressChange(addr);
       }
@@ -424,189 +463,66 @@ const Delivery = React.memo(
   },
 );
 
-const Payment = React.memo(({ summary, profile, orderId, getPaymentUrl }) => {
-  console.log("summary", summary);
-  const [selectedPayment, setSelectedPayment] = useState("tez");
-  const [paymentUrl, setPaymentUrl] = useState(null);
-  const [isGeneratingUrl, setIsGeneratingUrl] = useState(false);
-
-  // Generate payment URL when Tez is selected
-  useEffect(() => {
-    const generateUrl = async () => {
-      if (selectedPayment === "tez" && !paymentUrl && !isGeneratingUrl) {
-        setIsGeneratingUrl(true);
-        try {
-          const url = await getPaymentUrl();
-          setPaymentUrl(url);
-        } catch (error) {
-          console.error("Failed to generate payment URL:", error);
-          setPaymentUrl(null);
-        } finally {
-          setIsGeneratingUrl(false);
-        }
-      }
-    };
-
-    generateUrl();
-  }, [selectedPayment]); // Only depend on selectedPayment
+const Payment = React.memo(
+  function Payment({
+    onPaymentMethodChange,
+  }) {
+  const [selectedPayment, setSelectedPayment] = useState("razorpay");
 
   const handlePaymentChange = (value) => {
     setSelectedPayment(value);
-    // Reset payment URL if switching away from Tez
-    if (value !== "tez") {
-      setPaymentUrl(null);
-    }
+    if (onPaymentMethodChange) onPaymentMethodChange(value);
   };
   return (
     <section className="bg-white rounded-md p-4 border border-gray-200 shadow-sm">
-      <h2 className="text-[18px] font-bold mb-4 text-gray-900">
-        2. Payment method
+      <h2 className="text-[18px] font-bold mb-4 text-gray-900 border-b pb-2">
+        Choose a payment method
       </h2>
 
       <div className="space-y-0 border border-gray-200 rounded-md overflow-hidden">
-        {/* UPI / Tez Option */}
+        {/* Online Payment Option */}
         <div
-          className={`p-3 border-b border-gray-200 ${selectedPayment === "tez" ? "bg-[#FCF5EE]" : "bg-white"}`}
+          className={`p-4 border-b border-gray-200 ${selectedPayment === "razorpay" ? "bg-[#FCF5EE]" : "bg-white"}`}
         >
-          <div className="flex items-start justify-between">
-            <label className="flex items-start gap-3 cursor-pointer w-full">
-              <input
-                type="radio"
-                name="payment"
-                value="tez"
-                checked={selectedPayment === "tez"}
-                onChange={(e) => handlePaymentChange(e.target.value)}
-                className="mt-1 h-4 w-4 accent-[#007185]"
-              />
-              <div className="flex flex-col">
-                <span className="text-[14px] font-bold text-gray-900">
-                  QR code (Tez)
-                </span>
-                <span className="text-[12px] text-gray-600">
-                  Scan and pay instantly
-                </span>
-              </div>
-            </label>
-            {selectedPayment === "tez" && (
-              <div className="text-[12px]">
-                {isGeneratingUrl ? (
-                  <span className="text-gray-500 animate-pulse italic">
-                    Generating...
-                  </span>
-                ) : paymentUrl ? (
-                  <span className="text-[#007600] font-medium">✓ Ready</span>
-                ) : (
-                  <span className="text-[#B12704]">Unavailable</span>
-                )}
-              </div>
-            )}
-          </div>
-
-          {selectedPayment === "tez" && paymentUrl && (
-            <div className="ml-7 mt-3 p-3 border border-gray-300 rounded-md bg-white shadow-inner">
-              <p className="text-[12px] text-gray-500 mb-2">
-                Order ID:{" "}
-                <span className="font-bold text-gray-700">{orderId}</span>
-              </p>
-              <SimpleTezPaymentButton
-                paymentUrl={paymentUrl}
-                disabled={isGeneratingUrl}
-              />
+          <label className="flex items-start gap-4 cursor-pointer w-full">
+            <input
+              type="radio"
+              name="payment"
+              value="razorpay"
+              checked={selectedPayment === "razorpay"}
+              onChange={(e) => handlePaymentChange(e.target.value)}
+              className="mt-1 h-5 w-5 accent-[#007185]"
+            />
+            <div className="flex flex-col">
+              <span className="text-[15px] font-bold text-gray-900">
+                Online Payment
+              </span>
+              <span className="text-[13px] text-gray-600">
+                Pay securely via Razorpay (Cards, UPI, NetBanking)
+              </span>
             </div>
-          )}
+          </label>
         </div>
 
         {/* COD Option */}
         <div
-          className={`p-3 border-b border-gray-200 ${selectedPayment === "cod" ? "bg-[#FCF5EE]" : "bg-white"}`}
+          className={`p-4 ${selectedPayment === "cod" ? "bg-[#FCF5EE]" : "bg-white"}`}
         >
-          <label className="flex items-start gap-3 cursor-pointer">
+          <label className="flex items-start gap-4 cursor-pointer w-full">
             <input
               type="radio"
               name="payment"
               value="cod"
               checked={selectedPayment === "cod"}
               onChange={(e) => handlePaymentChange(e.target.value)}
-              className="mt-1 h-4 w-4 accent-[#007185]"
+              className="mt-1 h-5 w-5 accent-[#007185]"
             />
             <div className="flex flex-col">
-              <span className="text-[14px] font-bold text-gray-900">
-                Cash on Delivery
+              <span className="text-[15px] font-bold text-gray-900">
+                Cash on Delivery (COD)
               </span>
-              <span className="text-[12px] text-gray-600">
-                Pay when you receive the package
-              </span>
-            </div>
-          </label>
-        </div>
-
-        {/* Generic UPI Option */}
-        <div
-          className={`p-3 border-b border-gray-200 ${selectedPayment === "upi" ? "bg-[#FCF5EE]" : "bg-white"}`}
-        >
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value="upi"
-              checked={selectedPayment === "upi"}
-              onChange={(e) => handlePaymentChange(e.target.value)}
-              className="mt-1 h-4 w-4 accent-[#007185]"
-            />
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold text-gray-900">
-                Other UPI Apps
-              </span>
-              <span className="text-[12px] text-gray-600">
-                Google Pay, PhonePe, Paytm
-              </span>
-            </div>
-          </label>
-        </div>
-
-        {/* Card Option */}
-        <div
-          className={`p-3 border-b border-gray-200 ${selectedPayment === "card" ? "bg-[#FCF5EE]" : "bg-white"}`}
-        >
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value="card"
-              checked={selectedPayment === "card"}
-              onChange={(e) => handlePaymentChange(e.target.value)}
-              className="mt-1 h-4 w-4 accent-[#007185]"
-            />
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold text-gray-900">
-                Credit / Debit Card
-              </span>
-              <span className="text-[12px] text-gray-600">
-                All major cards accepted
-              </span>
-            </div>
-          </label>
-        </div>
-
-        {/* Net Banking Option */}
-        <div
-          className={`p-3 ${selectedPayment === "netbanking" ? "bg-[#FCF5EE]" : "bg-white"}`}
-        >
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="radio"
-              name="payment"
-              value="netbanking"
-              checked={selectedPayment === "netbanking"}
-              onChange={(e) => handlePaymentChange(e.target.value)}
-              className="mt-1 h-4 w-4 accent-[#007185]"
-            />
-            <div className="flex flex-col">
-              <span className="text-[14px] font-bold text-gray-900">
-                Net Banking
-              </span>
-              <span className="text-[12px] text-gray-600">
-                Secure payment via your bank
+              <span className="text-[13px] text-gray-600">
+                Pay when the product is delivered to your doorstep.
               </span>
             </div>
           </label>
@@ -616,11 +532,11 @@ const Payment = React.memo(({ summary, profile, orderId, getPaymentUrl }) => {
   );
 });
 
-const ReviewItems = React.memo(({ items }) => {
+const ReviewItems = React.memo(function ReviewItems({ items }) {
   return (
     <section className="bg-white rounded-md p-4 border border-gray-200 shadow-sm">
       <h2 className="text-[18px] font-bold mb-4 text-gray-900">
-        2. Review items and delivery
+        3. Review items and delivery
       </h2>
 
       <div className="space-y-4">
@@ -683,16 +599,15 @@ const ReviewItems = React.memo(({ items }) => {
 });
 
 const OrderPlace = React.memo(
-  ({
+  function OrderPlace({
     summary,
-    orderId,
     selectedAddress,
     onPlaceOrder,
     appliedCoupon,
     onCouponApplied,
-    orderTotal,
     estimatedDelivery,
-  }) => {
+    selectedPayment,
+  }) {
     const finalTotal = appliedCoupon
       ? summary.finalTotal - appliedCoupon.discount
       : summary.finalTotal;
@@ -715,7 +630,7 @@ const OrderPlace = React.memo(
           <div className="space-y-1.5 text-[12px] text-gray-700">
             <div className="flex justify-between">
               <span>Items ({summary.itemsCount}):</span>
-              <span>₹{summary.totalPrice.toLocaleString("en-IN")}</span>
+              <span>₹{summary?.totalPrice?.toLocaleString("en-IN")}</span>
             </div>
 
             <div className="flex justify-between">
@@ -765,24 +680,11 @@ const OrderPlace = React.memo(
 
         <div className="border-t border-gray-200 pt-4">
           <button
-            className={`${getButtonStyle()} flex items-center justify-center gap-2`}
+            className={getButtonStyle()}
             onClick={onPlaceOrder}
             disabled={!selectedAddress}
           >
-            <span>Proceed to Payment</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14m-7-7 7 7-7 7" />
-            </svg>
+            Place your order {selectedPayment === "razorpay" ? "(Online)" : "(COD)"}
           </button>
         </div>
 

@@ -4,8 +4,8 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { useEffect, useState, useMemo, useCallback } from "react";
-import { ChevronDown, Trash2 } from "lucide-react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { Trash2 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCart } from "@/redux/slices/cartSlice";
@@ -14,34 +14,44 @@ const CartPage = () => {
   const dispatch = useDispatch();
   const { items, loading } = useSelector((state) => state.cart);
 
+  const [tempQuantities, setTempQuantities] = useState({});
+  const debounceTimers = useRef({});
+
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
 
-  const updateQty = useCallback(
-    async (cartItemId, qty) => {
-      try {
-        const res = await apiClient(`/viewCart/item/${cartItemId}`, {
-          method: "PUT",
-          body: {
-            qty: Number(qty),
-          },
-        });
-
-        if (res?.success) {
-          toast.success("Quantity updated");
-        }
-
-        dispatch(fetchCart());
-      } catch (err) {
-        console.log("error", err);
-        const message = err?.error || "Failed to update quantity";
-
-        toast.error(message);
+  const performUpdate = useCallback(async (cartItemId, qty) => {
+    try {
+      const res = await apiClient(`/viewCart/item/${cartItemId}`, {
+        method: "PUT",
+        body: { qty: Number(qty) },
+      });
+      if (res?.success) {
+        toast.success("Quantity updated");
       }
-    },
-    [dispatch],
-  );
+      dispatch(fetchCart());
+    } catch (err) {
+      console.log("error", err);
+      toast.error(err?.error || "Failed to update quantity");
+      dispatch(fetchCart()); // Revert on error
+    }
+  }, [dispatch]);
+
+  const updateQty = useCallback((cartItemId, qty) => {
+    // 1. Optimistic Update
+    setTempQuantities(prev => ({ ...prev, [cartItemId]: qty }));
+
+    // 2. Debounce API Call
+    if (debounceTimers.current[cartItemId]) {
+      clearTimeout(debounceTimers.current[cartItemId]);
+    }
+    
+    debounceTimers.current[cartItemId] = setTimeout(() => {
+      performUpdate(cartItemId, qty);
+      delete debounceTimers.current[cartItemId];
+    }, 500);
+  }, [performUpdate]);
 
   const removeItem = useCallback(
     async (cartItemId) => {
@@ -119,7 +129,11 @@ const CartPage = () => {
           <h1 className="text-2xl font-semibold mb-4 text-black">
             Shopping Cart
           </h1>
-          <Carts items={items} onQtyChange={updateQty} onRemove={removeItem} />
+          <Carts 
+            items={items.map(item => ({ ...item, qty: tempQuantities[item._id] ?? item.qty }))} 
+            onQtyChange={updateQty} 
+            onRemove={removeItem} 
+          />
         </div>
         <OrderSummary summary={summary} />
       </div>
@@ -177,28 +191,26 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
             </p>
 
             <div className="flex items-center gap-3 mt-3 flex-wrap">
-              <div className="relative inline-block">
-                <select
-                  value={item.qty}
-                  disabled={!item.inStock}
-                  onChange={(e) =>
-                    onQtyChange(item._id, Number(e.target.value))
-                  }
-                  className="bg-[#F0F2F2] hover:bg-[#E3E6E6] border border-[#D5D9D9] rounded-lg px-2 py-1
-                   text-[13px] text-gray-800 shadow-sm focus:border-[#007185] outline-none cursor-pointer appearance-none pr-7 min-w-[70px]"
+              <div className="flex items-center border border-gray-300 rounded-full overflow-hidden bg-white shadow-sm h-8">
+                <button
+                  onClick={() => onQtyChange(item._id, Math.max(1, item.qty - 1))}
+                  className="w-8 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors border-r border-gray-200"
+                  disabled={item.qty <= 1 || !item.inStock}
                 >
-                  {Array.from(
-                    { length: Math.min(5, item.maxQty || 5) },
-                    (_, i) => i + 1,
-                  ).map((q) => (
-                    <option key={q} value={q}>
-                      Qty: {q}
-                    </option>
-                  ))}
-                </select>
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <ChevronDown size={14} className="text-gray-500" />
+                  <span className="text-lg font-medium">−</span>
+                </button>
+                <div className="px-3 flex items-center justify-center min-w-[32px]">
+                  <span className="text-[13px] font-semibold text-gray-800">
+                    {item.qty}
+                  </span>
                 </div>
+                <button
+                  onClick={() => onQtyChange(item._id, Math.min(item.maxQty || 100, item.qty + 1))}
+                  className="w-8 h-full flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors border-l border-gray-200"
+                  disabled={item.qty >= (item.maxQty || 100) || !item.inStock}
+                >
+                  <span className="text-lg font-medium">+</span>
+                </button>
               </div>
 
               <div className="w-[1px] h-4 bg-gray-300 hidden sm:block"></div>
@@ -243,7 +255,7 @@ const OrderSummary = React.memo(({ summary }) => {
         {/* Items Count & Price */}
         <div className="flex justify-between text-[13px] text-gray-700">
           <span>Items ({summary.itemsCount}):</span>
-          <span>₹{summary.totalPrice.toLocaleString("en-IN")}</span>
+          <span>₹{summary?.totalPrice?.toLocaleString("en-IN")}</span>
         </div>
 
         {/* Discount Section */}
