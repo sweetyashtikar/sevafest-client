@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import {
-  ShoppingCart,
   Star,
   Heart,
   Share2,
@@ -17,9 +16,11 @@ import {
 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/redux/slices/cartSlice";
 
 export default function Page() {
-  
+  const dispatch = useDispatch();
   const { id } = useParams();
 
   const [product, setProduct] = useState(null);
@@ -32,7 +33,7 @@ export default function Page() {
   const [variantSpecialPrice, setVariantSpecialPrice] = useState(0);
   const [groupedAttributes, setGroupedAttributes] = useState({});
 
-  const fetchProduct = async () => {
+  const fetchProduct = useCallback(async () => {
     try {
       setLoading(true);
       const res = await apiClient(`/product/${id}`);
@@ -62,11 +63,11 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     if (id) fetchProduct();
-  }, [id]);
+  }, [id, fetchProduct]);
 
   // Group variants by attributes (color, size, etc.)
   const groupVariantsByAttributes = (variants) => {
@@ -133,7 +134,7 @@ export default function Page() {
   };
 
 
-  const addToCart = async (qty = 1) => {
+  const addToCartAction = async () => {
     try {
       const payload = {
         productId: product._id,
@@ -145,15 +146,9 @@ export default function Page() {
         payload.variantId = selectedVariant._id;
       }
 
-      const res = await apiClient("/viewCart/addtoCart", {
-        method: "POST",
-        body: payload,
-      });
-
-      if (res?.success) {
-        console.log("Added to cart");
-        return true;
-      }
+      await dispatch(addToCart(payload)).unwrap();
+      console.log("Added to cart");
+      return true;
     } catch (err) {
       console.error("Add to cart failed", err);
     }
@@ -1097,7 +1092,7 @@ const savingsPercent = getDiscountPercentage();
 
                 <div className="mt-6 space-y-3">
                   <button
-                    onClick={() => addToCart(quantity)}
+                    onClick={() => addToCartAction(quantity)}
                     disabled={product.productType === 'variable_product' && !selectedVariant}
                     className="w-full bg-yellow-400 hover:bg-yellow-500 text-gray-900 py-3 rounded-full 
                     font-medium disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"

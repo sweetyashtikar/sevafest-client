@@ -84,7 +84,7 @@ export default function Footer() {
       {/* Newsletter Section */}
       <div className="relative z-10 flex flex-col items-center justify-center py-8 md:py-12 px-4">
         <h2 className="mb-4 md:mb-6 text-xl sm:text-2xl md:text-3xl font-bold text-white text-center leading-tight">
-          Subscribe to the SevaFast<span className="text-orange-500">New Arrivals</span>
+          Subscribe to the SevaFast<span className="text-orange-500"> New Arrivals</span>
         </h2>
         <div className="flex flex-col sm:flex-row w-full max-w-xl overflow-hidden rounded-lg shadow-xl">
           <input

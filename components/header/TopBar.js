@@ -30,6 +30,7 @@ import { fetchCart } from "@/redux/slices/cartSlice";
 import { SupportModal } from "@/ui/SupportModal";
 import { AddressModal } from "@/ui/AddressModal";
 import { CategoryDropdown } from "@/components/header/CategoryDropdown";
+import Link from "next/link";
 
 export default function TopBar() {
   const dispatch = useDispatch();
@@ -109,10 +110,14 @@ export default function TopBar() {
         <div className="bg-[#fdd835] px-4 py-1 shadow-sm">
           <div className="max-w-7xl mx-auto flex items-center justify-between gap-8">
             <div className="flex-shrink-0 cursor-pointer h-full flex items-cente ">
-              <img
+              <Image
                 src="/logo.png"
                 alt="SevaFast Logo"
+                width={150}
+                height={60}
                 className="h-15 w-auto object-contain"
+                onClick={() => router.push("/")}
+                priority
               />
             </div>
             <nav className="hidden lg:flex items-center gap-8 text-[#1a1c24] font-extrabold text-[15px] uppercase">
@@ -139,21 +144,21 @@ export default function TopBar() {
                 />
               </div>
 
-              <a href="/" className="hover:text-black">
+              <Link href="/" className="hover:text-black">
                 Home
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/products"
                 className="flex items-center gap-1 cursor-pointer hover:text-black group"
               >
                 PRODUCTS
-              </a>
-              <a
+              </Link>
+              {/* <a
                 href="/coupons"
                 className="flex items-center gap-1 cursor-pointer hover:text-black"
               >
                 <PartyPopper className="w-4 h-4" /> COUPONS
-              </a>
+              </a> */}
             </nav>
 
             <div className="flex-grow max-w-xl relative">

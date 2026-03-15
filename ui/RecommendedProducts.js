@@ -3,9 +3,11 @@
 import { useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
 import ProductCard from "@/ui/ProductCard";
-import { apiClient } from "@/services/apiClient";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/redux/slices/cartSlice";
 
 export default function RecommendedProducts() {
+  const dispatch = useDispatch();
   const router = useRouter();
 
   const recommended = useSelector((state) => state.recommendation.recommended);
@@ -30,19 +32,23 @@ export default function RecommendedProducts() {
     return null;
   };
 
-  const addToCart = async (productId, qty = 1) => {
-    try {
-      const res = await apiClient("/viewCart/addtoCart", {
-        method: "POST",
-        body: {
-          productId,
-          qty,
-        },
-      });
+  const isOutOfStock = (product) => product.inStock === false;
 
-      if (res?.success) {
-        console.log("✅ Added to cart");
+  const addToCartAction = async (product, qty = 1) => {
+    try {
+      let variantId = null;
+
+      if (product.productType === "variable_product") {
+        const firstVariant = product.variants?.find(
+          (v) => v.variant_isActive && v.variant_totalStock > 0,
+        );
+        variantId = firstVariant?._id;
       }
+
+      await dispatch(
+        addToCart({ productId: product._id, variantId, qty }),
+      ).unwrap();
+      console.log("✅ Added to cart");
     } catch (err) {
       console.error("Add to cart error", err);
     }
@@ -69,8 +75,9 @@ export default function RecommendedProducts() {
               discount={product?.discountPercentage}
               rating={Math.round(product.rating?.average || 0)}
               reviews={product.rating?.count || 0}
+              outOfStock={isOutOfStock(product)}
               onNavigate={() => router.push(`/products/${product._id}`)}
-              onAddToCart={() => addToCart(product._id)}
+              onAddToCart={() => addToCartAction(product)}
             />
           </div>
         ))}

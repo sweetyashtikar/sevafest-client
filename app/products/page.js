@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { apiClient } from "@/services/apiClient";
 import { useDispatch } from "react-redux";
 import { setRecommended } from "@/redux/slices/recommendationSlice";
-import { fetchCart } from "@/redux/slices/cartSlice";
+import { addToCart } from "@/redux/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import { Loader } from "@/ui/Loader";
 
@@ -54,30 +54,28 @@ export default function Page() {
   const [ratings, setRatings] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  const addToCart = async (productId, qty = 1) => {
+  const addToCartAction = async (product, qty = 1) => {
     try {
-      console.log("Card");
-      const res = await apiClient("/viewCart/addtoCart", {
-        method: "POST",
-        body: {
-          productId,
-          qty,
-        },
-      });
+      let variantId = null;
 
-      if (res?.success) {
-        dispatch(fetchCart());
-        console.log("✅ Added to cart", res);
-      } else {
-        console.error("Failed to add cart", res);
+      if (product.productType === "variable_product") {
+        const firstVariant = product.variants?.find(
+          (v) => v.variant_isActive && v.variant_totalStock > 0,
+        );
+        variantId = firstVariant?._id;
       }
+
+      await dispatch(
+        addToCart({ productId: product._id, variantId, qty }),
+      ).unwrap();
+      console.log("✅ Added to cart");
     } catch (err) {
       console.error("Add to cart error", err);
     }
   };
 
   // ================= API =================
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const res = await apiClient(`/product?page=1&limit=1000`);
       console.log("res", res);
@@ -89,11 +87,11 @@ export default function Page() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts, dispatch]);
 
   useEffect(() => {
     if (products.length > 0) {
@@ -237,7 +235,7 @@ export default function Page() {
             : true,
         )
     );
-  }, [products, search, price, brands, ratings]);
+  }, [products, search, price, brands, ratings, categories]);
 
   const sortedProducts = useMemo(() => {
     return [...filteredProducts].sort((a, b) => {
@@ -273,6 +271,8 @@ export default function Page() {
     setSortBy("featured");
     setCurrentPage(1);
   };
+
+  const isOutOfStock = (product) => product.inStock === false;
 
   const getProductImage = (product) => {
     if (product?.mainImage) return product.mainImage;
@@ -375,10 +375,11 @@ export default function Page() {
                         discount={product?.discountPercentage}
                         rating={Math.round(product.rating?.average || 0)}
                         reviews={product.rating?.count || 0}
+                        outOfStock={isOutOfStock(product)}
                         onNavigate={() =>
                           router.push(`/products/${product._id}`)
                         }
-                        onAddToCart={() => addToCart(product._id)}
+                        onAddToCart={() => addToCartAction(product)}
                       />
                     </motion.div>
                   ))}
