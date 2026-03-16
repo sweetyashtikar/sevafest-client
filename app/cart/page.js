@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "react-toastify";
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { Trash2 } from "lucide-react";
 import { apiClient } from "@/services/apiClient";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import { fetchCart } from "@/redux/slices/cartSlice";
 
 const CartPage = () => {
   const dispatch = useDispatch();
-  const { items, loading } = useSelector((state) => state.cart);
+  const { items, summary, loading } = useSelector((state) => state.cart);
 
   const [tempQuantities, setTempQuantities] = useState({});
   const debounceTimers = useRef({});
@@ -77,27 +77,7 @@ const CartPage = () => {
   );
 
   // ================= MEMOIZED VALUES =================
-  const summary = useMemo(() => {
-    if (!items.length) {
-      return {
-        itemsCount: 0,
-        totalPrice: 0,
-        totalDiscount: 0,
-        deliveryCharge: 0,
-        finalTotal: 0,
-      };
-    }
-
-    const totalPrice = items.reduce((acc, item) => acc + item.itemTotal, 0);
-
-    return {
-      itemsCount: items.length,
-      totalPrice,
-      totalDiscount: 0,
-      deliveryCharge: 0,
-      finalTotal: totalPrice,
-    };
-  }, [items]);
+  // Summary is now handled by Redux from the backend
 
   if (loading) {
     return (
@@ -132,7 +112,8 @@ const CartPage = () => {
           <Carts 
             items={items.map(item => ({ ...item, qty: tempQuantities[item._id] ?? item.qty }))} 
             onQtyChange={updateQty} 
-            onRemove={removeItem} 
+            onRemove={removeItem}
+            deliveryCharge={summary?.deliveryCharge}
           />
         </div>
         <OrderSummary summary={summary} />
@@ -143,7 +124,7 @@ const CartPage = () => {
 
 export default CartPage;
 
-const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
+const Carts = React.memo(({ items, onQtyChange, onRemove, deliveryCharge }) => {
   return (
     <div className="space-y-4">
       {items.map((item, index) => (
@@ -185,10 +166,16 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
               </p>
             )}
 
-            <p className="text-[11px] text-gray-500 mt-1">
-              Eligible for{" "}
-              <span className="font-bold text-[#00A8E1]">FREE Shipping</span>
-            </p>
+            {deliveryCharge === 0 ? (
+              <p className="text-[11px] text-gray-500 mt-1">
+                Eligible for{" "}
+                <span className="font-bold text-[#00A8E1]">FREE Shipping</span>
+              </p>
+            ) : (
+              <p className="text-[11px] text-gray-500 mt-1">
+                Shipping Charges: <span className="font-bold text-[#B12704]">₹{deliveryCharge}</span>
+              </p>
+            )}
 
             <div className="flex items-center gap-3 mt-3 flex-wrap">
               <div className="flex items-center border border-gray-300 rounded-full overflow-hidden bg-white shadow-sm h-8">
@@ -243,6 +230,7 @@ const Carts = React.memo(({ items, onQtyChange, onRemove }) => {
     </div>
   );
 });
+Carts.displayName = "Carts";
 
 const OrderSummary = React.memo(({ summary }) => {
   return (
@@ -282,7 +270,7 @@ const OrderSummary = React.memo(({ summary }) => {
       <div className="border-t border-gray-200 pt-3 mb-4">
         <div className="flex justify-between font-bold text-[18px] text-[#B12704]">
           <span>Order Total:</span>
-          <span>₹{summary.finalTotal.toLocaleString("en-IN")}</span>
+          <span>₹{summary?.finalTotal?.toLocaleString("en-IN") || 0}</span>
         </div>
       </div>
 
@@ -308,9 +296,11 @@ const OrderSummary = React.memo(({ summary }) => {
 
         <p className="text-[11px] text-gray-500 text-center leading-relaxed">
           Choose a payment method to continue checking out. You will still have
-          a chance to review your order before it's final.
+          a chance to review your order before it&apos;s final.
         </p>
       </div>
     </div>
   );
 });
+
+OrderSummary.displayName = "OrderSummary";

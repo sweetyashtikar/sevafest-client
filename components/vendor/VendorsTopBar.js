@@ -80,6 +80,10 @@ export default function VendorsTopBar() {
                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
                   Account Summary
                 </p>
+                <button onClick={()=> router.push("/profile")} className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-blue-500 bg-white border border-blue-100 rounded-xl hover:bg-blue-50 hover:text-blue-600 shadow-sm transition-all active:scale-95">Profile</button>
+
+
+
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">

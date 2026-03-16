@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { apiClient } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Eye, EyeOff, User, Mail, Phone, Briefcase } from "lucide-react";
+import { Eye, EyeOff, User, Mail, Phone, Briefcase, Gift } from "lucide-react";
 
 export default function Page() {
   const router = useRouter();
@@ -20,6 +20,7 @@ export default function Page() {
   const [password, setPassword] = useState("");
   const [rolesOptions, setRolesOptions] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
+  const [friendsCode, setFriendsCode] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState("");
@@ -105,6 +106,7 @@ export default function Page() {
         password,
         mobile,
         role: selectedRole,
+        friends_code: friendsCode
       };
 
       const res = await apiClient("/users/", {
@@ -272,6 +274,28 @@ export default function Page() {
                   ))}
                 </select>
               </motion.div>
+              
+              {/* Optional Referral Code - only for vendors */}
+              {selectedRole?.toLowerCase().includes("vendor") && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative"
+                >
+                  <Gift
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Referral Code (Optional)"
+                    value={friendsCode}
+                    onChange={(e) => setFriendsCode(e.target.value.toUpperCase())}
+                    className="w-full pl-12 pr-4 py-3 border-2 border-[#f3f4f7] rounded-xl focus:border-[#fcc221] outline-none transition-all bg-[#f3f4f7]/30 focus:bg-white text-black"
+                  />
+                </motion.div>
+              )}
 
               {/* Password */}
               <motion.div variants={itemVariants} className="relative">
