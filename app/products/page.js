@@ -4,11 +4,12 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { apiClient } from "@/services/apiClient";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setRecommended } from "@/redux/slices/recommendationSlice";
 import { addToCart } from "@/redux/slices/cartSlice";
 import { useRouter } from "next/navigation";
 import { Loader } from "@/ui/Loader";
+import { toast } from "react-toastify";
 
 const ProductCard = dynamic(() => import("@/ui/ProductCard"), {
   ssr: false,
@@ -40,6 +41,9 @@ const PER_PAGE = 20;
 export default function Page() {
   const router = useRouter();
   const dispatch = useDispatch();
+
+  const { user } = useSelector((a) => a.auth);
+
   const [view, setView] = useState("grid");
   const [sortBy, setSortBy] = useState("featured");
   const [products, setProducts] = useState([]);
@@ -55,6 +59,12 @@ export default function Page() {
   const [categories, setCategories] = useState([]);
 
   const addToCartAction = async (product, qty = 1) => {
+    if (!user) {
+      toast.warning("Please login to add product to cart");
+      router.push("/login");
+      throw new Error("User not logged in");
+    }
+
     try {
       let variantId = null;
 

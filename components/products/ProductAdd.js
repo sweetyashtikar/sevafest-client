@@ -17,8 +17,12 @@ import {
 } from "@/components/products/productTypes";
 import { apiClient } from "@/services/apiClient";
 import { ProductApi } from "@/API/api";
+import { useSelector } from "react-redux";
+import { useRouter } from "next/navigation";
 
 export default function AddProductPage() {
+  const router = useRouter();
+  const { user } = useSelector((a) => a.auth);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     // Basic Information
@@ -165,7 +169,7 @@ export default function AddProductPage() {
   // Update the next button logic to skip step 7 for VARIABLE products
   const handleNext = () => {
     const steps = getSteps();
-    const currentStepIndex = steps.findIndex(s => s.number === step);
+    const currentStepIndex = steps.findIndex((s) => s.number === step);
 
     if (currentStepIndex < steps.length - 1) {
       setStep(steps[currentStepIndex + 1].number);
@@ -178,7 +182,7 @@ export default function AddProductPage() {
 
   const handleBack = () => {
     const steps = getSteps();
-    const currentStepIndex = steps.findIndex(s => s.number === step);
+    const currentStepIndex = steps.findIndex((s) => s.number === step);
 
     if (currentStepIndex > 0) {
       setStep(steps[currentStepIndex - 1].number);
@@ -309,7 +313,7 @@ export default function AddProductPage() {
         // Add productLevelStock if using product-level stock
         if (
           formData.variantStockLevelType ===
-          VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
+            VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL &&
           formData.productLevelStock
         ) {
           formDataToSend.append(
@@ -321,7 +325,7 @@ export default function AddProductPage() {
 
       // ⭐ Handle variants WITHOUT images in the JSON
       // First, create a copy of variants without File objects
-      const variantsWithoutImages = formData.variants.map(variant => {
+      const variantsWithoutImages = formData.variants.map((variant) => {
         // Create a clean copy without File objects and previews
         const {
           variant_images,
@@ -333,7 +337,7 @@ export default function AddProductPage() {
         return {
           ...cleanVariant,
           // Initialize empty array for images - will be populated by multer
-          variant_images: []
+          variant_images: [],
         };
       });
 
@@ -353,14 +357,16 @@ export default function AddProductPage() {
               const imageId = `variant_${variantIndex}_img_${imageIndex}_${Date.now()}`;
 
               // Append the image with a custom filename
-              const customFile = new File([image], imageId, { type: image.type });
-              formDataToSend.append('variant_images', customFile);
+              const customFile = new File([image], imageId, {
+                type: image.type,
+              });
+              formDataToSend.append("variant_images", customFile);
 
               // Store the mapping
               imageMapping.push({
                 imageId,
                 variantIndex,
-                imageIndex
+                imageIndex,
               });
             }
           });
@@ -369,9 +375,11 @@ export default function AddProductPage() {
 
       // Append the mapping as a separate field
       if (imageMapping.length > 0) {
-        formDataToSend.append('variant_image_mapping', JSON.stringify(imageMapping));
+        formDataToSend.append(
+          "variant_image_mapping",
+          JSON.stringify(imageMapping),
+        );
       }
-
 
       //Handle image files separately
       if (formData.mainImage && formData.mainImage instanceof File) {
@@ -392,10 +400,10 @@ export default function AddProductPage() {
 
       // Log FormData contents for debugging
       for (let pair of formDataToSend.entries()) {
-        if (pair[0] === 'variants') {
-          console.log('variants:', JSON.parse(pair[1]));
-        } else if (pair[0] === 'variant_images') {
-          console.log('variant_images:', pair[1].name);
+        if (pair[0] === "variants") {
+          console.log("variants:", JSON.parse(pair[1]));
+        } else if (pair[0] === "variant_images") {
+          console.log("variant_images:", pair[1].name);
         } else {
           console.log(pair[0], pair[1]);
         }
@@ -413,18 +421,22 @@ export default function AddProductPage() {
         URL.revokeObjectURL(formData.mainImagePreview);
       }
       if (formData.otherImagesPreviews) {
-        formData.otherImagesPreviews.forEach(url => URL.revokeObjectURL(url));
+        formData.otherImagesPreviews.forEach((url) => URL.revokeObjectURL(url));
       }
       if (formData.variants) {
-        formData.variants.forEach(variant => {
+        formData.variants.forEach((variant) => {
           if (variant.variant_images_previews) {
-            variant.variant_images_previews.forEach(url => URL.revokeObjectURL(url));
+            variant.variant_images_previews.forEach((url) =>
+              URL.revokeObjectURL(url),
+            );
           }
         });
       }
-      // Reset form or redirect
-      // setFormData(initialFormState);
-      // router.push('/products');
+      if (user?.role === "admin") {
+        router.push("/admin/product");
+      } else {
+        router.push("/vendor/products");
+      }
     } catch (err) {
       console.error("Error:", err);
       setError(err.message || "Something went wrong");
@@ -432,35 +444,78 @@ export default function AddProductPage() {
       setLoading(false);
     }
   };
+
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <ProductBasicInfo formData={formData} updateFormData={updateFormData} />;
+        return (
+          <ProductBasicInfo
+            formData={formData}
+            updateFormData={updateFormData}
+          />
+        );
       case 2:
-        return <ProductCategorization formData={formData} updateFormData={updateFormData} />;
+        return (
+          <ProductCategorization
+            formData={formData}
+            updateFormData={updateFormData}
+          />
+        );
       case 3:
-        return <ProductPricing formData={formData} updateFormData={updateFormData} />;
+        return (
+          <ProductPricing formData={formData} updateFormData={updateFormData} />
+        );
       case 4:
-        return <ProductInventory formData={formData} updateFormData={updateFormData} />;
+        return (
+          <ProductInventory
+            formData={formData}
+            updateFormData={updateFormData}
+          />
+        );
 
       // Dynamic steps based on product type
       default:
         const steps = getSteps();
-        const currentStep = steps.find(s => s.number === step);
+        const currentStep = steps.find((s) => s.number === step);
 
         if (!currentStep) return null;
 
         switch (currentStep.label) {
           case "Variants":
-            return <ProductVariants formData={formData} updateFormData={updateFormData} />;
+            return (
+              <ProductVariants
+                formData={formData}
+                updateFormData={updateFormData}
+              />
+            );
           case "Shipping":
-            return <ProductShipping formData={formData} updateFormData={updateFormData} />;
+            return (
+              <ProductShipping
+                formData={formData}
+                updateFormData={updateFormData}
+              />
+            );
           case "Policies":
-            return <ProductPolicies formData={formData} updateFormData={updateFormData} />;
+            return (
+              <ProductPolicies
+                formData={formData}
+                updateFormData={updateFormData}
+              />
+            );
           case "Media":
-            return <ProductMedia formData={formData} updateFormData={updateFormData} />;
+            return (
+              <ProductMedia
+                formData={formData}
+                updateFormData={updateFormData}
+              />
+            );
           case "Digital":
-            return <ProductDigital formData={formData} updateFormData={updateFormData} />;
+            return (
+              <ProductDigital
+                formData={formData}
+                updateFormData={updateFormData}
+              />
+            );
           default:
             return null;
         }
@@ -476,7 +531,6 @@ export default function AddProductPage() {
           </p>
         </div>
 
-
         {/* Progress Bar */}
         <div className="mb-8">
           {/* Get dynamic steps based on product type */}
@@ -489,8 +543,9 @@ export default function AddProductPage() {
                   {steps.map((s) => (
                     <div
                       key={s.number}
-                      className={`flex-1 h-2 mx-1 rounded-full ${step >= s.number ? "bg-blue-600" : "bg-gray-200"
-                        }`}
+                      className={`flex-1 h-2 mx-1 rounded-full ${
+                        step >= s.number ? "bg-blue-600" : "bg-gray-200"
+                      }`}
                     />
                   ))}
                 </div>
@@ -532,12 +587,10 @@ export default function AddProductPage() {
                 Back
               </button>
             )}
-
-            {console.log('Current step:', step)};
-            {console.log('Total steps:', getTotalSteps())}
-            {console.log('Should show Next?', step < getTotalSteps())}
-            {console.log('Should show Submit?', step === getTotalSteps())}
-
+            {console.log("Current step:", step)};
+            {console.log("Total steps:", getTotalSteps())}
+            {console.log("Should show Next?", step < getTotalSteps())}
+            {console.log("Should show Submit?", step === getTotalSteps())}
             {step < getTotalSteps() ? (
               <button
                 type="button"
@@ -547,7 +600,6 @@ export default function AddProductPage() {
                 Next
               </button>
             ) : null}
-
             {/* Always show Next until the very last step */}
             {step === getTotalSteps() && (
               <button
@@ -558,7 +610,6 @@ export default function AddProductPage() {
                 {loading ? "Creating..." : "Create Product"}
               </button>
             )}
-
             {/* {step < getTotalSteps() ? (
               <button
                 type="button"

@@ -56,7 +56,7 @@ const OrderSuccessPage = ({ params }) => {
 
         <div className="flex gap-4">
           <Link
-            href="order/my-order"
+            href="/order/my-order"
             className="flex-1 border border-gray-300 rounded py-2 font-medium hover:bg-gray-50"
           >
             View Orders

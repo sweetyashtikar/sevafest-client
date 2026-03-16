@@ -26,9 +26,9 @@ export default function VendorsSidebar() {
   const router = useRouter();
 
   return (
-    <aside className="fixed left-0 top-0 w-64 h-screen bg-[#0F766E] border-r border-white/10">
+    <aside className="fixed left-0 top-0 w-54 h-screen bg-[#fdd835] border-r border-black/20">
       {/* LOGO */}
-      <div className="px-6 py-5 text-lg font-bold text-white border-b border-white/10">
+      <div className="px-6 py-5 text-lg font-bold text-black border-b border-black/20">
         Vendor Panel
       </div>
 
@@ -41,8 +41,8 @@ export default function VendorsSidebar() {
             <button
               key={item.path}
               onClick={() => router.push(item.path)}
-              className={`flex items-center gap-3 px-4 py-3 text-base text-white font-bold rounded-md
-                ${isActive ? "bg-white/20" : ""}`}
+              className={`flex items-center gap-3 px-4 py-3 text-base text-black font-bold rounded-md
+                ${isActive ? "bg-black/10" : "hover:bg-black/10"}`}
             >
               <item.icon size={20} />
               {item.label}

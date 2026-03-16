@@ -1,5 +1,6 @@
 "use client";
 
+import {toast} from "react-toastify"
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { apiClient } from "@/services/apiClient";
@@ -141,12 +142,11 @@ export default function CategoryFormPage() {
       const url = id && id !== "new" ? `/category/${id}` : "/category";
       const method = id && id !== "new" ? "PUT" : "POST";
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
+      const result = await apiClient(`${url}`, {
         method,
         body: submitData,
       });
-      const result = await res.json();
-
+      
       if (result.success) {
         toast.success(
           id && id !== "new"
@@ -156,7 +156,7 @@ export default function CategoryFormPage() {
       }
 
       if (result.success) {
-        router.push("/admin/categories");
+        router.push("/admin/category");
       } else {
         toast.error(result.error || result.message || "Something went wrong");
         setError(result.error || result.message);

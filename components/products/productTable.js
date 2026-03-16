@@ -28,9 +28,12 @@ const ProductTable = ({ path, editPath }) => {
 
   // console.log("user", user);
 
-  const isAdmin = user?.role?.role === "admin";
+  const isAdmin = user?.role === "admin";
+  const role = user?.role;
 
-  // console.log("Role", isAdmin);
+  console.log("role", role);
+
+  console.log("Role", isAdmin);
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -80,9 +83,10 @@ const ProductTable = ({ path, editPath }) => {
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
+    if (!role) return;
     fetchProducts();
     fetchFilterOptions();
-  }, []);
+  }, [role]);
 
   const fetchProducts = async () => {
     try {
@@ -99,9 +103,6 @@ const ProductTable = ({ path, editPath }) => {
         }
       });
 
-      const role = user?.role?.role;
-
-      console.log("Sending params:", params); // Debug log
       const response = await ProductApi.getProductsByRole(role, params);
       console.log("products fetched", response);
 
@@ -271,7 +272,17 @@ const ProductTable = ({ path, editPath }) => {
   const handleApproveToggle = async (product) => {
     const newValue = !product.isApproved;
 
-    // 1️⃣ Optimistic UI update
+    let rejectionReason = "";
+
+    if (!newValue) {
+      rejectionReason = prompt("Enter rejection reason:");
+      if (!rejectionReason) {
+        alert("Rejection reason required");
+        return;
+      }
+    }
+
+    // Optimistic UI update
     setProducts((prev) =>
       prev.map((p) =>
         p._id === product._id ? { ...p, isApproved: newValue } : p,
@@ -279,19 +290,13 @@ const ProductTable = ({ path, editPath }) => {
     );
 
     try {
-      // 2️⃣ API call
-      const res = await ProductApi.update(product._id, {
-        isApproved: newValue,
+      const res = await apiClient(`/product/approve/${product._id}`, {
+        method: "PATCH",
+        body: {
+          isApproved: newValue,
+          rejectionReason: !newValue ? rejectionReason : null,
+        },
       });
-
-      console.log("newValue", newValue);
-
-      // const res = await apiClient(`/product/approve/${product._id}`, {
-      //   method: "PUT",
-      //   body: {
-      //     isApproved: newValue,
-      //   },
-      // });
 
       if (!res?.success) {
         throw new Error("Update failed");
@@ -1365,11 +1370,10 @@ const ProductTable = ({ path, editPath }) => {
                         ))}
                     </div>
                   </th>
-                  {isAdmin && (
+                 
                     <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
                       Approved
                     </th>
-                  )}
                   <th className="px-6 py-3 text-left text-[10px] font-bold text-gray-700 uppercase tracking-wider">
                     Actions
                   </th>

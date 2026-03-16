@@ -114,14 +114,19 @@ export default function CategoriesPage() {
 
   // Handle category update
   const handleUpdateCategory = async (id, categoryData) => {
+
+    
+    console.log("categoryData", categoryData);
+
     try {
       const data = await apiClient(`/category/${id}`, {
         method: "PUT",
         body: categoryData,
       });
 
+      console.log("data", data);
       setEditingCategory(null);
-      fetchCategories(); // refresh list
+      fetchCategories();
 
       return { success: true, data };
     } catch (err) {
@@ -355,7 +360,7 @@ export default function CategoriesPage() {
               </button>
 
               <button
-                onClick={() => setShowForm(true)}
+                onClick={() => router.push("/admin/category/create")}
                 className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
               >
                 <svg

@@ -37,7 +37,7 @@ const Page = () => {
       console.log("response", response);
       if (response?.success === true) {
         const rolesList = response.data
-          .filter((item) => item.role.toLowerCase() === "vendor")
+          .filter((item) => item.role.toLowerCase() === "field_manager")
           .map((item) => item.role);
 
         setRolesOptions(rolesList);
@@ -134,7 +134,6 @@ const Page = () => {
       if (res.success === true) {
         clearState();
         toast.success("Account created successfully");
-        router.push("/admin/vendors")
       }
     } catch (err) {
       console.log("ERR FULL:", err);
@@ -150,30 +149,34 @@ const Page = () => {
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.8 }}
-        className="hidden lg:flex lg:w-1/2 bg-[#0F766E] relative items-center justify-center p-12 text-white"
+        className="hidden lg:flex lg:w-1/2 bg-[#fdd835] relative items-center justify-center p-12 text-white"
       >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#115E59] rounded-full -mr-20 -mt-20 opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#26b5ab] rounded-full -ml-32 -mb-32 opacity-30"></div>
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#fcc221] rounded-full -mr-20 -mt-20 opacity-80"></div>
+
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#fcc221] rounded-full -ml-32 -mb-32 opacity-80"></div>
 
         <div className="relative z-10 max-w-md">
-          <h1 className="text-5xl font-bold leading-tight">
-            Grow your business with our{" "}
-            <span className="text-teal-200">Vendor Network.</span>
+          <h1 className="text-5xl font-bold leading-tight text-[#1a1c24]">
+            Join SEVAFAST Seller Network.
           </h1>
-          <p className="mt-6 text-lg text-teal-100">
-            Thousands of vendors are already selling. Join the community and
-            start earning today.
+          <p className="mt-6 text-lg text-[#1a1c24]">
+            List your products, reach thousands of customers and grow your
+            business with SEVAFAST.
           </p>
 
           <div className="mt-10 space-y-4">
-            {["Quick Onboarding", "Lowest Commission", "24/7 Support"].map(
-              (text, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <CheckCircle2 className="text-teal-300" size={24} />
-                  <span className="text-lg font-medium">{text}</span>
-                </div>
-              ),
-            )}
+            {[
+              "Easy Seller Registration",
+              "Sell Across Maharashtra",
+              "Secure Payments",
+            ].map((text, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <CheckCircle2 className="text-[#1a1c24]" size={24} />
+                <span className="text-lg text-[#1a1c24] font-medium">
+                  {text}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </motion.div>
@@ -199,7 +202,7 @@ const Page = () => {
               </label>
               <div className="relative group">
                 <User
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F766E] transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1a1c24] transition-colors"
                   size={20}
                 />
                 <input
@@ -207,7 +210,7 @@ const Page = () => {
                   name="fullName"
                   placeholder="Enter your name"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 text-black py-3 
-                  pl-10 pr-4 outline-none transition-all focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
+                  pl-10 pr-4 outline-none transition-all focus:bg-white focus:ring-2 focus:ring-[#fdd835]/20 focus:border-[#fdd835]"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   required
@@ -222,7 +225,7 @@ const Page = () => {
               <div className="relative group">
                 <Mail
                   className="absolute left-3 top-1/2 -translate-y-1/2
-                   text-gray-400 group-focus-within:text-[#0F766E] transition-colors"
+                   text-gray-400 group-focus-within:text-[#1a1c24] transition-colors"
                   size={20}
                 />
                 <input
@@ -230,7 +233,7 @@ const Page = () => {
                   name="email"
                   placeholder="name@company.com"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 outline-none 
-                   text-black transition-all focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
+                   text-black transition-all focus:bg-white focus:ring-2 focus:ring-[#fdd835]/20 focus:border-[#fdd835]"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -244,7 +247,7 @@ const Page = () => {
               </label>
               <div className="relative group">
                 <Phone
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F766E] text-black transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1a1c24] text-black transition-colors"
                   size={20}
                 />
                 <input
@@ -252,7 +255,7 @@ const Page = () => {
                   name="mobileNumber"
                   placeholder="+91 00000 00000"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 outline-none transition-all text-black
-                   focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
+                   focus:bg-white focus:ring-2 focus:ring-[#fdd835]/20 focus:border-[#fdd835]"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value)}
                   required
@@ -269,7 +272,7 @@ const Page = () => {
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 outline-none 
-                focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] text-black"
+                focus:bg-white focus:ring-2 focus:ring-[#fdd835]/20 focus:border-[#fdd835] text-black"
               >
                 <option value="">Select role</option>
                 {rolesOptions.map((role, index) => (
@@ -286,7 +289,7 @@ const Page = () => {
               </label>
               <div className="relative group">
                 <Lock
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#0F766E] transition-colors"
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#1a1c24] transition-colors"
                   size={20}
                 />
                 <input
@@ -294,7 +297,7 @@ const Page = () => {
                   name="password"
                   placeholder="••••••••"
                   className="w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-12 outline-none transition-all
-                   focus:bg-white focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] text-black"
+                   focus:bg-white focus:ring-2 focus:ring-[#fdd835]/20 focus:border-[#fdd835] text-black"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -311,8 +314,8 @@ const Page = () => {
 
             <button
               type="submit"
-              className="w-full mt-4 bg-[#0F766E] text-white py-4 rounded-xl font-bold text-lg hover:bg-[#0D5C55]  hover:shadow-lg
-               hover:shadow-[#0F766E]/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+              className="w-full mt-4 bg-[#fdd835] text-[#1a1c24] py-4 rounded-xl font-bold text-lg hover:bg-[#fcc221]  hover:shadow-lg
+               hover:shadow-[#fdd835]/30 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
             >
               Register Now
               <ArrowRight size={20} />

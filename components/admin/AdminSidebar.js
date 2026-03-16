@@ -134,16 +134,16 @@ export const menuItems = [
     path: "/admin/timesolt",
   },
 
-  {
-    label: "Delivery boy",
-    icon: Truck,
-    children: [
-      { label: "Add delivery boy", path: "/admin/category", icon: UserPlus },
-      { label: "Manage delivery boy", path: "/admin/category", icon: Users },
-      { label: "Fund transfer", path: "/admin/category", icon: Banknote },
-      { label: "Cash collection", path: "/admin/category", icon: Wallet },
-    ],
-  },
+  // {
+  //   label: "Delivery boy",
+  //   icon: Truck,
+  //   children: [
+  //     { label: "Add delivery boy", path: "/admin/category", icon: UserPlus },
+  //     { label: "Manage delivery boy", path: "/admin/category", icon: Users },
+  //     { label: "Fund transfer", path: "/admin/category", icon: Banknote },
+  //     { label: "Cash collection", path: "/admin/category", icon: Wallet },
+  //   ],
+  // },
 
   // {
   //   label: "Orders",
@@ -159,7 +159,16 @@ export const menuItems = [
   {
     label: "Staff",
     icon: UserCog,
-    path: "/admin/staff",
+
+    children: [
+      { label: "Add Seller", path: "/admin/staff/register", icon: UserPlus },
+      { label: "Staff List", path: "/admin/staff", icon: Users },
+      {
+        label: "Field Managers",
+        path: "/admin/staff/field-manager",
+        icon: Users,
+      },
+    ],
   },
 
   // {
@@ -216,57 +225,39 @@ export const menuItems = [
         icon: XCircle,
       },
       { label: "Return", path: "/admin/orders/return", icon: RotateCcw },
-      {
-        label: "AI Insight Report",
-        path: "/admin/orders/ai-report",
-        icon: BarChart3,
-      },
+      
     ],
   },
 
-  // ===== Promotion =====
-  {
-    label: "Promotion",
-    icon: Megaphone,
-    children: [
-      {
-        label: "Highlights",
-        path: "/admin/promotion/highlights",
-        icon: Megaphone,
-      },
-      { label: "Banner", path: "/admin/promotion/banner", icon: Image },
-      { label: "Home Section", path: "/admin/promotion/home", icon: Home },
-    ],
-  },
 
   // ===== Setting =====
-  {
-    label: "Setting",
-    icon: Settings,
-    children: [
-      {
-        label: "Payment Setting",
-        path: "/admin/settings/payment",
-        icon: CreditCard,
-      },
-      {
-        label: "Manage Roles",
-        path: "/admin/settings/roles",
-        icon: ShieldCheck,
-      },
-      {
-        label: "Customer App Policy",
-        path: "/admin/settings/customer-policy",
-        icon: FileText,
-      },
-      {
-        label: "Delivery App Policy",
-        path: "/admin/settings/delivery-policy",
-        icon: FileText,
-      },
-      { label: "System User", path: "/admin/settings/system-user", icon: User },
-    ],
-  },
+  // {
+  //   label: "Setting",
+  //   icon: Settings,
+  //   children: [
+  //     {
+  //       label: "Payment Setting",
+  //       path: "/admin/settings/payment",
+  //       icon: CreditCard,
+  //     },
+  //     {
+  //       label: "Manage Roles",
+  //       path: "/admin/settings/roles",
+  //       icon: ShieldCheck,
+  //     },
+  //     {
+  //       label: "Customer App Policy",
+  //       path: "/admin/settings/customer-policy",
+  //       icon: FileText,
+  //     },
+  //     {
+  //       label: "Delivery App Policy",
+  //       path: "/admin/settings/delivery-policy",
+  //       icon: FileText,
+  //     },
+  //     { label: "System User", path: "/admin/settings/system-user", icon: User },
+  //   ],
+  // },
 ];
 
 export default function AdminSidebar({ isOpen }) {
@@ -274,7 +265,7 @@ export default function AdminSidebar({ isOpen }) {
   const router = useRouter();
 
   const [openMenus, setOpenMenus] = useState({
-    Products: true,
+    Products: false,
     Catalog: false,
     Categories: false,
   });
@@ -288,7 +279,7 @@ export default function AdminSidebar({ isOpen }) {
 
   return (
     <aside
-      className={`fixed left-0 top-0 h-screen bg-[#0F766E] text-white transition-all duration-300 z-50
+      className={`fixed left-0 top-0 h-screen bg-[#fdd835] text-white transition-all duration-300 z-50
   ${isOpen ? "w-64" : "w-20"} overflow-y-auto scrollbar-thin scrollbar-thumb-teal-400/40 scrollbar-track-transparent`}
     >
       {/* LOGO */}
@@ -298,10 +289,8 @@ export default function AdminSidebar({ isOpen }) {
             isOpen ? "text-2xl opacity-100" : "text-xs opacity-0"
           }`}
         >
-          ADMIN<span className="text-teal-300">PANEL</span>
+          <span className="text-[#1a1c24]">Admin Panel</span>
         </h1>
-
-        {!isOpen && <span className="text-teal-400 font-bold ml-1">AP</span>}
       </div>
 
       {/* NAVIGATION */}
@@ -320,8 +309,8 @@ export default function AdminSidebar({ isOpen }) {
                 {/* PARENT */}
                 <button
                   onClick={() => toggleMenu(item.label)}
-                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all
-              ${menuOpen ? "bg-white/10" : "hover:bg-white/5"}`}
+                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all text-black
+              ${menuOpen ? "bg-[#1a1c24] text-white" : "hover:bg-white/5"}`}
                 >
                   <div className="flex items-center gap-3">
                     <item.icon size={22} />
@@ -342,7 +331,7 @@ export default function AdminSidebar({ isOpen }) {
 
                 {/* CHILDREN */}
                 {menuOpen && isOpen && (
-                  <div className="ml-8 mt-2 flex flex-col gap-1 border-l-2 border-teal-500/30 pl-3">
+                  <div className="ml-8 mt-2 flex flex-col gap-1 border-l-2 border-white/60 pl-3">
                     {item.children.map((child) => {
                       const isChildActive = pathname === child.path;
 
@@ -353,8 +342,8 @@ export default function AdminSidebar({ isOpen }) {
                           className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold transition-all
                       ${
                         isChildActive
-                          ? "bg-white/20 text-white"
-                          : "text-white/70 hover:text-white hover:bg-white/5"
+                          ? "bg-[#1a1c24] text-white"
+                          : "text-black/70 hover:text-white hover:bg-[#1a1c24]"
                       }`}
                         >
                           <child.icon size={16} />
@@ -376,8 +365,8 @@ export default function AdminSidebar({ isOpen }) {
               className={`flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-300
           ${
             isActive
-              ? "bg-white/20 text-white translate-x-1"
-              : "text-white/80 hover:bg-white/10 hover:translate-x-1"
+              ? "bg-[#1a1c24] text-white translate-x-1"
+              : "text-black/80 hover:bg-white/10 hover:translate-x-1"
           }`}
             >
               <item.icon size={22} />

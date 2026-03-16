@@ -152,6 +152,8 @@ export default function Page() {
             break;
           case "courier":
             router.push("/courier");
+          case "field_manager":
+            router.push("/seller");
             break;
           default:
             router.push("/");

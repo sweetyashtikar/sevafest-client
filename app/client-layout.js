@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import TopBar from "@/components/header/TopBar";
 import Footer from "@/components/footer/Footer";
 
-
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
 
@@ -20,8 +19,15 @@ export default function ClientLayout({ children }) {
   const isVendorPage = pathname.startsWith("/vendor");
   const isDeliveryBoyPage = pathname.startsWith("/delivery");
   const isDesigner = pathname.startsWith("/designer");
+  const isSeller = pathname.startsWith("/seller");
 
-  if (isAdminPage || isVendorPage || isDeliveryBoyPage || isDesigner) {
+  if (
+    isAdminPage ||
+    isVendorPage ||
+    isDeliveryBoyPage ||
+    isDesigner ||
+    isSeller
+  ) {
     return <>{children}</>;
   }
 

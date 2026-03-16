@@ -91,17 +91,21 @@ const CheckoutPage = () => {
 
   // Remove unused getPaymentUrl
 
-  const fetchSummaryDelivery = async () => {
+ const fetchSummaryDelivery = useCallback(async () => {
     try {
       const res = await apiClient("/viewCart/summary");
-
       if (res?.success) {
         setSummaryDelivery(res.data?.estimatedDelivery);
       }
     } catch (error) {
       console.error("Failed to fetch delivery summary", error);
     }
-  };
+}, []); // ✅ stable reference
+
+useEffect(() => {
+    fetchCheckoutData();
+    fetchSummaryDelivery();
+}, [fetchCheckoutData, fetchSummaryDelivery]); // ✅ both in deps
 
   const handleRazorpaySuccess = async (response, appOrderId) => {
     try {
@@ -297,9 +301,9 @@ const Delivery = React.memo(
     const closeModal = () => {
       setIsModalOpen(false);
 
-      if (refreshCheckout) {
-        refreshCheckout();
-      }
+      // if (refreshCheckout) {
+      //   refreshCheckout();
+      // }
     };
 
     if (!selectedAddress) {
@@ -405,7 +409,7 @@ const Delivery = React.memo(
               </div>
 
               {/* Serviceability Badge */}
-              <div className="mt-3">
+              {/* <div className="mt-3">
                 {selectedAddress.serviceable ? (
                   <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-green-50 rounded text-green-700 text-xs font-medium">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
@@ -417,7 +421,7 @@ const Delivery = React.memo(
                     Delivery not available here
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Delivery Charges Info */}
               {selectedAddress.delivery_info && (
