@@ -3,7 +3,15 @@
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/redux/slices/authSlice";
-import { ShieldCheck, LogOut, UserCircle, ChevronDown, Clock, Wallet, Phone } from "lucide-react";
+import {
+  ShieldCheck,
+  LogOut,
+  UserCircle,
+  ChevronDown,
+  Clock,
+  Wallet,
+  Phone,
+} from "lucide-react";
 import { useState } from "react";
 
 export default function VendorsTopBar() {
@@ -49,33 +57,37 @@ export default function VendorsTopBar() {
           </button>
 
           {open && (
-            <div className="absolute right-0 mt-3 w-72 bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
-              {/* USER HEADER - Gradient Background */}
-              <div className="bg-gradient-to-br from-[#0F766E] to-[#134E4A] px-5 py-6 text-white relative">
+            <div className="absolute right-0 mt-3 w-72 bg-white border border-[#fcc221]/30 rounded-2xl shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+              {/* USER HEADER */}
+              <div className="bg-gradient-to-br from-[#fdd835] to-[#fcc221] px-5 py-6 text-[#1a1c24] relative">
                 <div className="relative z-10">
                   <p className="text-base font-bold truncate">
                     {user?.username || "User Profile"}
                   </p>
-                  <p className="text-xs opacity-90 truncate font-medium">
+
+                  <p className="text-xs opacity-80 truncate font-medium">
                     {user?.email || "No Email Provided"}
                   </p>
+
                   <div className="mt-3 flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-white/20 backdrop-blur-md rounded-full border border-white/10">
+                    <span className="px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-white/40 backdrop-blur-md rounded-full border border-white/30">
                       {user?.role || "user"}
                     </span>
+
                     {user?.status && (
-                      <span className="flex items-center gap-1 px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-emerald-400/20 text-emerald-300 rounded-full">
-                        <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                      <span className="flex items-center gap-1 px-2.5 py-0.5 text-[10px] uppercase tracking-wider font-bold bg-green-100 text-green-700 rounded-full">
+                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
                         Live
                       </span>
                     )}
                   </div>
                 </div>
+
                 {/* Decorative Circle */}
-                <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/10 rounded-full blur-2xl" />
+                <div className="absolute -right-4 -top-4 w-20 h-20 bg-white/30 rounded-full blur-2xl" />
               </div>
 
-              {/* USER DETAILS SECTION */}
+              {/* USER DETAILS */}
               <div className="p-4 space-y-3">
                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
                   Account Summary
@@ -93,22 +105,9 @@ export default function VendorsTopBar() {
                       </div>
                       <span className="text-xs font-medium">Mobile</span>
                     </div>
+
                     <span className="text-xs font-bold text-gray-800">
                       {user?.mobile || "N/A"}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="flex items-center gap-3 text-gray-600">
-                      <div className="p-1.5 bg-amber-50 text-amber-600 rounded-md">
-                        <Wallet size={14} />
-                      </div>
-                      <span className="text-xs font-medium">
-                        Wallet Balance
-                      </span>
-                    </div>
-                    <span className="text-sm font-bold text-[#0F766E]">
-                      ₹{user?.balance?.toLocaleString() ?? 0}
                     </span>
                   </div>
 
@@ -117,10 +116,12 @@ export default function VendorsTopBar() {
                       <div className="p-1.5 bg-purple-50 text-purple-600 rounded-md">
                         <Clock size={14} />
                       </div>
+
                       <span className="text-xs font-medium">
                         Recent Activity
                       </span>
                     </div>
+
                     <span className="text-[11px] font-semibold text-gray-500">
                       {user?.last_login
                         ? new Date(user.last_login).toLocaleDateString(
@@ -137,7 +138,7 @@ export default function VendorsTopBar() {
               <div className="p-3 bg-gray-50/50">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-red-500 bg-white border border-red-100 rounded-xl hover:bg-red-50 hover:text-red-600 shadow-sm transition-all active:scale-95"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-bold text-[#1a1c24] bg-[#fdd835] border border-[#fcc221] rounded-xl hover:bg-[#fcc221] shadow-sm transition-all active:scale-95"
                 >
                   <LogOut size={16} />
                   Sign Out Account

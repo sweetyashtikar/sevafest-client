@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import ProductCard from "@/ui/ProductCard";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/slices/cartSlice";
+import { toast } from "react-toastify";
 
 export default function RecommendedProducts() {
   const dispatch = useDispatch();
   const router = useRouter();
+  const { user } = useSelector((a) => a.auth);
 
   const recommended = useSelector((state) => state.recommendation.recommended);
 
@@ -35,6 +37,12 @@ export default function RecommendedProducts() {
   const isOutOfStock = (product) => product.inStock === false;
 
   const addToCartAction = async (product, qty = 1) => {
+    if (!user) {
+      toast.warning("Please login to add product to cart");
+      router.push("/login");
+      throw new Error("User not logged in");
+    }
+
     try {
       let variantId = null;
 

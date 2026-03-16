@@ -6,7 +6,7 @@ import { apiClient } from "@/services/apiClient";
 import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
-export default function Page() {
+export default function Page({ endPoint }) {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [summary, setSummary] = useState(null);
@@ -25,7 +25,16 @@ export default function Page() {
   const fetchOrders = async (pageNo = 1) => {
     try {
       setLoading(true);
-      const res = await apiClient(`/order?page=${pageNo}`);
+
+      let url = `/order?page=${pageNo}`;
+
+      if (endPoint) {
+        url += `&${endPoint}`;
+      }
+
+      const res = await apiClient(url);
+
+      console.log("res", res)
 
       if (res?.success) {
         setOrders(res.data.order_items);
@@ -41,21 +50,16 @@ export default function Page() {
 
   useEffect(() => {
     fetchOrders(page);
-  }, [page]);
+  }, [page, endPoint]);
 
-  /* ===== SEARCH + FILTER ===== */
-  const filteredOrders = orders.filter((o) => {
-    const searchMatch =
+  
+  const filteredOrders = orders.filter(
+    (o) =>
       o.order_id?.order_number?.toLowerCase().includes(search.toLowerCase()) ||
       o.user_id?.username?.toLowerCase().includes(search.toLowerCase()) ||
       o.user_id?.email?.toLowerCase().includes(search.toLowerCase()) ||
-      o.product_name?.toLowerCase().includes(search.toLowerCase());
-
-    const statusMatch =
-      statusFilter === "all" ? true : o.active_status === statusFilter;
-
-    return searchMatch && statusMatch;
-  });
+      o.product_name?.toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 overflow-x-hidden -ml-20">
@@ -89,33 +93,7 @@ export default function Page() {
               "
             />
           </div>
-
-          {/* FILTER */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="
-      w-40
-      px-4 py-2.5
-      -pr-12
-      border border-gray-300
-      rounded-lg
-      text-sm
-      text-black
-      bg-white
-      outline-none
-      focus:ring-2
-      focus:ring-blue-500
-      focus:border-blue-500
-    "
-          >
-            <option value="all">All Status</option>
-            <option value="awaiting">Awaiting</option>
-            <option value="processed">Processed</option>
-          </select>
         </div>
-
-        {/* ===== SUMMARY ===== */}
         {summary && (
           <div className="max-w-4xl">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
