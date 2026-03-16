@@ -400,8 +400,9 @@ const ProfileModel = ({
         <button
           className="w-full flex items-center justify-between px-3 py-2 rounded-md 
         hover:bg-[#fdd835] text-sm text-[#1a1c24]"
+        onClick={()=>router.push("/vendor")}
         >
-          Coupons
+          Vendor Panel
           <span>›</span>
         </button>
       </div>

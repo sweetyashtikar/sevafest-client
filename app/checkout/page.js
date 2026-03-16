@@ -608,6 +608,8 @@ const OrderPlace = React.memo(
       ? summary.finalTotal - appliedCoupon.discount
       : summary.finalTotal;
 
+    const subBenefit = summary.subscriptionBenefit;
+
     const getButtonStyle = () =>
       `w-full py-2 text-[14px] font-bold rounded-lg shadow-sm border transition-colors mb-4
       ${
@@ -636,11 +638,21 @@ const OrderPlace = React.memo(
               </span>
             </div>
 
-            <div className="flex justify-between">
-              <span>Delivery:</span>
-              <span>
-                ₹{summary.deliveryCharge > 0 ? summary.deliveryCharge : "0.00"}
+            <div className="flex justify-between items-center">
+              <span className="flex items-center gap-1.5">
+                Delivery:
+                {subBenefit?.isApplied && (
+                  <span className="bg-blue-50 text-blue-600 text-[9px] px-1.5 py-0.5 rounded-full font-bold border border-blue-100 uppercase tracking-tight">
+                    Member Benefit
+                  </span>
+                )}
               </span>
+              <span className={subBenefit?.isApplied ? "line-through text-gray-400 mr-2" : ""}>
+                ₹{summary.deliveryCharge > 0 ? summary.deliveryCharge.toLocaleString("en-IN") : "0.00"}
+              </span>
+              {subBenefit?.isApplied && (
+                <span className="text-[#007600] font-bold">₹0.00</span>
+              )}
             </div>
 
             {appliedCoupon && (
@@ -702,13 +714,21 @@ const OrderPlace = React.memo(
           .
         </p>
 
-        <div className="mt-3 flex items-start gap-2">
-          <div className="w-2 h-2 bg-[#00A8E1] rounded-full mt-1"></div>
-          <p className="text-[11px] text-gray-600">
-            Your order qualifies for <b>FREE Delivery</b>. Choose this option at
-            checkout.
-          </p>
-        </div>
+        {subBenefit?.isApplied ? (
+          <div className="mt-3 flex items-start gap-2 bg-blue-50/50 p-2 rounded-lg border border-blue-100">
+            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5 flex-shrink-0"></div>
+            <p className="text-[11px] text-blue-800 leading-tight">
+              You saved on delivery charges with your <b>{subBenefit.activePlanName}</b> membership!
+            </p>
+          </div>
+        ) : (
+          <div className="mt-3 flex items-start gap-2 bg-green-50/30 p-2 rounded-lg border border-green-100">
+            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-1.5 flex-shrink-0"></div>
+            <p className="text-[11px] text-green-800 leading-tight">
+              Your order qualifies for <b>FREE Delivery</b>. Choose this option at checkout.
+            </p>
+          </div>
+        )}
       </div>
     );
   },

@@ -1,13 +1,13 @@
 "use client";
 import { apiClient } from "@/services/apiClient";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   User,
   Mail,
   Phone,
   MapPin,
-  Calendar,
   ShieldCheck,
   Wallet,
   Clock,
@@ -16,26 +16,51 @@ import {
   Hash,
   Zap,
   CreditCard,
+  Check,
+  Copy,
+  Gift
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 export default function ProfilePage() {
-    
   const [profile, setProfile] = useState(null);
+  const [subscription, setSubscription] = useState(null);
+  const [coupons, setCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
-        const res = await apiClient("/users/profile/me");
-        setProfile(res.data);
+        const [profileRes, subRes, couponRes] = await Promise.all([
+          apiClient("/users/profile/me"),
+          apiClient("/subscriptions/active-subscription"),
+          apiClient("/coupons/active")
+        ]);
+        
+        if (profileRes.success) setProfile(profileRes.data);
+        if (subRes.success) setSubscription(subRes.data);
+        if (couponRes.success) setCoupons(couponRes.data);
       } catch (err) {
-        console.error("Error fetching profile:", err);
+        console.error("Error fetching data:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
+    fetchData();
   }, []);
+
+  const calculateDaysRemaining = (endDate) => {
+    const now = new Date();
+    const end = new Date(endDate);
+    const diffTime = end - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 0;
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Referral code copied to clipboard!");
+  };
 
   // Animation Variants
   const containerVars = {
@@ -68,6 +93,9 @@ export default function ProfilePage() {
         No profile data found.
       </div>
     );
+
+  const daysRemaining = subscription ? calculateDaysRemaining(subscription.endDate) : 0;
+  const progressPercent = subscription ? Math.max(0, Math.min(100, (daysRemaining / (subscription.subscriptionId?.duration === 'monthly' ? 30 : 365)) * 100)) : 0;
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-900 selection:bg-blue-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -147,6 +175,74 @@ export default function ProfilePage() {
 
         {/* --- GRID BODY --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Active Subscription Card - Light Mode */}
+          <motion.div
+            variants={itemVars}
+            className="md:col-span-3 overflow-hidden rounded-[2.5rem] bg-white p-8 border border-blue-100 shadow-xl shadow-blue-900/5 relative transition-all duration-500 hover:border-blue-200"
+          >
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-64 h-64 opacity-[0.05] pointer-events-none -mr-20 -mt-20 rounded-full blur-3xl bg-blue-600" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 shadow-sm border border-blue-100">
+                    <Zap size={24} />
+                  </div>
+                  <h3 className="text-xl font-black tracking-tight uppercase text-slate-800">Membership Overview</h3>
+                </div>
+
+                {subscription ? (
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-5xl font-black text-blue-600 mb-1">{subscription.subscriptionId?.name}</h4>
+                      <p className="text-slate-500 font-medium">Active until {new Date(subscription.endDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-end">
+                        <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-blue-500">Validity Progress</span>
+                        <span className="text-2xl font-black text-slate-800">{daysRemaining} <span className="text-sm font-medium text-slate-500 text-slate-400">days left</span></span>
+                      </div>
+                      <div className="h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200 p-0.5">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progressPercent}%` }}
+                          transition={{ duration: 1, ease: "easeOut" }}
+                          className="h-full bg-gradient-to-r from-blue-600 to-indigo-500 rounded-full shadow-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <p className="text-slate-500 font-medium text-lg">You don&apos;t have an active membership yet.</p>
+                    <Link 
+                      href="/#planCard" 
+                      className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-200 inline-block text-center"
+                    >
+                      View Plans
+                    </Link>
+                  </div>
+                )}
+              </div>
+
+              {subscription && (
+                <div className="lg:w-1/4 p-6 bg-slate-50/50 backdrop-blur-sm rounded-3xl border border-blue-50">
+                  <p className="text-[10px] uppercase font-bold text-blue-500 tracking-[0.2em] mb-4">Included Benefits</p>
+                  <div className="space-y-3">
+                    {subscription.subscriptionId?.features?.map((feature, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <Check className="text-green-500 mt-1 shrink-0" size={14} />
+                        <span className="text-sm font-semibold text-slate-600">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+
           {/* Financial Overview */}
           <motion.div
             variants={itemVars}
@@ -165,7 +261,7 @@ export default function ProfilePage() {
                   Available Balance
                 </p>
                 <h4 className="text-3xl font-black text-slate-800">
-                  ₹{profile.balance.toLocaleString()}
+                  ₹{profile.balance?.toLocaleString()}
                 </h4>
               </div>
               <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
@@ -173,7 +269,7 @@ export default function ProfilePage() {
                   Total Cash Received
                 </p>
                 <h4 className="text-3xl font-black text-slate-800">
-                  ₹{profile.cash_received.toLocaleString()}
+                  ₹{profile.cash_received?.toLocaleString()}
                 </h4>
               </div>
             </div>
@@ -187,11 +283,90 @@ export default function ProfilePage() {
                   Reward Tier
                 </p>
                 <p className="text-sm font-bold text-blue-900 capitalize">
-                  {profile.bonus_type.replace(/_/g, " ")}
+                  {profile.bonus_type?.replace(/_/g, " ")}
                 </p>
               </div>
             </div>
           </motion.div>
+
+          {/* Referral Program Card - ONLY FOR VENDORS */}
+          {profile.role?.role?.toLowerCase().includes("vendor") && (
+            <div className="md:col-span-1 space-y-6">
+              <motion.div
+                variants={itemVars}
+                className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group hover:border-blue-200 transition-all"
+              >
+                <div className="absolute -top-4 -right-4 w-20 h-20 bg-blue-50 rounded-full opacity-50 group-hover:scale-110 transition-transform" />
+                <div className="relative z-10">
+                  <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                    <Gift className="text-blue-600" size={22} /> Referral Program
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <p className="text-xs text-slate-500 font-medium leading-relaxed">
+                      Invite other vendors and earn <span className="text-blue-600 font-bold">50% OFF</span> coupons!
+                    </p>
+                    
+                    <div className="relative mt-4">
+                      <div className="p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-between group-hover:bg-blue-50/30 transition-colors">
+                        <span className="font-mono font-black text-xl text-slate-800 tracking-wider">
+                          {profile.referral_code || "VF-CODE"}
+                        </span>
+                        <button 
+                          onClick={() => copyToClipboard(profile.referral_code)}
+                          className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90"
+                          title="Copy Code"
+                        >
+                          <Copy size={18} />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mt-2">
+                      Your Personal Invitation Code
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Earned Rewards List */}
+              {coupons.length > 0 && (
+                <motion.div
+                  variants={itemVars}
+                  className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 p-4 opacity-10">
+                    <Zap size={80} />
+                  </div>
+                  <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                    <Zap className="text-yellow-400" size={22} /> My Rewards  ({coupons.length})
+                  </h3>
+                  <div className="space-y-4 max-h-[280px] no-scrollbar overflow-y-auto pr-2 custom-scrollbar">
+                    {coupons.map((coupon) => (
+                      <div key={coupon._id} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="text-xs font-bold text-blue-200 uppercase tracking-wider">{coupon.title}</p>
+                            <p className="text-xl font-black">{coupon.couponCode}</p>
+                          </div>
+                          <button 
+                            onClick={() => copyToClipboard(coupon.couponCode)}
+                            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                          >
+                            <Copy size={16} />
+                          </button>
+                        </div>
+                        <p className="text-[10px] text-blue-100/70">{coupon.description}</p>
+                        <div className="mt-3 text-[10px] font-bold bg-white/20 inline-block px-2 py-1 rounded">
+                          EXPIRES: {new Date(coupon.expiryDate).toLocaleDateString()}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </div>
+          )}
 
           {/* Contact & Tech Details */}
           <motion.div
@@ -279,37 +454,37 @@ export default function ProfilePage() {
           {/* Regional Settings */}
           <motion.div
             variants={itemVars}
-            className="md:col-span-2 bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm"
+            className="md:col-span-1 bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm"
           >
             <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
               <MapPin className="text-red-500" size={22} /> Regional & Logistics
             </h3>
-            <div className="flex flex-col sm:flex-row gap-8">
-              <div className="flex-1">
+            <div className="flex flex-col gap-6">
+              <div>
                 <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">
                   Geolocation (Point)
                 </p>
-                <div className="flex gap-2">
-                  {profile.location.coordinates.map((coord, i) => (
+                <div className="flex flex-wrap gap-2">
+                  {profile.location?.coordinates?.map((coord, i) => (
                     <span
                       key={i}
-                      className="px-4 py-2 bg-slate-50 rounded-xl font-mono text-sm text-slate-600 border border-slate-100"
+                      className="px-3 py-2 bg-slate-50 rounded-xl font-mono text-xs text-slate-600 border border-slate-100"
                     >
                       {coord.toFixed(4)}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="flex-1">
+              <div>
                 <p className="text-[10px] uppercase font-bold text-slate-400 mb-2">
                   Serviceable Zipcodes
                 </p>
-                {profile.zipcodes.length > 0 ? (
+                {profile.zipcodes?.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {profile.zipcodes.map((zip, i) => (
                       <span
                         key={i}
-                        className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-lg border border-green-100"
+                        className="px-3 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-lg border border-green-100"
                       >
                         {zip}
                       </span>
