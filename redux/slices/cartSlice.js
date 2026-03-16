@@ -7,7 +7,7 @@ export const fetchCart = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await apiClient("/viewCart");
-      return res?.data?.items || [];
+      return res?.data || {};
     } catch (err) {
       return rejectWithValue(err.response?.data || "Error fetching cart");
     }
@@ -38,6 +38,14 @@ const cartSlice = createSlice({
   name: "cart",
   initialState: {
     items: [],
+    summary: {
+      totalItems: 0,
+      totalPrice: 0,
+      totalDiscount: 0,
+      deliveryCharge: 0,
+      finalTotal: 0,
+    },
+    unavailableItems: [],
     loading: false,
   },
   reducers: {},
@@ -48,7 +56,9 @@ const cartSlice = createSlice({
       })
       .addCase(fetchCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.items = action.payload;
+        state.items = action.payload.items || [];
+        state.summary = action.payload.summary || state.summary;
+        state.unavailableItems = action.payload.unavailableItems || [];
       })
       .addCase(fetchCart.rejected, (state) => {
         state.loading = false;
