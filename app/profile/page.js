@@ -1,6 +1,5 @@
 "use client";
 
-import { toast } from "react-toastify";
 import { apiClient } from "@/services/apiClient";
 import { useEffect, useState } from "react";
 import Link from "next/link";
