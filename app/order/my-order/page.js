@@ -16,7 +16,7 @@ import { apiClient } from "@/services/apiClient";
 import { useRouter } from "next/navigation";
 
 export default function OrdersPageWithAPI() {
-    const router = useRouter()
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeFilter, setActiveFilter] = useState("all");
@@ -38,6 +38,8 @@ export default function OrdersPageWithAPI() {
 
       // Replace with your actual API endpoint
       const response = await apiClient(`/order/User/my-orders`);
+
+      console.log("resposne", response);
 
       if (response.success === true) {
         setOrders(response.data || []);
@@ -61,10 +63,14 @@ export default function OrdersPageWithAPI() {
 
   const getStatusIcon = (status) => {
     switch (status) {
-      case "awaiting":
+      case "Order placed":
         return <Clock className="w-5 h-5 text-yellow-600" />;
-      case "received":
+      case "processed":
         return <Package className="w-5 h-5 text-blue-600" />;
+      case "assigned":
+        return <Truck className="w-5 h-5 text-indigo-600" />;
+      case "picked_up":
+        return <Truck className="w-5 h-5 text-purple-600" />;
       case "shipped":
         return <Truck className="w-5 h-5 text-orange-600" />;
       case "delivered":
@@ -75,33 +81,35 @@ export default function OrdersPageWithAPI() {
         return <Clock className="w-5 h-5 text-gray-600" />;
     }
   };
-
   const getStatusText = (status) => {
-    const statusMap = {
-      awaiting: "Order Placed",
-      received: "Order Received",
+    const map = {
+      "Order placed": "Order Placed",
+      processed: "Processing",
+      assigned: "Assigned",
+      picked_up: "Picked Up",
       shipped: "Shipped",
       delivered: "Delivered",
       cancelled: "Cancelled",
+      returned: "Returned",
+      pending: "Pending",
     };
-    return statusMap[status] || status;
+
+    return map[status] || status;
   };
 
   const getStatusColor = (status) => {
-    const colorMap = {
-      awaiting: "bg-yellow-50 text-yellow-800 border-yellow-200",
-      received: "bg-blue-50 text-blue-800 border-blue-200",
+    const map = {
+      "Order placed": "bg-yellow-50 text-yellow-800 border-yellow-200",
+      processed: "bg-blue-50 text-blue-800 border-blue-200",
+      assigned: "bg-indigo-50 text-indigo-800 border-indigo-200",
+      picked_up: "bg-purple-50 text-purple-800 border-purple-200",
       shipped: "bg-orange-50 text-orange-800 border-orange-200",
       delivered: "bg-green-50 text-green-800 border-green-200",
       cancelled: "bg-red-50 text-red-800 border-red-200",
+      returned: "bg-gray-200 text-gray-800 border-gray-300",
     };
-    return colorMap[status] || "bg-gray-50 text-gray-800 border-gray-200";
-  };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    // Implement search functionality
-    console.log("Searching for:", searchQuery);
+    return map[status] || "bg-gray-50 text-gray-800 border-gray-200";
   };
 
   const handlePageChange = (page) => {
@@ -111,12 +119,15 @@ export default function OrdersPageWithAPI() {
 
   const filters = [
     { id: "all", label: "All Orders" },
-    { id: "received", label: "Processing" },
+    { id: "Order placed", label: "Order Placed" },
+    { id: "processed", label: "Processing" },
+    { id: "assigned", label: "Assigned" },
+    { id: "picked_up", label: "Picked Up" },
     { id: "shipped", label: "Shipped" },
     { id: "delivered", label: "Delivered" },
     { id: "cancelled", label: "Cancelled" },
+    { id: "returned", label: "Returned" },
   ];
-
   // Loading State
   if (loading) {
     return (
@@ -149,33 +160,13 @@ export default function OrdersPageWithAPI() {
       </div>
     );
   }
+  const filteredOrders =
+    activeFilter === "all"
+      ? orders
+      : orders.filter((order) => order.status === activeFilter);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-gray-900 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Your Orders</h1>
-            <form
-              onSubmit={handleSearch}
-              className="relative w-96 hidden md:block"
-            >
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search all orders"
-                className="w-full px-4 py-2 rounded-md bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
-              />
-              <button type="submit" className="absolute right-3 top-2.5">
-                <Search className="w-5 h-5 text-gray-400" />
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm mb-6 p-4">
@@ -199,7 +190,6 @@ export default function OrdersPageWithAPI() {
           </div>
         </div>
 
-        {/* Orders Summary */}
         {summary && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
             <div className="bg-white rounded-lg shadow-sm p-6">
@@ -223,15 +213,13 @@ export default function OrdersPageWithAPI() {
           </div>
         )}
 
-        {/* Orders List */}
-        {orders.length > 0 ? (
+        {filteredOrders.length > 0 ? (
           <div className="space-y-4">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div
                 key={order._id}
                 className="bg-white rounded-lg shadow-sm overflow-hidden"
               >
-                {/* Order Header */}
                 <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
@@ -314,11 +302,11 @@ export default function OrdersPageWithAPI() {
 
                         {/* Status Badge */}
                         <div className="inline-flex items-center gap-2 mb-4">
-                          {getStatusIcon(item.active_status)}
+                          {getStatusIcon(item.status)}
                           <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(item.active_status)}`}
+                            className={`px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(item.status)}`}
                           >
-                            {getStatusText(item.active_status)}
+                            {getStatusText(item.status)}
                           </span>
                         </div>
 
@@ -362,7 +350,6 @@ export default function OrdersPageWithAPI() {
                   ))}
                 </div>
 
-               
                 <div
                   className="bg-gray-50 px-6 py-3 border-t border-gray-200"
                   onClick={() => router.push(`/order/my-order/${order._id}`)}
@@ -376,18 +363,24 @@ export default function OrdersPageWithAPI() {
             ))}
           </div>
         ) : (
-          // Empty State
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No orders found
+              No {activeFilter !== "all" ? activeFilter : ""} orders found
             </h3>
+
             <p className="text-gray-600 mb-6">
-              You haven't placed any orders yet. Start shopping to see your
-              orders here!
+              {activeFilter === "all"
+                ? "You haven't placed any orders yet."
+                : `You have no ${activeFilter} orders at the moment.`}
             </p>
-            <button className="px-6 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-medium">
-              Start Shopping
+
+            <button
+              onClick={() => setActiveFilter("all")}
+              className="px-6 py-3 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition-colors font-medium"
+            >
+              View All Orders
             </button>
           </div>
         )}
