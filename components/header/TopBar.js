@@ -31,6 +31,7 @@ import { SupportModal } from "@/ui/SupportModal";
 import { AddressModal } from "@/ui/AddressModal";
 import { CategoryDropdown } from "@/components/header/CategoryDropdown";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function TopBar() {
   const dispatch = useDispatch();
@@ -314,8 +315,8 @@ const ProfileModel = ({
       if (res.success) {
         dispatch(logout());
         setIsProfileOpen(false);
+        toast.success("Logged out successfully");
         router.push("/login");
-        alert("Logged out successfully");
 
         document.cookie = "token=; path=/; max-age=0";
         document.cookie = "role=; path=/; max-age=0";
@@ -397,14 +398,16 @@ const ProfileModel = ({
           <span>›</span>
         </button>
 
-        <button
-          className="w-full flex items-center justify-between px-3 py-2 rounded-md 
+        {user?.role === "vendor" && (
+          <button
+            onClick={() => router.push("/vendor")}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-md 
         hover:bg-[#fdd835] text-sm text-[#1a1c24]"
-        onClick={()=>router.push("/vendor")}
-        >
-          Vendor Panel
-          <span>›</span>
-        </button>
+          >
+            Vendor Dashboard
+            <span>›</span>
+          </button>
+        )}
       </div>
 
       <div className="border-t p-3">

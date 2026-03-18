@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, List, PlusCircle, Users } from "lucide-react";
+import { LayoutDashboard, List, PlusCircle, Users, WalletMinimal } from "lucide-react";
 
 export const menuItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/seller" },
@@ -9,6 +9,7 @@ export const menuItems = [
   { label: "Vendor List", icon: Users, path: "/seller/vendor" },
   { label: "Add Leads", icon: PlusCircle, path: "/seller/leads/create" },
   { label: "Recent Leads", icon: List, path: "/seller/leads" },
+  {label:"Wallet", icon: WalletMinimal, path:"/seller/wallet"}
 ];
 
 export default function Sidebar() {

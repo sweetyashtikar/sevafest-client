@@ -18,6 +18,7 @@ import { apiClient } from "@/services/apiClient";
 import { PRODUCT_TYPES } from "@/components/products/productTypes";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/redux/slices/cartSlice";
+import { toast } from "react-toastify";
 
 export default function Page() {
   const dispatch = useDispatch();
@@ -147,16 +148,17 @@ export default function Page() {
       }
 
       await dispatch(addToCart(payload)).unwrap();
-      console.log("Added to cart");
+      toast.success("Added to cart successfully!");
       return true;
     } catch (err) {
       console.error("Add to cart failed", err);
+      toast.error(err?.message || "Failed to add to cart");
     }
     return false;
   };
 
   const handleBuyNow = async () => {
-    const ok = await addToCart(quantity);
+    const ok = await addToCartAction();
     if (ok) {
       window.location.href = "/checkout";
     }
@@ -856,13 +858,20 @@ const savingsPercent = getDiscountPercentage();
           <div className="lg:col-span-5">
             <div className="sticky top-4">
               {/* Main Image */}
-              <div className="border rounded-lg p-4 mb-4 bg-white relative">
+              <div className="border rounded-lg p-4 mb-4 bg-white relative overflow-hidden">
                 <img
                   src={selectedImage}
                   alt={selectedVariant?.variant_name || product.name}
-                  className="w-full h-[500px] object-contain"
+                  className={`w-full h-[500px] object-contain transition-all duration-300 ${!isInStock ? 'grayscale opacity-60' : ''}`}
                 />
-                {savingsPercent > 0 && (
+                {!isInStock && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                    <span className="bg-white/90 text-gray-800 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-widest shadow-md border border-gray-200">
+                      Out of Stock
+                    </span>
+                  </div>
+                )}
+                {savingsPercent > 0 && isInStock && (
                   <div className="absolute top-6 left-6 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
                     -{savingsPercent}%
                   </div>
