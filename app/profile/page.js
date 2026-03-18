@@ -18,7 +18,10 @@ import {
   CreditCard,
   Check,
   Copy,
-  Gift
+  Gift,
+  ArrowUpRight,
+  ArrowDownLeft,
+  History
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -26,20 +29,32 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState(null);
   const [subscription, setSubscription] = useState(null);
   const [coupons, setCoupons] = useState([]);
+  const [walletData, setWalletData] = useState(null);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [profileRes, subRes, couponRes] = await Promise.all([
+        const [profileRes, subRes, couponRes, walletRes, transRes] = await Promise.all([
           apiClient("/users/profile/me"),
           apiClient("/subscriptions/active-subscription"),
-          apiClient("/coupons/active")
+          apiClient("/coupons/active"),
+          apiClient("/wallet/me"),
+          apiClient("/wallet/transactions?page=1&limit=5"),
         ]);
         
         if (profileRes.success) setProfile(profileRes.data);
         if (subRes.success) setSubscription(subRes.data);
         if (couponRes.success) setCoupons(couponRes.data);
+        if (walletRes.success) setWalletData(walletRes.data);
+        if (transRes.success) {
+          setTransactions(transRes.data.transactions);
+          setHasMore(transRes.data.pagination.page < transRes.data.pagination.pages);
+        }
       } catch (err) {
         console.error("Error fetching data:", err);
       } finally {
@@ -48,6 +63,26 @@ export default function ProfilePage() {
     };
     fetchData();
   }, []);
+
+  const loadMoreTransactions = async () => {
+    if (loadingMore || !hasMore) return;
+    
+    try {
+      setLoadingMore(true);
+      const nextPage = page + 1;
+      const res = await apiClient(`/wallet/transactions?page=${nextPage}&limit=5`);
+      
+      if (res.success) {
+        setTransactions(prev => [...prev, ...res.data.transactions]);
+        setPage(nextPage);
+        setHasMore(res.data.pagination.page < res.data.pagination.pages);
+      }
+    } catch (err) {
+      console.error("Failed to load more transactions", err);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const calculateDaysRemaining = (endDate) => {
     const now = new Date();
@@ -261,37 +296,130 @@ export default function ProfilePage() {
                   Available Balance
                 </p>
                 <h4 className="text-3xl font-black text-slate-800">
-                  ₹{profile.balance?.toLocaleString()}
+                  ₹{(walletData?.balance ?? profile.balance ?? 0).toLocaleString()}
                 </h4>
               </div>
-              <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+              {/* <div className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
                 <p className="text-sm text-slate-500 mb-1">
                   Total Cash Received
                 </p>
                 <h4 className="text-3xl font-black text-slate-800">
-                  ₹{profile.cash_received?.toLocaleString()}
+                  ₹{(walletData?.totalCashReceived ?? profile.cash_received ?? 0).toLocaleString()}
                 </h4>
-              </div>
+              </div> */}
             </div>
 
-            <div className="mt-6 flex items-center gap-4 p-4 bg-blue-50/50 rounded-xl">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                <CreditCard size={20} className="text-blue-600" />
+            <div className="mt-6 flex items-center justify-between p-4 bg-blue-50/50 rounded-xl">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                  <CreditCard size={20} className="text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-blue-400">
+                    Reward Tier
+                  </p>
+                  <p className="text-sm font-bold text-blue-900 capitalize">
+                    {walletData?.levelInfo?.currentLevel?.levelName || profile.bonus_type?.replace(/_/g, " ") || "No Level Yet"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-blue-400">
-                  Reward Tier
+              {walletData?.levelInfo?.currentLevel?.cashbackPercentage > 0 ? (
+                <div className="text-right">
+                  <p className="text-[10px] uppercase font-bold text-indigo-400">
+                    Cashback Rate
+                  </p>
+                  <p className="text-sm font-black text-indigo-600">
+                    {walletData.levelInfo.currentLevel.cashbackPercentage}% per order
+                  </p>
+                </div>
+              ) : profile.bonus > 0 ? (
+                <div className="text-right">
+                  <p className="text-[10px] uppercase font-bold text-indigo-400">
+                    Loyalty Bonus
+                  </p>
+                  <p className="text-sm font-black text-indigo-600">
+                    {profile.bonus_type === "percentage_per_order"
+                      ? `${profile.bonus}%`
+                      : `₹${profile.bonus}`}
+                  </p>
+                </div>
+              ) : null}
+            </div>
+
+            {/* Transactions Section */}
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4 px-1">
+                <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest">
+                  Transaction History
                 </p>
-                <p className="text-sm font-bold text-blue-900 capitalize">
-                  {profile.bonus_type?.replace(/_/g, " ")}
-                </p>
+                {hasMore && (
+                  <button 
+                    onClick={loadMoreTransactions}
+                    disabled={loadingMore}
+                    className="text-[10px] font-black uppercase text-blue-600 hover:text-blue-800 disabled:opacity-50 transition-colors"
+                  >
+                    {loadingMore ? "Loading..." : "Load More"}
+                  </button>
+                )}
+              </div>
+              
+              <div className="max-h-[240px] overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                {transactions.length > 0 ? (
+                  transactions.map((tx) => (
+                    <div
+                      key={tx._id}
+                      className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-100 transition-all group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm transition-transform group-hover:scale-110 ${
+                          tx.type === "credit" ? "bg-green-100 text-green-600" : "bg-red-100 text-red-500"
+                        }`}>
+                          {tx.type === "credit" ? <ArrowDownLeft size={18} /> : <ArrowUpRight size={18} />}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-700 truncate max-w-[200px]">
+                            {tx.message}
+                          </p>
+                          <p className="text-[10px] text-slate-400 font-medium">
+                            {new Date(tx.createdAt).toLocaleDateString("en-IN", {
+                              day: "2-digit", month: "short", year: "numeric"
+                            })} • {new Date(tx.createdAt).toLocaleTimeString("en-IN", {
+                              hour: "2-digit", minute: "2-digit"
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right ml-4">
+                        <span className={`text-sm font-black flex-shrink-0 ${
+                          tx.type === "credit" ? "text-green-600" : "text-red-500"
+                        }`}>
+                          {tx.type === "credit" ? "+" : "−"}₹{parseFloat(tx.amount?.$numberDecimal ?? tx.amount).toLocaleString()}
+                        </span>
+                        <p className="text-[8px] font-bold text-slate-300 uppercase tracking-tighter">
+                          {tx.status || 'SUCCESS'}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="py-12 flex flex-col items-center justify-center text-center bg-slate-50/50 rounded-3xl border border-dashed border-slate-200">
+                    <History size={32} className="text-slate-200 mb-2" />
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">No Activity Yet</p>
+                  </div>
+                )}
+                
+                {loadingMore && (
+                  <div className="py-4 flex justify-center">
+                    <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
 
-          {/* Referral Program Card - ONLY FOR VENDORS */}
-          {profile.role?.role?.toLowerCase().includes("vendor") && (
-            <div className="md:col-span-1 space-y-6">
+          <div className="md:col-span-1 space-y-6">
+            {/* Referral Program Card - ONLY FOR VENDORS */}
+            {profile.role?.role?.toLowerCase().includes("vendor") && (
               <motion.div
                 variants={itemVars}
                 className="bg-white rounded-[2rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group hover:border-blue-200 transition-all"
@@ -301,18 +429,20 @@ export default function ProfilePage() {
                   <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
                     <Gift className="text-blue-600" size={22} /> Referral Program
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <p className="text-xs text-slate-500 font-medium leading-relaxed">
-                      Invite other vendors and earn <span className="text-blue-600 font-bold">50% OFF</span> coupons!
+                      Invite other vendors and earn{" "}
+                      <span className="text-blue-600 font-bold">50% OFF</span>{" "}
+                      coupons!
                     </p>
-                    
+
                     <div className="relative mt-4">
                       <div className="p-4 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-between group-hover:bg-blue-50/30 transition-colors">
                         <span className="font-mono font-black text-xl text-slate-800 tracking-wider">
                           {profile.referral_code || "VF-CODE"}
                         </span>
-                        <button 
+                        <button
                           onClick={() => copyToClipboard(profile.referral_code)}
                           className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 hover:text-blue-600 hover:border-blue-200 transition-all active:scale-90"
                           title="Copy Code"
@@ -321,52 +451,88 @@ export default function ProfilePage() {
                         </button>
                       </div>
                     </div>
-                    
+
                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest text-center mt-2">
                       Your Personal Invitation Code
                     </p>
                   </div>
                 </div>
               </motion.div>
+            )}
 
-              {/* Earned Rewards List */}
-              {coupons.length > 0 && (
-                <motion.div
-                  variants={itemVars}
-                  className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 p-4 opacity-10">
-                    <Zap size={80} />
-                  </div>
-                  <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                    <Zap className="text-yellow-400" size={22} /> My Rewards  ({coupons.length})
-                  </h3>
-                  <div className="space-y-4 max-h-[280px] no-scrollbar overflow-y-auto pr-2 custom-scrollbar">
-                    {coupons.map((coupon) => (
-                      <div key={coupon._id} className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <p className="text-xs font-bold text-blue-200 uppercase tracking-wider">{coupon.title}</p>
-                            <p className="text-xl font-black">{coupon.couponCode}</p>
+            {/* My Rewards & Offers */}
+            <motion.div
+              variants={itemVars}
+              className="bg-gradient-to-br from-indigo-600 to-blue-700 rounded-[2rem] p-8 text-white shadow-xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 p-4 opacity-10">
+                <Zap size={80} />
+              </div>
+              <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+                <Zap className="text-yellow-400" size={22} /> My Rewards ({coupons.length})
+              </h3>
+
+              {coupons.length > 0 ? (
+                <div className="space-y-4 max-h-[280px] no-scrollbar overflow-y-auto pr-2 custom-scrollbar">
+                  {coupons.map((coupon) => (
+                    <div
+                      key={coupon._id}
+                      className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 hover:bg-white/20 transition-all duration-300 group/coupon"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <p className="text-[10px] font-bold text-blue-200 uppercase tracking-widest mb-0.5">
+                            {coupon.title}
+                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-xl font-black tracking-tight">
+                              {coupon.couponCode}
+                            </p>
+                            <span className="px-1.5 py-0.5 bg-yellow-400 text-slate-900 text-[8px] font-black rounded uppercase">
+                              Active
+                            </span>
                           </div>
-                          <button 
-                            onClick={() => copyToClipboard(coupon.couponCode)}
-                            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-                          >
-                            <Copy size={16} />
-                          </button>
                         </div>
-                        <p className="text-[10px] text-blue-100/70">{coupon.description}</p>
-                        <div className="mt-3 text-[10px] font-bold bg-white/20 inline-block px-2 py-1 rounded">
-                          EXPIRES: {new Date(coupon.expiryDate).toLocaleDateString()}
-                        </div>
+                        <button
+                          onClick={() => copyToClipboard(coupon.couponCode)}
+                          className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-all active:scale-95 border border-white/5"
+                          title="Copy Code"
+                        >
+                          <Copy size={14} />
+                        </button>
                       </div>
-                    ))}
+                      <p className="text-[10px] text-blue-100/70 line-clamp-2 mb-3">
+                        {coupon.description}
+                      </p>
+                      <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                        <div className="flex items-center gap-1.5">
+                          <Clock size={10} className="text-blue-300" />
+                          <span className="text-[9px] font-bold text-blue-200">
+                            EXPIRES:{" "}
+                            {new Date(coupon.expiryDate).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <Link
+                          href="/products"
+                          className="text-[9px] font-black uppercase text-white hover:text-yellow-400 transition-colors"
+                        >
+                          Shop Now →
+                        </Link>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-6 text-center">
+                  <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center mb-3">
+                    <Gift size={22} className="text-white/40" />
                   </div>
-                </motion.div>
+                  <p className="text-sm font-bold text-white/60">No active rewards</p>
+                  <p className="text-[10px] text-white/40 mt-1">Keep shopping to unlock exclusive coupons!</p>
+                </div>
               )}
-            </div>
-          )}
+            </motion.div>
+          </div>
 
           {/* Contact & Tech Details */}
           <motion.div

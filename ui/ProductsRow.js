@@ -68,18 +68,19 @@ export default function ProductsRow({ products = [], loading = false, name }) {
         {topTen.slice(0, 5).map((product) => {
           const discount = getDiscountPercent(product);
           const imageUrl = getProductImage(product);
+          const outOfStock = product.inStock === false;
 
           return (
             <div
               key={product._id}
-              className="bg-white rounded-lg border hover:shadow-lg transition duration-300 overflow-hidden group"
+              className={`bg-white rounded-lg border hover:shadow-lg transition duration-300 overflow-hidden group ${outOfStock ? 'opacity-75' : ''}`}
             >
               {/* Image */}
               <div
                 className="relative h-44 overflow-hidden cursor-pointer"
                 onClick={() => router.push(`/products/${product._id}`)}
               >
-                {discount && (
+                {discount && !outOfStock && (
                   <div className="absolute top-2 left-2 bg-pink-500 text-white text-[10px] font-bold px-2 py-1 rounded-full z-10">
                     {discount}% OFF
                   </div>
@@ -89,18 +90,25 @@ export default function ProductsRow({ products = [], loading = false, name }) {
                   src={imageUrl}
                   alt={product?.name || "product"}
                   fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className={`object-cover transition-transform duration-300 ${outOfStock ? 'grayscale' : 'group-hover:scale-105'}`}
                 />
+                {outOfStock && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+                    <span className="bg-white/90 text-gray-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm border border-gray-200">
+                      Out of Stock
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Content */}
               <div className="p-3">
-                <h3 className="text-xs font-semibold text-gray-800 line-clamp-2">
+                <h3 className={`text-xs font-semibold line-clamp-2 transition-colors ${outOfStock ? 'text-gray-400' : 'text-gray-800'}`}>
                   {product?.name}
                 </h3>
 
                 <div className="mt-2 flex items-center gap-2">
-                  <span className="text-black font-bold text-sm">
+                  <span className={`font-bold text-sm ${outOfStock ? 'text-gray-400' : 'text-black'}`}>
                     ₹{getProductPrice(product)}
                   </span>
 
@@ -110,7 +118,7 @@ export default function ProductsRow({ products = [], loading = false, name }) {
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-[11px] text-gray-500 line-clamp-2 min-h-[32px]">
+                <p className={`mt-1 text-[11px] line-clamp-2 min-h-[32px] ${outOfStock ? 'text-gray-400' : 'text-gray-500'}`}>
                   {product?.shortDescription}
                 </p>
               </div>
