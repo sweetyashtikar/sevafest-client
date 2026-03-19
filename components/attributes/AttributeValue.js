@@ -53,7 +53,7 @@ export default function AttributeValue() {
         attributeApi.getAll({ limit: 100 })
       ]);
 
-      setValues(valuesRes.data);
+setValues(valuesRes.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));
       setAttributes(attributesRes.data);
       setPagination(prev => ({ ...prev, total: valuesRes.total }));
     } catch (error) {

@@ -5,7 +5,7 @@ import { cityService } from "@/API/CityAPI";
 import DataTable from "@/components/admin/DataTable";
 import Modal from "@/components/admin/Model";
 import BulkUploadModal from "@/components/admin/BulkUploadModal";
-// import { PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { Pencil, Trash2 } from "lucide-react";
 
 const Cities = () => {
   const [cities, setCities] = useState([]);
@@ -26,20 +26,21 @@ const Cities = () => {
     fetchCities();
   }, [pagination.currentPage, searchTerm]);
 
+  // ─── Data Fetching ───────────────────────────────────────────────────────────
+
   const fetchCities = async () => {
     setLoading(true);
     try {
+      // GET /cities?page=1&limit=10&search=...
       const response = await cityService.getCities(
         pagination.currentPage,
         10,
-        searchTerm,
+        searchTerm
       );
-
       setCities(response?.cities || []);
-
       setPagination((prev) => ({
         ...prev,
-        ...response?.pagination,
+        ...(response?.pagination || {}),
       }));
     } catch (error) {
       console.error("Error fetching cities:", error);
@@ -48,15 +49,17 @@ const Cities = () => {
     }
   };
 
+  // ─── CRUD ────────────────────────────────────────────────────────────────────
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (editingCity) {
+        // PUT /cities/:id
         await cityService.updateCity(editingCity._id, formData);
       } else {
-       const creatCirty =  await cityService.createCity(formData);
-
-       console.log("creatCirty", creatCirty)
+        // POST /cities
+        await cityService.createCity(formData);
       }
       fetchCities();
       setShowModal(false);
@@ -69,6 +72,7 @@ const Cities = () => {
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this city?")) {
       try {
+        // DELETE /cities/:id
         await cityService.deleteCity(id);
         fetchCities();
       } catch (error) {
@@ -81,6 +85,7 @@ const Cities = () => {
     if (selectedRows.length === 0) return;
     if (window.confirm(`Delete ${selectedRows.length} cities?`)) {
       try {
+        // Individual DELETE calls (no bulk delete route in backend)
         await cityService.bulkDeleteCities(selectedRows);
         setSelectedRows([]);
         fetchCities();
@@ -90,9 +95,10 @@ const Cities = () => {
     }
   };
 
-  const handleBulkUpload = async (cities) => {
+  const handleBulkUpload = async (citiesList) => {
     try {
-      await cityService.bulkUploadCities(cities);
+      // POST /cities/bulk-city  →  body: { cities: [...] }
+      await cityService.bulkUploadCities(citiesList);
       setShowBulkModal(false);
       fetchCities();
     } catch (error) {
@@ -105,49 +111,61 @@ const Cities = () => {
     setEditingCity(null);
   };
 
+  const handleSearchChange = (e) => {
+    // Reset to page 1 when searching
+    setPagination((prev) => ({ ...prev, currentPage: 1 }));
+    setSearchTerm(e.target.value);
+  };
+
+  // ─── Table Columns ───────────────────────────────────────────────────────────
+
   const columns = [
     { key: "name", label: "City Name", sortable: true },
     {
       key: "createdAt",
       label: "Created At",
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => (date ? new Date(date).toLocaleDateString() : "—"),
     },
     {
       key: "actions",
       label: "Actions",
       render: (_, row) => (
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button
             onClick={() => {
               setEditingCity(row);
               setFormData({ name: row.name });
               setShowModal(true);
             }}
-            className="text-blue-600 hover:text-blue-900"
+            className="text-blue-600 hover:text-blue-900 transition-colors"
+            title="Edit"
           >
-            {/* <PencilIcon className="w-5 h-5" /> */}
+            <Pencil className="w-4 h-4" />
           </button>
           <button
             onClick={() => handleDelete(row._id)}
-            className="text-red-600 hover:text-red-900"
+            className="text-red-600 hover:text-red-900 transition-colors"
+            title="Delete"
           >
-            {/* <TrashIcon className="w-5 h-5" /> */}
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       ),
     },
   ];
 
+  // ─── Render ──────────────────────────────────────────────────────────────────
+
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 pt-4">
+      {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Cities Management</h1>
         <div className="flex space-x-2">
           <button
             onClick={() => setShowBulkModal(true)}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
+            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
           >
-            {/* <PlusIcon className="w-5 h-5 mr-2" /> */}
             Bulk Upload
           </button>
           <button
@@ -155,22 +173,21 @@ const Cities = () => {
               resetForm();
               setShowModal(true);
             }}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center"
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
-            {/* <PlusIcon className="w-5 h-5 mr-2" /> */}
-            Add City
+            + Add City
           </button>
         </div>
       </div>
 
-      {/* Search Bar */}
+      {/* Search */}
       <div className="mb-4">
         <input
           type="text"
           placeholder="Search cities..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full md:w-96 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          onChange={handleSearchChange}
+          className="w-full md:w-96 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
@@ -181,14 +198,14 @@ const Cities = () => {
         loading={loading}
         pagination={pagination}
         onPageChange={(page) =>
-          setPagination({ ...pagination, currentPage: page })
+          setPagination((prev) => ({ ...prev, currentPage: page }))
         }
         onRowSelect={setSelectedRows}
         selectedRows={selectedRows}
-        onBulkDelete={handleBulkDelete}
+        onBulkDelete={selectedRows.length > 0 ? handleBulkDelete : undefined}
       />
 
-      {/* Create/Edit Modal */}
+      {/* Create / Edit Modal */}
       <Modal
         isOpen={showModal}
         onClose={() => {
@@ -199,29 +216,32 @@ const Cities = () => {
       >
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 mb-2">City Name</label>
+            <label className="block text-gray-700 mb-2 font-semibold text-sm">
+              City Name <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               value={formData.name}
               onChange={(e) => setFormData({ name: e.target.value })}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter city name"
               required
             />
           </div>
-          <div className="flex justify-end space-x-2">
+          <div className="flex justify-end space-x-2 pt-4 border-t border-gray-100">
             <button
               type="button"
               onClick={() => {
                 setShowModal(false);
                 resetForm();
               }}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 text-sm font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
             >
               {editingCity ? "Update" : "Create"}
             </button>
@@ -235,7 +255,7 @@ const Cities = () => {
         onClose={() => setShowBulkModal(false)}
         onUpload={handleBulkUpload}
         template={[{ name: "Mumbai" }, { name: "Pune" }]}
-        entityName="cities"
+        entityName="Cities"
       />
     </div>
   );

@@ -37,8 +37,7 @@ export default function Attribute() {
         attributeSetApi.getAll({ limit: 100 })
       ]);
 
-      setAttributes(attributesRes.data);
-      console.log('Fetched Attributes:', attributesRes);
+setAttributes(attributesRes.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));      console.log('Fetched Attributes:', attributesRes);
       setAttributeSets(setsRes.data);
       setPagination(prev => ({ ...prev, total: attributesRes.total }));
     } catch (error) {
