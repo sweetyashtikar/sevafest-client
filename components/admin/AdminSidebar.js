@@ -170,26 +170,11 @@ export const menuItems = [
     children: [
       { label: "All Order", path: "/admin/orders", icon: ClipboardList },
       {
-        label: "Pending Order",
-        path: "/admin/orders/pending",
-        icon: ClipboardList,
-      },
-      {
-        label: "Received Order",
-        path: "/admin/orders/received",
-        icon: ClipboardList,
-      },
-      {
-        label: "Processed Order",
-        path: "/admin/orders/processed",
+        label: "Order Placed",
+        path: "/admin/orders/placed",
         icon: ClipboardList,
       },
       { label: "Shipped Order", path: "/admin/orders/shipped", icon: Truck },
-      {
-        label: "Out for Delivery",
-        path: "/admin/orders/out-for-delivery",
-        icon: Truck,
-      },
       {
         label: "Delivered Order",
         path: "/admin/orders/delivered",
@@ -201,7 +186,6 @@ export const menuItems = [
         icon: XCircle,
       },
       { label: "Return", path: "/admin/orders/return", icon: RotateCcw },
-      
     ],
   },
 

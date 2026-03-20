@@ -188,11 +188,8 @@ import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
 
 const STATUS_OPTIONS = [
-  { label: "All Status", value: "all" },
+  { label: "All Orders", value: "all" },
   { label: "Order Placed", value: "Order%20placed" },
-  { label: "Processed", value: "processed" },
-  { label: "Assigned", value: "assigned" },
-  { label: "Picked Up", value: "picked_up" },
   { label: "Shipped", value: "shipped" },
   { label: "Delivered", value: "delivered" },
   { label: "Cancelled", value: "cancelled" },

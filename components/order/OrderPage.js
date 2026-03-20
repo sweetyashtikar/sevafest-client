@@ -29,7 +29,24 @@ export default function Page({ endPoint }) {
       let url = `/order?page=${pageNo}`;
 
       if (endPoint) {
-        url += `&${endPoint}`;
+        // Extract status if it exists in endPoint (e.g., active_status=shipped)
+        const statusMatch = endPoint.match(/active_status=([^&]+)/);
+        if (statusMatch) {
+          const status = statusMatch[1];
+          // Use the new status route
+          url = `/order/status/${status}?page=${pageNo}`;
+
+          // Add other params from endPoint if any (except active_status)
+          const otherParams = endPoint
+            .split("&")
+            .filter((p) => !p.startsWith("active_status="))
+            .join("&");
+          if (otherParams) {
+            url += `&${otherParams}`;
+          }
+        } else {
+          url += `&${endPoint}`;
+        }
       }
 
       const res = await apiClient(url);
