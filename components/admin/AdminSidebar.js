@@ -124,28 +124,8 @@ export const menuItems = [
     path: "/admin/subscriptions",
   },
 
-  {
-    label: "Time slot",
-    icon: Clock,
-    path: "/admin/timesolt",
-  },
 
-  // {
-  //   label: "Delivery boy",
-  //   icon: Truck,
-  //   children: [
-  //     { label: "Add delivery boy", path: "/admin/category", icon: UserPlus },
-  //     { label: "Manage delivery boy", path: "/admin/category", icon: Users },
-  //     { label: "Fund transfer", path: "/admin/category", icon: Banknote },
-  //     { label: "Cash collection", path: "/admin/category", icon: Wallet },
-  //   ],
-  // },
 
-  // {
-  //   label: "Orders",
-  //   icon: ShoppingCart,
-  //   path: "/admin/orders",
-  // },
 
   {
     label: "Customers",
@@ -172,11 +152,11 @@ export const menuItems = [
   //   icon: Users,
   //   path: "/admin/users",
   // },
-  {
-    label: "Notification",
-    icon: Bell,
-    path: "/admin/notifications",
-  },
+  // {
+  //   label: "Notification",
+  //   icon: Bell,
+  //   path: "/admin/notifications",
+  // },
   {
     label: "FAQ",
     icon: HelpCircle,

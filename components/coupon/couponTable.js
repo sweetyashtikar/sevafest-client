@@ -15,10 +15,8 @@ import {
   Tag,
   Calendar,
   Users,
-  Percent,
   Copy,
   CheckCircle,
-  XCircle,
 } from "lucide-react";
 import { couponService } from "@/API/couponAPI";
 import AddCouponModal from "./AddCouponModal";
@@ -72,7 +70,8 @@ export default function CouponTable() {
       const params = {
         page: currentPage,
         limit: itemsPerPage,
-        ...(filters.status && { status: filters.status === "active" }),
+        // ✅ FIX: status filter properly passed as boolean string
+        ...(filters.status && { status: filters.status === "active" ? "true" : "false" }),
         ...(filters.couponType && { couponType: filters.couponType }),
         ...(filters.discountType && { discountType: filters.discountType }),
         ...(filters.userType && { userType: filters.userType }),
@@ -101,6 +100,7 @@ export default function CouponTable() {
 
   const handleStatusToggle = async (id, currentStatus) => {
     try {
+      // ✅ FIX: pass boolean directly
       await couponService.toggleStatus(id, !currentStatus);
       fetchCoupons();
       fetchStats();
@@ -116,6 +116,9 @@ export default function CouponTable() {
         fetchCoupons();
         fetchStats();
       } catch (error) {
+        // ✅ FIX: show proper error from backend
+        const msg = error?.response?.data?.message || error.message;
+        alert(msg || "Error deleting coupon");
         console.error("Error deleting coupon:", error);
       }
     }
@@ -129,10 +132,9 @@ export default function CouponTable() {
 
   const handleBulkDelete = async () => {
     if (selectedCoupons.length === 0) return;
-
     if (
       window.confirm(
-        `Are you sure you want to delete ${selectedCoupons.length} coupons?`,
+        `Are you sure you want to delete ${selectedCoupons.length} coupons?`
       )
     ) {
       try {
@@ -142,6 +144,8 @@ export default function CouponTable() {
         fetchCoupons();
         fetchStats();
       } catch (error) {
+        const msg = error?.response?.data?.message || error.message;
+        alert(msg || "Error deleting coupons");
         console.error("Error bulk deleting coupons:", error);
       }
     }
@@ -149,7 +153,6 @@ export default function CouponTable() {
 
   const handleBulkStatusUpdate = async (status) => {
     if (selectedCoupons.length === 0) return;
-
     try {
       await couponService.bulkUpdateStatus(selectedCoupons, status);
       setSelectedCoupons([]);
@@ -177,6 +180,12 @@ export default function CouponTable() {
     } else {
       setSelectedCoupons([...selectedCoupons, id]);
     }
+  };
+
+  // ✅ FIX: filter change handler — currentPage वेगळं reset करतो
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setCurrentPage(1);
   };
 
   const resetFilters = () => {
@@ -217,41 +226,31 @@ export default function CouponTable() {
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
             <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-              <p className="text-xs text-blue-600 font-medium uppercase">
-                Total Coupons
-              </p>
+              <p className="text-xs text-blue-600 font-medium uppercase">Total Coupons</p>
               <p className="text-2xl font-bold text-blue-700 mt-1">
                 {stats.overall?.[0]?.totalCoupons || 0}
               </p>
             </div>
             <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-              <p className="text-xs text-green-600 font-medium uppercase">
-                Active
-              </p>
+              <p className="text-xs text-green-600 font-medium uppercase">Active</p>
               <p className="text-2xl font-bold text-green-700 mt-1">
                 {stats.overall?.[0]?.activeCoupons || 0}
               </p>
             </div>
             <div className="bg-red-50 rounded-xl p-4 border border-red-100">
-              <p className="text-xs text-red-600 font-medium uppercase">
-                Inactive
-              </p>
+              <p className="text-xs text-red-600 font-medium uppercase">Inactive</p>
               <p className="text-2xl font-bold text-red-700 mt-1">
                 {stats.overall?.[0]?.inactiveCoupons || 0}
               </p>
             </div>
             <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
-              <p className="text-xs text-orange-600 font-medium uppercase">
-                Total Used
-              </p>
+              <p className="text-xs text-orange-600 font-medium uppercase">Total Used</p>
               <p className="text-2xl font-bold text-orange-700 mt-1">
                 {stats.overall?.[0]?.totalUsedCount || 0}
               </p>
             </div>
             <div className="bg-purple-50 rounded-xl p-4 border border-purple-100">
-              <p className="text-xs text-purple-600 font-medium uppercase">
-                Expiring Soon
-              </p>
+              <p className="text-xs text-purple-600 font-medium uppercase">Expiring Soon</p>
               <p className="text-2xl font-bold text-purple-700 mt-1">
                 {stats.expiringSoon?.[0]?.count || 0}
               </p>
@@ -270,13 +269,7 @@ export default function CouponTable() {
               type="text"
               placeholder="Search coupons by code, title or description..."
               value={filters.search}
-              onChange={(e) =>
-                setFilters({
-                  ...filters,
-                  search: e.target.value,
-                  currentPage: 1,
-                })
-              }
+              onChange={(e) => handleFilterChange("search", e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-black placeholder:text-black/20 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
             />
           </div>
@@ -312,13 +305,7 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.status}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    status: e.target.value,
-                    currentPage: 1,
-                  })
-                }
+                onChange={(e) => handleFilterChange("status", e.target.value)}
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Status</option>
@@ -332,13 +319,7 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.couponType}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    couponType: e.target.value,
-                    currentPage: 1,
-                  })
-                }
+                onChange={(e) => handleFilterChange("couponType", e.target.value)}
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Types</option>
@@ -355,13 +336,7 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.discountType}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    discountType: e.target.value,
-                    currentPage: 1,
-                  })
-                }
+                onChange={(e) => handleFilterChange("discountType", e.target.value)}
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Discounts</option>
@@ -378,13 +353,7 @@ export default function CouponTable() {
               </label>
               <select
                 value={filters.userType}
-                onChange={(e) =>
-                  setFilters({
-                    ...filters,
-                    userType: e.target.value,
-                    currentPage: 1,
-                  })
-                }
+                onChange={(e) => handleFilterChange("userType", e.target.value)}
                 className="w-full border border-slate-200 px-3 py-2 rounded-lg text-black outline-none focus:border-blue-500"
               >
                 <option value="">All Users</option>
@@ -441,33 +410,15 @@ export default function CouponTable() {
                   className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
               </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Code
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Title
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Discount
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Type
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                User Type
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Usage
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Expiry
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Status
-              </th>
-              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">
-                Actions
-              </th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Code</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Title</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Discount</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Type</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">User Type</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Usage</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Expiry</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Status</th>
+              <th className="px-6 py-4 text-left text-xs font-bold uppercase tracking-wider text-black/40">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -485,9 +436,7 @@ export default function CouponTable() {
                 <td colSpan="10" className="px-6 py-12 text-center">
                   <div className="flex flex-col items-center justify-center">
                     <Tag size={48} className="text-black/20 mb-3" />
-                    <p className="text-black/60 font-medium">
-                      No coupons found
-                    </p>
+                    <p className="text-black/60 font-medium">No coupons found</p>
                     <p className="text-sm text-black/40 mt-1">
                       Create your first coupon to get started
                     </p>
@@ -561,9 +510,7 @@ export default function CouponTable() {
                     <span
                       className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${COUPON_TYPE_COLORS[coupon.couponType]}`}
                     >
-                      {coupon.couponType === "single time valid"
-                        ? "Single"
-                        : "Multiple"}
+                      {coupon.couponType === "single time valid" ? "Single" : "Multiple"}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -577,8 +524,7 @@ export default function CouponTable() {
                   <td className="px-6 py-4">
                     <div className="text-sm">
                       <p className="text-black">
-                        {coupon.totalUsedCount} /{" "}
-                        {coupon.totalUsageLimit || "∞"}
+                        {coupon.totalUsedCount} / {coupon.totalUsageLimit || "∞"}
                       </p>
                       <p className="text-xs text-black/40">
                         {coupon.perUserUsageLimit} per user
@@ -589,9 +535,7 @@ export default function CouponTable() {
                     <div className="flex items-center gap-1 text-sm">
                       <Calendar size={14} className="text-black/40" />
                       <span
-                        className={
-                          coupon.isExpired ? "text-red-600" : "text-black/60"
-                        }
+                        className={coupon.isExpired ? "text-red-600" : "text-black/60"}
                       >
                         {new Date(coupon.expiryDate).toLocaleDateString()}
                       </span>
@@ -599,9 +543,7 @@ export default function CouponTable() {
                   </td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() =>
-                        handleStatusToggle(coupon._id, coupon.status)
-                      }
+                      onClick={() => handleStatusToggle(coupon._id, coupon.status)}
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                         coupon.status
                           ? "bg-green-100 text-green-700 hover:bg-green-200"
@@ -609,15 +551,9 @@ export default function CouponTable() {
                       }`}
                     >
                       {coupon.status ? (
-                        <>
-                          <Eye size={14} />
-                          Active
-                        </>
+                        <><Eye size={14} /> Active</>
                       ) : (
-                        <>
-                          <EyeOff size={14} />
-                          Inactive
-                        </>
+                        <><EyeOff size={14} /> Inactive</>
                       )}
                     </button>
                   </td>
@@ -661,8 +597,7 @@ export default function CouponTable() {
           <div className="flex items-center gap-2">
             <span className="text-sm text-black/40">
               Showing {(currentPage - 1) * itemsPerPage + 1} to{" "}
-              {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{" "}
-              coupons
+              {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems} coupons
             </span>
             <select
               value={itemsPerPage}
@@ -678,7 +613,6 @@ export default function CouponTable() {
               <option value={100}>100 per page</option>
             </select>
           </div>
-
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -691,9 +625,7 @@ export default function CouponTable() {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
               className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >

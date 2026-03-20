@@ -1,10 +1,11 @@
 // pages/StockManagement.jsx
 "use client";
-
-import React, { useState, useEffect } from 'react';
-import { stockService } from '@/API/stockAPI';
-import DataTable from '@/components/admin/DataTable';
-import StockAdjustmentModal from '@/components/stock/stockAdjustModel';
+import { toast } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { stockService } from "@/API/stockAPI";
+import DataTable from "@/components/admin/DataTable";
+import StockAdjustmentModal from "@/components/stock/stockAdjustModel";
+import { apiClient } from "@/services/apiClient";
 
 const StockManagement = () => {
   // State management
@@ -14,29 +15,29 @@ const StockManagement = () => {
     currentPage: 1,
     totalPages: 1,
     totalItems: 0,
-    hasNextPage: false
+    hasNextPage: false,
   });
-  
+
   // Filter states
   const [filters, setFilters] = useState({
     page: 1,
     limit: 50,
-    category: '',
-    seller: '',
-    search: '',
-    status: '',
-    sortBy: 'createdAt',
-    sortOrder: -1
+    category: "",
+    seller: "",
+    search: "",
+    status: "",
+    sortBy: "createdAt",
+    sortOrder: -1,
   });
 
   // Filter options
   const [categories, setCategories] = useState([]);
   const [sellers, setSellers] = useState([]);
   const [summary, setSummary] = useState(null);
-  
+
   // Selected rows for bulk actions
   const [selectedRows, setSelectedRows] = useState([]);
-  
+
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -47,23 +48,24 @@ const StockManagement = () => {
     try {
       const response = await stockService.getStockSalesView(filters);
       const responseData = response.data;
-      console.log("response tock", responseData)
-      
+      console.log("response tock", responseData);
+
       setData(responseData.tableRows || []);
       setPagination({
         currentPage: responseData.pagination?.currentPage || 1,
         totalPages: responseData.pagination?.totalPages || 1,
         totalItems: responseData.pagination?.totalItems || 0,
-        hasNextPage: responseData.pagination?.currentPage < responseData.pagination?.totalPages
+        hasNextPage:
+          responseData.pagination?.currentPage <
+          responseData.pagination?.totalPages,
       });
-      
+
       // Set filter options
       setCategories(responseData.filters?.categories || []);
       setSellers(responseData.filters?.sellers || []);
       setSummary(responseData.summary || null);
-      
     } catch (error) {
-      console.error('Error fetching stock data:', error);
+      console.error("Error fetching stock data:", error);
     } finally {
       setLoading(false);
     }
@@ -76,44 +78,47 @@ const StockManagement = () => {
 
   // Handle filter changes
   const handleFilterChange = (key, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       [key]: value,
-      page: 1 // Reset to first page on filter change
+      page: 1, // Reset to first page on filter change
     }));
   };
 
   // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    handleFilterChange('search', e.target.search.value);
+    handleFilterChange("search", e.target.search.value);
   };
 
   // Handle page change
   const handlePageChange = (page) => {
-    setFilters(prev => ({ ...prev, page }));
+    setFilters((prev) => ({ ...prev, page }));
   };
 
   // Handle export
-  const handleExport = async (format = 'csv') => {
+  const handleExport = async (format = "csv") => {
     try {
       const response = await stockService.exportStockSalesData({
         ...filters,
-        format
+        format,
       });
-      
-      if (format === 'csv') {
+
+      if (format === "csv") {
         const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.setAttribute('download', `stock-management-${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute(
+          "download",
+          `stock-management-${new Date().toISOString().split("T")[0]}.csv`,
+        );
         document.body.appendChild(link);
         link.click();
         link.remove();
       }
     } catch (error) {
-      console.error('Export failed:', error);
-      alert('Failed to export data');
+      console.error("Export failed:", error);
+      alert("Failed to export data");
     }
   };
 
@@ -126,42 +131,62 @@ const StockManagement = () => {
   // Handle stock update
   const handleStockUpdate = async (updateData) => {
     try {
-      if (updateData.variantId) {
-        await stockService.updateVariantStock(
-          updateData.productId,
-          updateData.variantId,
-          {
-            adjustmentType: updateData.adjustmentType,
-            quantity: updateData.quantity,
-            reason: updateData.reason,
-            notes: updateData.notes
-          }
-        );
-      } else {
-        await stockService.updateSimpleProductStock(
-          updateData.productId,
-          {
-            adjustmentType: updateData.adjustmentType,
-            quantity: updateData.quantity,
-            reason: updateData.reason,
-            notes: updateData.notes
-          }
-        );
-      }
-      
+      // if (updateData.variantId) {
+      //   await stockService.updateVariantStock(
+      //     updateData.productId,
+      //     updateData.variantId,
+      //     {
+      //       adjustmentType: updateData.adjustmentType,
+      //       quantity: updateData.quantity,
+      //       reason: updateData.reason,
+      //       notes: updateData.notes,
+      //     },
+      //   );
+      // } else {
+      //   await stockService.updateSimpleProductStock(updateData.productId, {
+      //     adjustmentType: updateData.adjustmentType,
+      //     quantity: updateData.quantity,
+      //     reason: updateData.reason,
+      //     notes: updateData.notes,
+      //   });
+      // }
+
+      console.log("updateData", updateData);
+
+      const productId = updateData.productId;
+
+      const res = await apiClient(`/product/${productId}/stock`, {
+        method: "PATCH",
+        body: {
+          variantIds: updateData.variantId || null,
+          adjustmentType:
+            updateData.adjustmentType === "increase"
+              ? "increase_by"
+              : "decrease_by",
+          quantity: updateData.quantity,
+          reason: updateData.reason,
+          notes: updateData.notes,
+        },
+      });
+
+      console.log("res", res);
+      toast.success("Stock updated successfully");
       // Refresh data
       fetchStockData();
       setModalOpen(false);
-      alert('Stock updated successfully!');
     } catch (error) {
-      console.error('Stock update failed:', error);
-      alert('Failed to update stock');
+      console.error("Stock update failed:", error);
+      toast.error(error?.response?.data?.message || "Failed to update stock ");
     }
   };
 
   // Handle bulk delete (if needed)
   const handleBulkDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete ${selectedRows.length} items?`)) {
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${selectedRows.length} items?`,
+      )
+    ) {
       // Implement bulk delete logic here if needed
       setSelectedRows([]);
     }
@@ -170,21 +195,21 @@ const StockManagement = () => {
   // Define table columns
   const columns = [
     {
-      key: 'index',
-      label: '#',
+      key: "index",
+      label: "#",
       render: (_, row, index) => (
         <span className="text-gray-500">
           {(filters.page - 1) * filters.limit + index + 1}
         </span>
-      )
+      ),
     },
     {
-      key: 'name',
-      label: 'Name',
+      key: "name",
+      label: "Name",
       render: (_, row) => (
         <div className="flex items-center">
-          <img 
-            src={row.image} 
+          <img
+            src={row.image}
             alt={row.name}
             className="w-10 h-10 rounded-lg object-cover mr-3"
             // onError={(e) => {
@@ -192,55 +217,63 @@ const StockManagement = () => {
             // }}
           />
           <div>
-            <div className="font-medium text-gray-900">{row.shortName || row.name}</div>
+            <div className="font-medium text-gray-900">
+              {row.shortName || row.name}
+            </div>
             {row.variation && (
               <div className="text-xs text-gray-500">{row.variation}</div>
             )}
-            <div className="text-xs text-gray-400">SKU: {row.sku || 'N/A'}</div>
+            <div className="text-xs text-gray-400">SKU: {row.sku || "N/A"}</div>
           </div>
         </div>
-      )
+      ),
     },
     {
-      key: 'seller',
-      label: 'Seller',
+      key: "seller",
+      label: "Seller",
       render: (_, row) => (
         <div className="text-sm">
           <div className="font-medium text-gray-900">{row.seller}</div>
-          <div className="text-xs text-gray-500">ID: {row.sellerId?.slice(-6)}</div>
+          <div className="text-xs text-gray-500">
+            ID: {row.sellerId?.slice(-6)}
+          </div>
         </div>
-      )
+      ),
     },
-     {
-      key: 'productType',
-      label: 'Product Type',
+    {
+      key: "productType",
+      label: "Product Type",
       render: (_, row) => (
         <div className="text-sm">
           <div className="font-medium text-gray-900">{row.productType}</div>
         </div>
-      )
+      ),
     },
     {
-      key: 'variation',
-      label: 'Variation',
+      key: "variation",
+      label: "Variation",
       render: (_, row) => (
         <span className="text-sm text-gray-600">
-          {row.variation || 'Default'}
+          {row.variation || "Default"}
         </span>
-      )
+      ),
     },
     {
-      key: 'stock',
-      label: 'Stock',
+      key: "stock",
+      label: "Stock",
       render: (_, row) => {
-        const stockClass = 
-          row.stock === 0 ? 'bg-red-100 text-red-800' :
-          row.stock <= 10 ? 'bg-yellow-100 text-yellow-800' :
-          'bg-green-100 text-green-800';
-        
+        const stockClass =
+          row.stock === 0
+            ? "bg-red-100 text-red-800"
+            : row.stock <= 10
+              ? "bg-yellow-100 text-yellow-800"
+              : "bg-green-100 text-green-800";
+
         return (
           <div className="flex items-center space-x-2">
-            <span className={`px-2 py-1 text-xs font-medium rounded-full ${stockClass}`}>
+            <span
+              className={`px-2 py-1 text-xs font-medium rounded-full ${stockClass}`}
+            >
               {row.stockDisplay}
             </span>
             <button
@@ -251,42 +284,49 @@ const StockManagement = () => {
             </button>
           </div>
         );
-      }
+      },
     },
     {
-      key: 'sales',
-      label: 'Sales',
+      key: "sales",
+      label: "Sales",
       render: (_, row) => (
         <div className="text-sm">
-          <div className="font-medium text-gray-900">{row.sales || 0} units</div>
+          <div className="font-medium text-gray-900">
+            {row.sales || 0} units
+          </div>
           {row.revenue > 0 && (
-            <div className="text-xs text-gray-500">₹{row.revenue?.toLocaleString()}</div>
+            <div className="text-xs text-gray-500">
+              ₹{row.revenue?.toLocaleString()}
+            </div>
           )}
         </div>
-      )
+      ),
     },
     {
-      key: 'status',
-      label: 'Status',
+      key: "status",
+      label: "Status",
       render: (_, row) => {
-        const statusClass = row.status === true 
-          ? 'bg-green-100 text-green-800' 
-          : 'bg-gray-100 text-gray-800';
-        
+        const statusClass =
+          row.status === true
+            ? "bg-green-100 text-green-800"
+            : "bg-gray-100 text-gray-800";
+
         return (
-          <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusClass}`}>
+          <span
+            className={`px-2 py-1 text-xs font-medium rounded-full ${statusClass}`}
+          >
             {row.status || false}
           </span>
         );
-      }
+      },
     },
     {
-      key: 'actions',
-      label: 'Actions',
+      key: "actions",
+      label: "Actions",
       render: (_, row) => (
         <div className="flex space-x-2">
           <button
-            onClick={() => window.location.href = `/products/${row.id}`}
+            onClick={() => (window.location.href = `/products/${row.id}`)}
             className="text-blue-600 hover:text-blue-800 text-sm font-medium"
           >
             View
@@ -298,15 +338,17 @@ const StockManagement = () => {
             Stock
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen -ml-20">
+    <div className="p-6 bg-gray-50 min-h-screen -ml-20 overflow-x-hidden">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">View Stock Management</h1>
+        <h1 className="text-2xl font-bold text-gray-900">
+          View Stock Management
+        </h1>
         <p className="text-sm text-gray-500 mt-1">
           Manage and track inventory across all products
         </p>
@@ -317,157 +359,172 @@ const StockManagement = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-500 mb-1">Total Stock</p>
-            <p className="text-2xl font-bold text-gray-900">{summary.totalStock}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {summary.totalStock}
+            </p>
             <p className="text-xs text-gray-400 mt-1">Across all products</p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-500 mb-1">Total Sales</p>
-            <p className="text-2xl font-bold text-gray-900">{summary.totalSales}</p>
-            <p className="text-xs text-green-600 mt-1">+{summary.totalSales} units sold</p>
+            <p className="text-2xl font-bold text-gray-900">
+              {summary.totalSales}
+            </p>
+            <p className="text-xs text-green-600 mt-1">
+              +{summary.totalSales} units sold
+            </p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-500 mb-1">Total Revenue</p>
-            <p className="text-2xl font-bold text-gray-900">₹{summary.totalRevenue?.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-gray-900">
+              ₹{summary.totalRevenue?.toLocaleString()}
+            </p>
             <p className="text-xs text-gray-400 mt-1">From all sales</p>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow p-6">
             <p className="text-sm text-gray-500 mb-1">Low Stock Alert</p>
-            <p className="text-2xl font-bold text-yellow-600">{summary.lowStock}</p>
-            <p className="text-xs text-gray-400 mt-1">Products below threshold</p>
+            <p className="text-2xl font-bold text-yellow-600">
+              {summary.lowStock}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Products below threshold
+            </p>
           </div>
         </div>
       )}
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow p-4 mb-6">
-<div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          {/* Category Filter */}
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Filter By Category
+            </label>
 
-  {/* Category Filter */}
-  <div>
-    <label className="block text-xs font-medium text-gray-500 mb-1">
-      Filter By Category
-    </label>
+            <select
+              value={filters.category}
+              onChange={(e) => handleFilterChange("category", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" className="text-black">
+                All Category
+              </option>
 
-    <select
-      value={filters.category}
-      onChange={(e) => handleFilterChange('category', e.target.value)}
-      className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="" className="text-black">All Category</option>
+              {categories.map((cat) => (
+                <option key={cat._id} value={cat._id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {categories.map((cat) => (
-        <option key={cat._id} value={cat._id}>
-          {cat.name}
-        </option>
-      ))}
-    </select>
-  </div>
+          {/* Seller Filter */}
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Filter By Seller
+            </label>
 
-  {/* Seller Filter */}
-  <div>
-    <label className="block text-xs font-medium text-gray-500 mb-1">
-      Filter By Seller
-    </label>
+            <select
+              value={filters.seller}
+              onChange={(e) => handleFilterChange("seller", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" className="text-black">
+                All Sellers
+              </option>
 
-    <select
-      value={filters.seller}
-      onChange={(e) => handleFilterChange('seller', e.target.value)}
-      className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="" className="text-black">All Sellers</option>
+              {sellers.map((seller) => (
+                <option key={seller._id} value={seller._id}>
+                  {seller.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {sellers.map((seller) => (
-        <option key={seller._id} value={seller._id}>
-          {seller.name}
-        </option>
-      ))}
-    </select>
-  </div>
+          {/* Status Filter */}
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Status
+            </label>
 
-  {/* Status Filter */}
-  <div>
-    <label className="block text-xs font-medium text-gray-500 mb-1">
-      Status
-    </label>
+            <select
+              value={filters.status}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="" className="text-black">
+                All Status
+              </option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
 
-    <select
-      value={filters.status}
-      onChange={(e) => handleFilterChange('status', e.target.value)}
-      className="w-full px-3 py-2 border border-gray-700 rounded-md text-sm text-black bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="" className="text-black">All Status</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
-  </div>
+          {/* Search */}
+          <div className="md:col-span-2">
+            <label className="block text-xs font-medium text-gray-500 mb-1">
+              Search
+            </label>
 
-  {/* Search */}
-  <div className="md:col-span-2">
-    <label className="block text-xs font-medium text-gray-500 mb-1">
-      Search
-    </label>
+            <form onSubmit={handleSearch} className="flex">
+              <input
+                type="text"
+                name="search"
+                placeholder="Search by product name or SKU..."
+                defaultValue={filters.search}
+                className="flex-1 px-3 py-2 border border-gray-700 rounded-l-md text-sm text-black bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
 
-    <form onSubmit={handleSearch} className="flex">
-      <input
-        type="text"
-        name="search"
-        placeholder="Search by product name or SKU..."
-        defaultValue={filters.search}
-        className="flex-1 px-3 py-2 border border-gray-700 rounded-l-md text-sm text-black bg-white placeholder:text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                Search
+              </button>
+            </form>
+          </div>
+        </div>
+        {/* Bottom Actions */}
+        <div className="flex justify-between items-center mt-4">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm text-gray-500">Show</span>
 
-      <button
-        type="submit"
-        className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-r-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-      >
-        Search
-      </button>
-    </form>
-  </div>
+            <select
+              value={filters.limit}
+              onChange={(e) =>
+                handleFilterChange("limit", parseInt(e.target.value))
+              }
+              className="px-2 py-1 border border-gray-700 rounded-md text-sm text-gray-700 bg-white"
+            >
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="250">250</option>
+            </select>
 
-</div>
-  {/* Bottom Actions */}
-  <div className="flex justify-between items-center mt-4">
-    <div className="flex items-center space-x-2">
-      <span className="text-sm text-gray-500">Show</span>
+            <span className="text-sm text-gray-500">entries</span>
+          </div>
 
-      <select
-        value={filters.limit}
-        onChange={(e) =>
-          handleFilterChange("limit", parseInt(e.target.value))
-        }
-        className="px-2 py-1 border border-gray-700 rounded-md text-sm text-gray-700 bg-white"
-      >
-        <option value="50">50</option>
-        <option value="100">100</option>
-        <option value="250">250</option>
-      </select>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => handleExport("csv")}
+              className="px-3 py-1 border border-gray-700 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+            >
+              Export CSV
+            </button>
 
-      <span className="text-sm text-gray-500">entries</span>
-    </div>
+            <button
+              onClick={fetchStockData}
+              className="px-3 py-1 bg-gray-100 border border-gray-700 rounded-md text-sm text-gray-700 hover:bg-gray-200"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+      </div>
 
-    <div className="flex space-x-2">
-      <button
-        onClick={() => handleExport("csv")}
-        className="px-3 py-1 border border-gray-700 rounded-md text-sm text-gray-700 hover:bg-gray-50"
-      >
-        Export CSV
-      </button>
-
-      <button
-        onClick={fetchStockData}
-        className="px-3 py-1 bg-gray-100 border border-gray-700 rounded-md text-sm text-gray-700 hover:bg-gray-200"
-      >
-        Refresh
-      </button>
-    </div>
-  </div>
-</div>
-
-      {/* Data Table */}
       <DataTable
         columns={columns}
         data={data}

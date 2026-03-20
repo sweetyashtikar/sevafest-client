@@ -27,11 +27,11 @@ export default function AttributeSet() {
         limit: pagination.limit,
         offset: (pagination.page - 1) * pagination.limit,
         searchQuery: search ? { name: { $regex: search, $options: 'i' } } : {},
+
       };
 
       const response = await attributeSetApi.getAll(params);
-      setSets(response.data);
-      setPagination(prev => ({ ...prev, total: response.total }));
+setSets(response.data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)));      setPagination(prev => ({ ...prev, total: response.total }));
     } catch (error) {
       alert(error.message);
     } finally {

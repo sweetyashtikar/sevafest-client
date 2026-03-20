@@ -1,6 +1,7 @@
 'use client';
 
 import { useState ,useRef} from 'react';
+import { toast } from "react-toastify";
 import { STOCK_STATUS } from '@/components/products/productTypes';
 
 export default function ProductVariants({ formData, updateFormData }) {
@@ -45,7 +46,7 @@ export default function ProductVariants({ formData, updateFormData }) {
     }));
   };
 
-   // Handle variant images upload (for new variant form)
+   
   const handleNewVariantImagesChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length === 0) return;
@@ -162,15 +163,15 @@ export default function ProductVariants({ formData, updateFormData }) {
 
   const addVariant = () => {
     if (!newVariant.variant_name.trim()) {
-      alert('Variant name is required');
+      toast.error("Variant name is required");
       return;
     }
     if (newVariant.variant_price <= 0) {
-      alert('Variant price must be greater than 0');
+       toast.error("Variant price must be greater than 0");
       return;
     }
     if (newVariant.variant_specialPrice >= newVariant.variant_price) {
-      alert('Special price must be less than regular price');
+      toast.error("Special price must be less than regular price");
       return;
     }
 

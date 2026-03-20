@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
+  IndianRupee,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -18,6 +19,12 @@ export const menuItems = [
     icon: Package,
     path: "/delivery/orders",
   },
+  {
+    label: "Earnings",
+    icon: IndianRupee,
+    path: "/delivery/earnings"
+  },
+
 ];
 
 export default function Sidebar() {
@@ -43,10 +50,9 @@ export default function Sidebar() {
               key={item.path}
               onClick={() => router.push(item.path)}
               className={`relative flex items-center gap-3 px-6 py-3 text-base font-bold text-black transition
-                ${
-                  isActive
-                    ? "bg-black/20"
-                    : "hover:bg-black/10"
+                ${isActive
+                  ? "bg-black/20"
+                  : "hover:bg-black/10"
                 }`}
             >
               {isActive && (

@@ -784,6 +784,9 @@ const ProductTable = ({ path, editPath }) => {
 
     toast.success("All data exported successfully to Excel!");
   };
+
+
+  
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">

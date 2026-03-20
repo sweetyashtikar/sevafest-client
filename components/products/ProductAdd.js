@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "react-toastify";
 import ProductBasicInfo from "@/components/products/ProductBasicInfo";
 import ProductCategorization from "@/components/products/ProductCategorization";
 import ProductPricing from "@/components/products/ProductPricing";
@@ -24,6 +25,7 @@ export default function AddProductPage() {
   const router = useRouter();
   const { user } = useSelector((a) => a.auth);
   const [step, setStep] = useState(1);
+
   const [formData, setFormData] = useState({
     // Basic Information
     name: "",
@@ -127,8 +129,6 @@ export default function AddProductPage() {
     }));
   };
 
-  // First, define the step order based on product type
-  // Define the step order based on product type
   const getSteps = () => {
     const steps = [
       { number: 1, label: "Basic Info" },
@@ -166,7 +166,9 @@ export default function AddProductPage() {
 
     return steps;
   };
+
   // Update the next button logic to skip step 7 for VARIABLE products
+
   const handleNext = () => {
     const steps = getSteps();
     const currentStepIndex = steps.findIndex((s) => s.number === step);
@@ -188,10 +190,58 @@ export default function AddProductPage() {
       setStep(steps[currentStepIndex - 1].number);
     }
   };
+
+  const validateForm = () => {
+    if (!formData.name) return "Product name is required";
+    if (!formData.categoryId) return "Category is required";
+
+    if (formData.productType === PRODUCT_TYPES.SIMPLE) {
+      if (
+        !formData.simpleProduct.sp_price ||
+        formData.simpleProduct.sp_price <= 0
+      ) {
+        return "Price must be greater than 0";
+      }
+
+      if (!formData.simpleProduct.sp_stockStatus) {
+        return "Stock status is required";
+      }
+    }
+
+    if (formData.productType === PRODUCT_TYPES.VARIABLE) {
+
+      if (!formData.variants || formData.variants.length === 0) {
+        return "At least one variant is required";
+      }
+      return null;
+    }
+
+    if (
+      formData.variantStockLevelType === VARIANT_STOCK_LEVEL_TYPES.PRODUCT_LEVEL
+    ) {
+      if (!formData.productLevelStock.pls_sku) {
+        return "Product level SKU required";
+      }
+
+      if (!formData.productLevelStock.pls_stockStatus) {
+        return "Product level stock status required";
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const validationError = validateForm();
+
+    if (validationError) {
+      toast.error(validationError);
+      setError(validationError);
+      setLoading(false);
+      return;
+    }
 
     try {
       // Create FormData
@@ -411,8 +461,9 @@ export default function AddProductPage() {
 
       // Use the ProductApi
       const response = await ProductApi.create(formDataToSend);
+
       if (response.success === true) {
-        alert("Product created successfully!");
+        toast.success("Product created successfully!");
         console.log("Created product:", response);
       }
 
@@ -439,7 +490,13 @@ export default function AddProductPage() {
       }
     } catch (err) {
       console.error("Error:", err);
-      setError(err.message || "Something went wrong");
+
+      const errorMessage =
+        err?.response?.data?.message || err.error || "Something went wrong";
+
+      toast.error(errorMessage);
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -521,6 +578,7 @@ export default function AddProductPage() {
         }
     }
   };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 -ml-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

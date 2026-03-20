@@ -1,79 +1,73 @@
 import { apiClient } from "@/services/apiClient";
 
 export const areaService = {
-  // Get all areas with pagination
+  // GET /areas?page=1&limit=10&city_id=...&status=true&search=...
   getAreas: (page = 1, limit = 10, filters = {}) => {
-    const params = new URLSearchParams({ page, limit, ...filters });
-    return apiClient(`/area`, {
+    const params = new URLSearchParams({ page, limit });
+    if (filters.city_id) params.append("city_id", filters.city_id);
+    // ⚠️ Backend uses "status" not "active"
+    if (filters.active !== "" && filters.active !== undefined)
+      params.append("status", filters.active);
+    if (filters.search) params.append("search", filters.search);
+    if (filters.pincode) params.append("search", filters.pincode); // search by name/pincode
+
+    return apiClient(`/areas?${params}`, {
       method: "GET",
     });
   },
 
-  // Create single area
+  // GET /areas/:id
+  getAreaById: (id) =>
+    apiClient(`/areas/${id}`, {
+      method: "GET",
+    }),
+
+  // GET /areas/city/:city_id
+  getAreasByCity: (cityId) =>
+    apiClient(`/areas/city/${cityId}`, {
+      method: "GET",
+    }),
+
+  // POST /areas  →  body: { city_id, zipcode_id, name, minimum_free_delivery_order_amount, delivery_charges, ... }
   createArea: (areaData) =>
     apiClient("/areas", {
       method: "POST",
       body: areaData,
     }),
 
-  // Bulk upload areas
-  bulkUploadAreas: (areas) =>
-    apiClient("/areas/bulk", {
-      method: "POST",
-      body: { areas },
-    }),
-
-  // Update area
+  // PUT /areas/:id
   updateArea: (id, areaData) =>
     apiClient(`/areas/${id}`, {
       method: "PUT",
       body: areaData,
     }),
 
-  // Delete area
+  // PATCH /areas/:id/toggle-status
+  toggleAreaStatus: (id) =>
+    apiClient(`/areas/${id}/toggle-status`, {
+      method: "PATCH",
+    }),
+
+  // DELETE /areas/:id
   deleteArea: (id) =>
     apiClient(`/areas/${id}`, {
       method: "DELETE",
     }),
 
-  // Get areas by pincode (for checkout)
-  getAreaByPincode: (pincode) =>
-    apiClient(`/areas/pincode/${pincode}`, {
-      method: "GET",
+  // POST /areas/calculate-delivery  →  body: { area_id, order_amount }
+  calculateDeliveryCharges: (area_id, order_amount) =>
+    apiClient("/areas/calculate-delivery", {
+      method: "POST",
+      body: { area_id, order_amount },
     }),
 
-  // Toggle area active status
-  toggleAreaStatus: (id) =>
-    apiClient(`/areas/${id}/toggle`, {
-      method: "PATCH",
-    }),
-
-  // Additional useful methods
-  getAreasByCity: (cityId) =>
-    apiClient(`/areas/city/${cityId}`, {
-      method: "GET",
-    }),
-
-  getAreasByZipcode: (zipcodeId) =>
-    apiClient(`/areas/zipcode/${zipcodeId}`, {
-      method: "GET",
-    }),
-
-  bulkDeleteAreas: (ids) =>
-    apiClient("/areas/bulk", {
-      method: "DELETE",
-      body: { ids },
-    }),
-
-  updateDeliveryCharges: (id, charges) =>
-    apiClient(`/areas/${id}/delivery-charges`, {
-      method: "PATCH",
-      body: { delivery_charges: charges },
-    }),
-
-  updateMinFreeAmount: (id, amount) =>
-    apiClient(`/areas/${id}/min-free-amount`, {
-      method: "PATCH",
-      body: { minimum_free_delivery_order_amount: amount },
-    }),
+  // ⚠️ Backend मध्ये bulk upload route नाही — individual create वापरतो
+  bulkUploadAreas: async (areas) => {
+    const results = await Promise.allSettled(
+      areas.map((area) =>
+        apiClient("/areas", { method: "POST", body: area })
+      )
+    );
+    return results;
+  },
 };

@@ -18,7 +18,6 @@ export const menuItems = [
   { label: "User Requests", icon: UserCheck, path: "/vendor/user-requests" },
   { label: "Orders", icon: ShoppingCart, path: "/vendor/orders" },
   { label: "Earnings", icon: IndianRupee, path: "/vendor/earnings" },
-  { label: "Settings", icon: Settings, path: "/vendor/settings" },
 ];
 
 export default function VendorsSidebar() {

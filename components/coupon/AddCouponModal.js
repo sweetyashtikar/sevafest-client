@@ -2,75 +2,74 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { 
-  X, 
-  Upload, 
-  Plus, 
-  Pencil, 
-  Tag, 
+import {
+  X,
+  Upload,
+  Plus,
+  Pencil,
+  Tag,
   Calendar,
-  Percent,
   Users,
   Clock,
   Infinity,
-  DollarSign
 } from "lucide-react";
 import { couponService } from "@/API/couponAPI";
-import { 
-  COUPON_TYPE_OPTIONS, 
+import {
+  COUPON_TYPE_OPTIONS,
   DISCOUNT_TYPE_OPTIONS,
-  USER_TYPE_OPTIONS 
+  USER_TYPE_OPTIONS,
 } from "@/components/coupon/couponConstants";
 
-export default function AddCouponModal({
-  onClose,
-  initialData = null,
-  onSuccess
-}) {
+export default function AddCouponModal({ onClose, initialData = null, onSuccess }) {
   const isEdit = Boolean(initialData);
 
   const [formData, setFormData] = useState({
-    couponCode: '',
-    title: '',
-    description: '',
-    couponType: 'multiple time valid',
-    userType: 'all',
-    discountType: 'percentage',
-    couponValue: '',
-    minOrderAmount: '0',
-    maxDiscountAmount: '',
-    expiryDate: '',
-    startDate: '',
-    totalUsageLimit: '',
-    perUserUsageLimit: '1',
+    couponCode: "",
+    title: "",
+    description: "",
+    couponType: "multiple time valid",
+    userType: "all",
+    discountType: "percentage",
+    couponValue: "",
+    minOrderAmount: "0",
+    maxDiscountAmount: "",
+    expiryDate: "",
+    startDate: "",
+    totalUsageLimit: "",
+    perUserUsageLimit: "1",
     status: true,
-    image: null
+    image: null,
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
-  
+
   const fileInputRef = useRef(null);
 
+  // ✅ Prefill form on edit
   useEffect(() => {
     if (initialData) {
       setFormData({
-        couponCode: initialData.couponCode || '',
-        title: initialData.title || '',
-        description: initialData.description || '',
-        couponType: initialData.couponType || 'multiple time valid',
-        userType: initialData.userType || 'all',
-        discountType: initialData.discountType || 'percentage',
-        couponValue: initialData.couponValue || '',
-        minOrderAmount: initialData.minOrderAmount || '0',
-        maxDiscountAmount: initialData.maxDiscountAmount || '',
-        expiryDate: initialData.expiryDate ? new Date(initialData.expiryDate).toISOString().split('T')[0] : '',
-        startDate: initialData.startDate ? new Date(initialData.startDate).toISOString().split('T')[0] : '',
-        totalUsageLimit: initialData.totalUsageLimit || '',
-        perUserUsageLimit: initialData.perUserUsageLimit || '1',
+        couponCode: initialData.couponCode || "",
+        title: initialData.title || "",
+        description: initialData.description || "",
+        couponType: initialData.couponType || "multiple time valid",
+        userType: initialData.userType || "all",
+        discountType: initialData.discountType || "percentage",
+        couponValue: initialData.couponValue ?? "",
+        minOrderAmount: initialData.minOrderAmount ?? "0",
+        maxDiscountAmount: initialData.maxDiscountAmount ?? "",
+        expiryDate: initialData.expiryDate
+          ? new Date(initialData.expiryDate).toISOString().split("T")[0]
+          : "",
+        startDate: initialData.startDate
+          ? new Date(initialData.startDate).toISOString().split("T")[0]
+          : "",
+        totalUsageLimit: initialData.totalUsageLimit ?? "",
+        perUserUsageLimit: initialData.perUserUsageLimit ?? "1",
         status: initialData.status ?? true,
-        image: initialData.image || null
+        image: initialData.image || null,
       });
       setImagePreview(initialData.image || null);
     }
@@ -78,61 +77,73 @@ export default function AddCouponModal({
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
-    setError('');
+    setError("");
   };
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setError('File size must be less than 5MB');
-        return;
-      }
-      
-      if (!file.type.startsWith('image/')) {
-        setError('Please select an image file');
-        return;
-      }
+    if (!file) return;
 
-      setFormData(prev => ({ ...prev, image: file }));
-      setImagePreview(URL.createObjectURL(file));
-      setError('');
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size must be less than 5MB");
+      return;
     }
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file");
+      return;
+    }
+
+    setFormData((prev) => ({ ...prev, image: file }));
+    setImagePreview(URL.createObjectURL(file));
+    setError("");
   };
 
   const handleRemoveImage = () => {
-    setFormData(prev => ({ ...prev, image: null }));
+    setFormData((prev) => ({ ...prev, image: null }));
     setImagePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const validateForm = () => {
     if (!formData.couponCode.trim()) {
-      setError('Coupon code is required');
+      setError("Coupon code is required");
+      return false;
+    }
+    if (formData.couponCode.trim().length < 3) {
+      setError("Coupon code must be at least 3 characters");
       return false;
     }
     if (!formData.title.trim()) {
-      setError('Coupon title is required');
+      setError("Coupon title is required");
       return false;
     }
     if (!formData.description.trim()) {
-      setError('Coupon description is required');
+      setError("Coupon description is required");
       return false;
     }
-    if (!formData.couponValue) {
-      setError('Coupon value is required');
+    if (!formData.couponValue && formData.couponValue !== 0) {
+      setError("Coupon value is required");
       return false;
     }
-    if (formData.discountType === 'percentage' && formData.couponValue > 100) {
-      setError('Percentage discount cannot exceed 100%');
+    if (formData.discountType === "percentage" && Number(formData.couponValue) > 100) {
+      setError("Percentage discount cannot exceed 100%");
+      return false;
+    }
+    if (Number(formData.couponValue) < 0) {
+      setError("Coupon value cannot be negative");
       return false;
     }
     if (!formData.expiryDate) {
-      setError('Expiry date is required');
+      setError("Expiry date is required");
+      return false;
+    }
+    // ✅ FIX: expiry date must be future
+    if (new Date(formData.expiryDate) <= new Date()) {
+      setError("Expiry date must be in the future");
       return false;
     }
     return true;
@@ -140,22 +151,21 @@ export default function AddCouponModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
 
     try {
       setLoading(true);
-      setError('');
+      setError("");
 
       const submitData = new FormData();
-      
-      // Append all form fields
-      Object.keys(formData).forEach(key => {
-        if (key === 'image') {
+
+      Object.keys(formData).forEach((key) => {
+        if (key === "image") {
+          // ✅ FIX: only append new File, not existing URL string
           if (formData.image instanceof File) {
-            submitData.append('image', formData.image);
+            submitData.append("image", formData.image);
           }
-        } else if (formData[key] !== null && formData[key] !== '') {
+        } else if (formData[key] !== null && formData[key] !== "") {
           submitData.append(key, formData[key]);
         }
       });
@@ -170,29 +180,35 @@ export default function AddCouponModal({
       onSuccess?.(response.data);
       onClose();
     } catch (err) {
-      console.error('Error saving coupon:', err);
-      setError(err.message || 'Failed to save coupon');
+      console.error("Error saving coupon:", err);
+      // ✅ FIX: proper axios error message extraction
+      const msg =
+        err?.response?.data?.message || err.message || "Failed to save coupon";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
+  // ✅ Close on backdrop click
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget) onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-white w-[650px] rounded-2xl shadow-2xl relative overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={handleBackdropClick}
+    >
+      {/* ✅ FIX: removed overflow-hidden conflict */}
+      <div className="bg-white w-[650px] rounded-2xl shadow-2xl relative flex flex-col animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+        {/* Sticky Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
           <h2 className="text-xl font-bold text-black flex items-center gap-2">
             {isEdit ? (
-              <>
-                <Pencil size={18} className="text-blue-600" />
-                Edit Coupon
-              </>
+              <><Pencil size={18} className="text-blue-600" /> Edit Coupon</>
             ) : (
-              <>
-                <Plus size={18} className="text-blue-600" />
-                Create New Coupon
-              </>
+              <><Plus size={18} className="text-blue-600" /> Create New Coupon</>
             )}
           </h2>
           <button
@@ -203,7 +219,7 @@ export default function AddCouponModal({
           </button>
         </div>
 
-        {/* Error Message */}
+        {/* Error */}
         {error && (
           <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-xl">
             <p className="text-sm text-red-600">{error}</p>
@@ -251,11 +267,9 @@ export default function AddCouponModal({
             </div>
           </div>
 
-          {/* Two Column Layout */}
+          {/* Two Column */}
           <div className="grid grid-cols-2 gap-4">
-            {/* Left Column */}
             <div className="space-y-4">
-              {/* Coupon Code */}
               <div className="space-y-2">
                 <label className="text-sm font-bold uppercase tracking-wider text-black/40">
                   Coupon Code <span className="text-red-500">*</span>
@@ -271,7 +285,6 @@ export default function AddCouponModal({
                 />
               </div>
 
-              {/* Title */}
               <div className="space-y-2">
                 <label className="text-sm font-bold uppercase tracking-wider text-black/40">
                   Coupon Title <span className="text-red-500">*</span>
@@ -286,7 +299,6 @@ export default function AddCouponModal({
                 />
               </div>
 
-              {/* Coupon Type */}
               <div className="space-y-2">
                 <label className="text-sm font-bold uppercase tracking-wider text-black/40">
                   Coupon Type <span className="text-red-500">*</span>
@@ -297,13 +309,12 @@ export default function AddCouponModal({
                   onChange={handleChange}
                   className="w-full border border-slate-200 px-4 py-3 rounded-xl text-black font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                 >
-                  {COUPON_TYPE_OPTIONS.map(option => (
+                  {COUPON_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
               </div>
 
-              {/* User Type */}
               <div className="space-y-2">
                 <label className="text-sm font-bold uppercase tracking-wider text-black/40">
                   User Type <span className="text-red-500">*</span>
@@ -314,16 +325,14 @@ export default function AddCouponModal({
                   onChange={handleChange}
                   className="w-full border border-slate-200 px-4 py-3 rounded-xl text-black font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                 >
-                  {USER_TYPE_OPTIONS.map(option => (
+                  {USER_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
               </div>
             </div>
 
-            {/* Right Column */}
             <div className="space-y-4">
-              {/* Discount Type */}
               <div className="space-y-2">
                 <label className="text-sm font-bold uppercase tracking-wider text-black/40">
                   Discount Type <span className="text-red-500">*</span>
@@ -334,20 +343,19 @@ export default function AddCouponModal({
                   onChange={handleChange}
                   className="w-full border border-slate-200 px-4 py-3 rounded-xl text-black font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                 >
-                  {DISCOUNT_TYPE_OPTIONS.map(option => (
+                  {DISCOUNT_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>{option.label}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Coupon Value */}
               <div className="space-y-2">
                 <label className="text-sm font-bold uppercase tracking-wider text-black/40">
                   Coupon Value <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40">
-                    {formData.discountType === 'percentage' ? '%' : '₹'}
+                    {formData.discountType === "percentage" ? "%" : "₹"}
                   </span>
                   <input
                     type="number"
@@ -355,17 +363,16 @@ export default function AddCouponModal({
                     value={formData.couponValue}
                     onChange={handleChange}
                     min="0"
-                    max={formData.discountType === 'percentage' ? 100 : undefined}
+                    max={formData.discountType === "percentage" ? 100 : undefined}
                     className="w-full border border-slate-200 pl-8 pr-4 py-3 rounded-xl text-black font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                   />
                 </div>
               </div>
 
-              {/* Max Discount Amount (for percentage) */}
-              {formData.discountType === 'percentage' && (
+              {formData.discountType === "percentage" && (
                 <div className="space-y-2">
                   <label className="text-sm font-bold uppercase tracking-wider text-black/40">
-                    Max Discount Amount <span className="text-xs font-normal">(Optional)</span>
+                    Max Discount <span className="text-xs font-normal">(Optional)</span>
                   </label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40">₹</span>
@@ -375,7 +382,8 @@ export default function AddCouponModal({
                       value={formData.maxDiscountAmount}
                       onChange={handleChange}
                       min="0"
-                      className="w-full border border-slate-200 pl-8 pr-4 py-3 rounded-xl text-black font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+                      placeholder="No limit"
+                      className="w-full border border-slate-200 pl-8 pr-4 py-3 rounded-xl text-black font-medium placeholder:text-black/20 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                     />
                   </div>
                 </div>
@@ -416,7 +424,7 @@ export default function AddCouponModal({
             />
           </div>
 
-          {/* Dates Row */}
+          {/* Dates */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-bold uppercase tracking-wider text-black/40">
@@ -444,17 +452,19 @@ export default function AddCouponModal({
                   name="expiryDate"
                   value={formData.expiryDate}
                   onChange={handleChange}
+                  // ✅ FIX: prevent past date selection
+                  min={new Date().toISOString().split("T")[0]}
                   className="w-full border border-slate-200 pl-10 pr-4 py-3 rounded-xl text-black font-medium outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
                 />
               </div>
             </div>
           </div>
 
-          {/* Usage Limits Row */}
+          {/* Usage Limits */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-bold uppercase tracking-wider text-black/40">
-                Total Usage Limit <span className="text-xs font-normal">(Leave empty for unlimited)</span>
+                Total Usage Limit <span className="text-xs font-normal">(Empty = unlimited)</span>
               </label>
               <div className="relative">
                 <Infinity size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/40" />
@@ -490,28 +500,24 @@ export default function AddCouponModal({
           {/* Status Toggle */}
           <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-lg ${formData.status ? 'bg-green-100 text-green-600' : 'bg-slate-200 text-slate-600'}`}>
+              <div className={`p-2 rounded-lg ${formData.status ? "bg-green-100 text-green-600" : "bg-slate-200 text-slate-600"}`}>
                 {formData.status ? <Tag size={18} /> : <X size={18} />}
               </div>
               <div>
                 <p className="font-bold text-black text-sm">
-                  {formData.status ? 'Active Coupon' : 'Inactive Coupon'}
+                  {formData.status ? "Active Coupon" : "Inactive Coupon"}
                 </p>
                 <p className="text-xs text-black/40">
-                  {formData.status ? 'Coupon is available for users' : 'Coupon is hidden from users'}
+                  {formData.status ? "Coupon is available for users" : "Coupon is hidden from users"}
                 </p>
               </div>
             </div>
             <button
               type="button"
-              onClick={() => setFormData(prev => ({ ...prev, status: !prev.status }))}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                formData.status ? 'bg-green-600' : 'bg-slate-300'
-              }`}
+              onClick={() => setFormData((prev) => ({ ...prev, status: !prev.status }))}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.status ? "bg-green-600" : "bg-slate-300"}`}
             >
-              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                formData.status ? 'translate-x-6' : 'translate-x-1'
-              }`} />
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${formData.status ? "translate-x-6" : "translate-x-1"}`} />
             </button>
           </div>
 
@@ -520,8 +526,8 @@ export default function AddCouponModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2.5 rounded-lg font-bold text-black hover:bg-slate-100 transition-all"
               disabled={loading}
+              className="px-6 py-2.5 rounded-lg font-bold text-black hover:bg-slate-100 transition-all"
             >
               Cancel
             </button>
@@ -538,7 +544,7 @@ export default function AddCouponModal({
               ) : (
                 <>
                   <Tag size={16} />
-                  {isEdit ? 'Update Coupon' : 'Save Coupon'}
+                  {isEdit ? "Update Coupon" : "Save Coupon"}
                 </>
               )}
             </button>
