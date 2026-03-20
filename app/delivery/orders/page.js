@@ -36,16 +36,34 @@ export async function fetchDeliveryOrders(params = {}) {
 /* =========================
    🔄 UPDATE ORDER STATUS
 ========================= */
-export async function updateOrderStatus(orderId, status) {
+export async function updateOrderStatus(orderId, status, image = null) {
   try {
     const data = await apiClient(`/delivery/orders/${orderId}/status`, {
       method: "PATCH",
-      body: { status },
+      body: { status, image },
     });
 
     return data;
   } catch (err) {
     console.log("updateOrderStatus error:", err);
+    throw err;
+  }
+}
+
+export async function uploadDeliveryImage(file) {
+  try {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const data = await apiClient("/delivery/upload-image", {
+      method: "POST",
+      body: formData,
+      // apiClient should handle FormData by not setting Content-Type to application/json
+    });
+
+    return data;
+  } catch (err) {
+    console.log("uploadDeliveryImage error:", err);
     throw err;
   }
 }
@@ -56,20 +74,13 @@ const STATUS_CONFIG = {
   awaiting: {
     label: "Awaiting",
     color: "bg-yellow-100 text-yellow-700",
-    next: "picked_up",
-    nextLabel: "Mark as Picked Up",
+    next: "shipped",
+    nextLabel: "Mark as Shipped",
     nextColor: "bg-blue-600 hover:bg-blue-700",
   },
-  picked_up: {
-    label: "Picked Up",
+  shipped: {
+    label: "Shipped",
     color: "bg-blue-100 text-blue-700",
-    next: "out_for_delivery",
-    nextLabel: "Out for Delivery",
-    nextColor: "bg-orange-600 hover:bg-orange-700",
-  },
-  out_for_delivery: {
-    label: "Out for Delivery",
-    color: "bg-orange-100 text-orange-700",
     next: "delivered",
     nextLabel: "Mark as Delivered",
     nextColor: "bg-green-600 hover:bg-green-700",
@@ -92,16 +103,43 @@ const STATUS_CONFIG = {
 
 function OrderDetailModal({ order, onClose, onStatusUpdate }) {
   const [updating, setUpdating] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [image, setImage] = useState("");
 
   const statusInfo = STATUS_CONFIG[order.status] || STATUS_CONFIG["awaiting"];
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+      setError("");
+      const res = await uploadDeliveryImage(file);
+      if (res.success) {
+        setImage(res.url);
+      }
+    } catch (err) {
+      setError("Failed to upload image. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleStatusUpdate = async () => {
     if (!statusInfo.next) return;
+
+    // Image is required for delivered status
+    if (statusInfo.next === "delivered" && !image) {
+      setError("Please provide a delivery confirmation image");
+      return;
+    }
+
     try {
       setUpdating(true);
       setError("");
-      await updateOrderStatus(order._id, statusInfo.next);
+      await updateOrderStatus(order._id, statusInfo.next, image);
       onStatusUpdate();
       onClose();
     } catch (err) {
@@ -221,6 +259,54 @@ function OrderDetailModal({ order, onClose, onStatusUpdate }) {
             </span>
           </div>
 
+          {/* Image Upload for Delivery Confirmation */}
+          {statusInfo.next === "delivered" && (
+            <div className="bg-gray-50 rounded-xl p-4 space-y-3 border-2 border-dashed border-gray-200">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                  Delivery Confirmation
+                </p>
+                {uploading && (
+                  <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+                )}
+              </div>
+
+              {image ? (
+                <div className="relative aspect-video rounded-lg overflow-hidden group">
+                  <img
+                    src={image}
+                    alt="Delivery confirmation"
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    onClick={() => setImage("")}
+                    className="absolute top-2 right-2 p-1 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center py-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-white transition-colors">
+                  <Truck size={24} className="text-gray-400 mb-2" />
+                  <span className="text-xs text-gray-500 font-medium">
+                    Click to upload proof of delivery
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+              )}
+
+              <p className="text-[10px] text-gray-400 italic">
+                * Real-time image of the package at delivery location is required.
+              </p>
+            </div>
+          )}
+
           {/* Error */}
           {error && (
             <p className="text-sm text-red-600 bg-red-50 px-4 py-2 rounded-lg">
@@ -304,11 +390,11 @@ export default function DeliveryOrdersPage() {
   const statusOptions = [
     { value: "", label: "All Status" },
     { value: "awaiting", label: "Awaiting" },
-    { value: "picked_up", label: "Picked Up" },
-    { value: "out_for_delivery", label: "Out for Delivery" },
+    { value: "shipped", label: "Shipped" },
     { value: "delivered", label: "Delivered" },
     { value: "cancelled", label: "Cancelled" },
   ];
+
 
   return (
     <div className="space-y-6">

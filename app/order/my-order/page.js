@@ -120,10 +120,11 @@ export default function OrdersPageWithAPI() {
   const filters = [
     { id: "all", label: "All Orders" },
     { id: "Order placed", label: "Order Placed" },
-    { id: "processed", label: "Processing" },
-    { id: "assigned", label: "Assigned" },
-    { id: "picked_up", label: "Picked Up" },
+    // { id: "processed", label: "Processing" },
+    // { id: "assigned", label: "Assigned" },
+    // { id: "picked_up", label: "Picked Up" },
     { id: "shipped", label: "Shipped" },
+
     { id: "delivered", label: "Delivered" },
     { id: "cancelled", label: "Cancelled" },
     { id: "returned", label: "Returned" },

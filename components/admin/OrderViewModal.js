@@ -171,21 +171,49 @@ export function OrderViewModal({ open, onClose, data }) {
                       key={s._id || index}
                       className="flex items-center justify-between border-l-4 border-orange-400 bg-gray-50 rounded-r-lg p-4 hover:bg-gray-100 transition-colors"
                     >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                          <span className="text-orange-600 font-bold text-sm">{index + 1}</span>
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                            <span className="text-orange-600 font-bold text-sm">
+                              {index + 1}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800 capitalize">
+                              {s.status}
+                            </p>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {formatDate(s.timestamp)}
+                            </p>
+                            {s.confirmation_image && (
+                              <div className="mt-3">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">
+                                  Proof of Delivery
+                                </p>
+                                <a
+                                  href={s.confirmation_image}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block w-32 aspect-video rounded-lg overflow-hidden border-2 border-orange-200 hover:border-orange-400 transition-colors"
+                                >
+                                  <img
+                                    src={s.confirmation_image}
+                                    alt="Delivery proof"
+                                    className="w-full h-full object-cover"
+                                  />
+                                </a>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold text-gray-800 capitalize">{s.status}</p>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {formatDate(s.timestamp)}
-                          </p>
+                        <div
+                          className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(
+                            s.status
+                          )}`}
+                        >
+                          {s.status?.toUpperCase()}
                         </div>
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusColor(s.status)}`}>
-                        {s.status?.toUpperCase()}
-                      </div>
-                    </div>
+
                   ))}
                 </div>
               ) : (
