@@ -5,14 +5,35 @@ import { apiClient } from "@/services/apiClient";
 import { Phone, Search } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
-export function AssignDeliveryBoyModal({ open, data, onClose }) {
+
+export function AssignDeliveryBoyModal({ open, data, onClose, onSuccess }) {
+
   const { user } = useSelector((a) => a.auth);
   const vendorId = user?._id || user?.id;
 
   const [selectedBoy, setSelectedBoy] = useState(null);
   const [deliveryBoys, setDeliveryBoys] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (open && data?.order_id?.delivery_info?.boy_id) {
+      const boyData = data.order_id.delivery_info.boy_id;
+      // Ensure we set an object that at least has _id
+      if (typeof boyData === 'object' && boyData !== null) {
+        setSelectedBoy(boyData);
+      } else {
+        // If it's just an ID string, we might want to find it in deliveryBoys 
+        // but deliveryBoys might not be loaded yet. 
+        // For now, let's assume it's populated as per getSellerOrders controller.
+        setSelectedBoy({ _id: boyData });
+      }
+    } else if (!open) {
+      setSelectedBoy(null);
+    }
+  }, [open, data]);
+
   const [assigning, setAssigning] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -46,19 +67,29 @@ export function AssignDeliveryBoyModal({ open, data, onClose }) {
     try {
       setAssigning(true);
 
-      await apiClient(`/order/assignDeliveryBoy/${id}`, {
+      const res = await apiClient(`/order/assignDeliveryBoy/${id}`, {
         method: "PUT",
         body: {
           delivery_boy_id: selectedBoy?._id,
         },
       });
+
+      if (res?.success) {
+        toast.success("Delivery partner assigned successfully");
+        if (onSuccess) onSuccess();
+        onClose();
+      } else {
+
+        toast.error(res?.message || "Failed to assign delivery partner");
+      }
     } catch (err) {
       console.log(err);
+      toast.error(err?.message || "Something went wrong. Please try again.");
     } finally {
       setAssigning(false);
-      onClose();
     }
   };
+
 
   if (!open) return null;
 

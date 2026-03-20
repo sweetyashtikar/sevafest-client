@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Eye, Edit, Trash2, Menu, Dot, MoreVertical } from "lucide-react";
+import { Eye, MoreVertical } from "lucide-react";
 
 export function OrderTable({
   data = [],
@@ -9,8 +9,6 @@ export function OrderTable({
   totalPages = 1,
   onPageChange,
   onView,
-  onEdit,
-  onDelete,
   onAssign
 }) {
   return (
@@ -89,19 +87,25 @@ export function OrderTable({
                 </td>
 
                 <td className="px-6 py-4 text-sm text-black">
-                  {row.order_details?.delivery_info?.boy_name || '-'}
+                  {row.order_id?.delivery_info?.boy_id?.user_id?.username || 
+                   row.order_id?.delivery_info?.boy_id?.user_id?.email || '-'}
                 </td>
 
                 <td className="px-6 py-4 text-sm">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${row.status === "processed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                      }`}
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      row.status === "delivered" ? "bg-green-100 text-green-700 border border-green-200" :
+                      row.status === "shipped" ? "bg-blue-100 text-blue-700 border border-blue-200" :
+                      row.status === "processed" ? "bg-purple-100 text-purple-700 border border-purple-200" :
+                      row.status === "awaiting" ? "bg-orange-100 text-orange-700 border border-orange-200" :
+                      row.status === "cancelled" ? "bg-red-100 text-red-700 border border-red-200" :
+                      "bg-gray-100 text-gray-700 border border-gray-200"
+                    }`}
                   >
                     {row.status}
                   </span>
                 </td>
+
 
                 <td className="px-6 py-4 text-sm text-black">
                   {`${row.order_id.payment?.method} / ${row.order_id.payment?.status}`}

@@ -235,11 +235,13 @@ export default function Page() {
       <AssignDeliveryBoyModal
         open={assignOpen}
         data={assignOrder}
+        onSuccess={() => fetchOrders(page)}
         onClose={() => {
           setAssignOpen(false);
           setAssignOrder(null);
         }}
       />
+
     </div>
   );
 }
